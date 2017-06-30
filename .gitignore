@@ -1,3 +1,6 @@
+## OVE Raw database
+data/raw_data.csv
+
 # History files
 .Rhistory
 .Rapp.history
@@ -7,6 +10,7 @@
 
 # Example code in package build process
 *-Ex.R
+Rplots.pdf
 
 # Output files from R CMD build
 /*.tar.gz
@@ -16,6 +20,9 @@
 
 # RStudio files
 .Rproj.user/
+
+# Shiny files
+rsconnect/
 
 # produced vignettes
 vignettes/*.html
@@ -31,3 +38,14 @@ vignettes/*.pdf
 # Temporary files created by R markdown
 *.utf8.md
 *.knit.md
+
+# Emacs stuff
+_region_.tex
+auto/
+
+# Random OS stuff
+.DS_Store
+Thumbs.db
+*.bak
+*.log
+*~
