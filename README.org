@@ -1,0 +1,57 @@
+#+STARTUP: overview hidestars logdone
+#+COLUMNS: %38ITEM(Details) %7TODO(To Do) %TAGS(Context) 
+#+OPTIONS: tags:t timestamp:t todo:t TeX:t LaTeX:t          
+#+OPTIONS: skip:t @:t ::t |:t ^:t f:t
+#+LANGUAGE: en
+* Le butineur de l'OVE
+
+[[https://opensource.org/licenses/MIT][https://img.shields.io/badge/License-MIT-yellow.svg]]
+
+The butineur is a web application powered by [[https://shiny.rstudio.com/][shiny]] that analyses the professional integration of the graduate coming from the Université Nice Sophia Antipolis.
+
+butineur is distributed under MIT License (Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis). 
+
+* Documentation, Support and Issues
+  
+ Look for the most up-to-date documentation on the web site, or javadoc.
+ 
+ Use the [[https://github.com/arnaud-m/butineur/issues][issue tracker]] here on GitHub to report issues. 
+ As far as possible, provide a [[https://en.wikipedia.org/wiki/Minimal_Working_Example][Minimal Working Example]].
+
+* Download and Installation
+
+  In the following, we distinguish two usages of the butineur:
+    - as a local application: launch the application on your computer,
+    - as a web application: deploy the application on [[http://www.shinyapps.io/][Shinyapps.io]].
+
+** Prerequisites 
+   This project works on 32 bits and 64 bits environment. 
+   This project requires:
+   -Gnu R 3.4+ 
+ 
+** Launch the application
+   Start a R session in the project root directory and type:
+   #+BEGIN_SRC R
+     library(shiny)
+     runApp()
+   #+END_SRC
+
+** Deploy the application 
+   For administrators only.
+
+** Dependencies
+   This project requires additional R packages:
+  - Shiny 1.0+
+  - ggplot2 2.2+
+  - ggthemes 3.4+
+  - plyr_1.8+        
+
+   The project requires other additionnal packages for the word cloud.
+  - SnowballC 0.5+
+  - memoise 1.1+
+  - wordcloud 2.5+
+  - RColorBrewer 1.1+
+  - tm 0.7+
+
+
+
