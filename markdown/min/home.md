@@ -3,10 +3,10 @@
 
 
 Les résultats présentés sont issus de la sixième enquête nationale sur l’insertion professionnelle des diplômés de l’université.
-- Résultats de l'enquête sur les diplômé.e.s 2013 : enquête réalisée entre décembre 2015 et avril 2016
-    - de D.U.T.,
-    - de licence professionnelle,
-    - de master.
+* Résultats de l'enquête sur les diplômé.e.s 2013 : enquête réalisée entre décembre 2015 et avril 2016
+    * de D.U.T.,
+    * de licence professionnelle,
+    * de master.
 
 Elle a pour objet d’évaluer la situation professionnelle, 18 mois puis 30 mois après l’obtention du diplôme, des diplômés français issus de la formation initiale, n'ayant pas poursuivi ou repris d'études dans les deux années suivant l’obtention de leur diplôme.
  
@@ -19,17 +19,17 @@ Le dispositif d'enquête annuelle est coordonné par le ministère de l‘Educat
 ## Principaux indicateurs ##
 
 La situation professionnelle est évaluée au travers de six indicateurs à 18 mois et à 30 mois après le diplôme :
-  - le taux d’insertion, la part d’emplois stables, la part d’emplois à temps plein, la part d’emplois de niveau cadre ou profession intermédiaire, le salaire net mensuel médian des emplois à temps plein, le salaire brut annuel médian estimé à partir du salaire net mensuel médian.
+* le taux d’insertion, la part d’emplois stables, la part d’emplois à temps plein, la part d’emplois de niveau cadre ou profession intermédiaire, le salaire net mensuel médian des emplois à temps plein, le salaire brut annuel médian estimé à partir du salaire net mensuel médian.
 
 Deux indicateurs complémentaires sont proposés :
-  - le taux de mobilité (pourcentage des emplois extérieurs à la région de l’université d’origine, y compris à l’étranger), la part des emplois de niveau cadre (seulement).
+* le taux de mobilité (pourcentage des emplois extérieurs à la région de l’université d’origine, y compris à l’étranger), la part des emplois de niveau cadre (seulement).
 
 Ils sont accompagnés de quatre éléments de contexte socio-économique :
-  - le pourcentage de femmes (indicateur structurel), le pourcentage de diplômés boursiers de l’université (source : enquête insertion, diplômés de master), le taux de chômage régional (source : INSEE, 4ème trimestre 2015), le salaire net mensuel médian régional des jeunes âgés de 25 à 29 ans employés à temps plein dans les catégories cadres ou professions intermédiaires (source : INSEE DADS 2013).
+* le pourcentage de femmes (indicateur structurel), le pourcentage de diplômés boursiers de l’université (source : enquête insertion, diplômés de master), le taux de chômage régional (source : INSEE, 4ème trimestre 2015), le salaire net mensuel médian régional des jeunes âgés de 25 à 29 ans employés à temps plein dans les catégories cadres ou professions intermédiaires (source : INSEE DADS 2013).
 
 
 ## Définition du taux d'insertion ##
-Source: https://www.performance-publique.budget.gouv.fr/sites/performance_publique/files/files/circulaires/pieces_jointes/2009/2MPAP-09-3024/6-indicateurs_communs.pdf
+Source: [indicateurs communs](https://www.performance-publique.budget.gouv.fr/sites/performance_publique/files/files/circulaires/pieces_jointes/2009/2MPAP-09-3024/6-indicateurs_communs.pdf)
 
 Pour chaque année considérée, parmi la population répondante, mesure de l’insertion des étudiants
 diplômés 30 mois avant la date de l’enquête et qui n’ont jamais connu de poursuites ou de reprises

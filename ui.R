@@ -20,35 +20,30 @@ source(file.path("R", "uiRaw.R"), local = TRUE)
 
 
 ## Define UI
-fluidPage(
+navbarPage(
+  "Le butineur (en développement)!",
   theme = "bootstrap.min.css",
-  titlePanel("Le butineur de l'OVE (en développement)"),
-  fluidRow(
+  MakeAccueilPanel(),
+  tabPanel(
+    "Données Ministère 2013",
     tabsetPanel(
-      MakeAccueilPanel(),
-      tabPanel(
-        "Données Ministère 2013",
-        tabsetPanel(
-          MakeMinAccueilPanel(),
-          MakeMinResultatsPanel()
-        )
-      ),
-      tabPanel(
-        "Données brutes 2014",
-        h4("Appliquer un filtre:"),
-        MakeSelectionRow(),
-        ## MakeDebugRow(), ##DEBUG
-        tabsetPanel(
-          MakeRawAccueilPanel(),
-          MakeResultatslPanel(),
-          MakePopulationPanel(),
-          MakeSalairePanel(),
-          MakeEmploiPanel(),
-          MakeCloudPanel()
-        )
-      )
+      MakeMinAccueilPanel(),
+      MakeMinResultatsPanel()
     )
   ),
-  h2("The End !")
+  tabPanel(
+    "Données brutes 2014",
+    h4("Appliquer un filtre:"),
+    MakeSelectionRow(),
+    ## MakeDebugRow(), ##DEBUG
+    tabsetPanel(
+      MakeRawAccueilPanel(),
+      MakeResultatslPanel(),
+      MakePopulationPanel(),
+      MakeSalairePanel(),
+      MakeEmploiPanel(),
+      MakeCloudPanel()
+    )
+  )
 )
 
