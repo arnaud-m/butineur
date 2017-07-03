@@ -30,8 +30,7 @@ fluidPage(
         "Données Ministère 2013",
         tabsetPanel(
           MakeMinAccueilPanel(),
-          MakeMinDomPanel(),
-          MakeMinDiscPanel()
+          MakeMinResultatsPanel()
         )
       ),
       tabPanel(

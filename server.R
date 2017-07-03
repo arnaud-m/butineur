@@ -72,11 +72,21 @@ library(plyr)
 #write.csv(data, file.path("data", "int-uns-insertion_professionnelle-master.csv"), row.names=FALSE)
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle-master.csv"), header=TRUE)
 
+dataMin <- read.table(file = file.path("data", "fr-esr-insertion_professionnelle.csv"), header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
+dataMin$Nombre.de.diplômés <- round(dataMin$Nombre.de.réponses * 100 /  dataMin$Taux.de.réponse)
+
+filterSituation <-function(dataMin, after=30) {
+  subset(
+    dataMin,
+    dataMin$situation == paste0(after, " mois après le diplôme")
+  )
+}
+
 GetIndicateurs <- function(data) {
   population <- nrow(data)
   indics <- c("population"= nrow(data))
-  
 }
+
 ## Rename sum function for addmargins
 Total <- function(x) sum(x)
 
@@ -111,7 +121,7 @@ BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, 
   ## exploit recycling
   x$toplab[ append(rep(TRUE,m-1), FALSE) ] <- "" 
 
-    p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
+  p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
   
   if(labelF) {
     p <- p + geom_text(aes(y = pos, label = x$percentage, size = 6, position = "stack"), show.legend = FALSE)
@@ -137,14 +147,17 @@ BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, 
 ## Lettres-Langues-Arts (LLA)
 ## Sciences Humaines et sociales (SHS) 
 ## Sciences - Technologies-Santé (STS)
-MakeChoiceLists<- function(data) {
+MakeChoiceLists<- function(data, dataMin) {
   su <- function(x) sort(unique(x)) 
-  list(annee=su(data$annee),
-       grade=su(data$libdip1),
-       diplome=list("Mention" = su(data$libdip2), "Spécialité" = su(data$libdip3), "Code SISE" = su(data$code_diplome)))
+  list(
+    annee=su(data$annee),
+    grade=su(data$libdip1),
+    diplome=list("Mention" = su(data$libdip2), "Spécialité" = su(data$libdip3), "Code SISE" = su(data$code_diplome)),
+    gradeMin=su(dataMin$Diplôme)
+  )
 }
 
-choices <- MakeChoiceLists(data)
+choices <- MakeChoiceLists(data, dataMin)
 
 ## TODO ? https://rstudio.github.io/shinythemes/
 
@@ -168,12 +181,26 @@ MakeSelectionOutput <- function(input, output, choices) {
   })
 }
 
+MakeMinSelectionOutput <- function(input, output, choices) {
+  output$checkboxGradeMin <- renderUI( {
+    checkboxGroupInput("gradeMin", "Grade(s)", choices$gradeMin, choices$gradeMin)
+  })
+}
+
+MakeMinDebugOutput <- function(input, output, choices) {
+  output$gradeMin <- renderPrint(input$gradeMin)
+  output$isMinPerDomain <- renderPrint(input$isMinPerDomain)
+}
+
+
 MakeDebugOutput <- function(input, output, choices) {
   output$annee <- renderPrint(input$annee)
   output$grade <- renderPrint(input$grade)
   output$diplome <- renderPrint(input$diplome)
   output$sexe <- renderPrint(input$sexe)
 }
+
+
 
   ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
 MakeReactiveData <- function(input, data, choices) {
@@ -194,9 +221,24 @@ MakeReactiveData <- function(input, data, choices) {
     if(! is.null(input$diplome) ) {
       logInd <- logInd & (data$libdip2 %in% input$diplome | data$libdip3 %in% input$diplome | data$code_diplome %in% input$diplome)
     }
-    x <- subset(data, logInd)
-    x
+    subset(data, logInd)
   })
+}
+
+MakeMinReactiveData <- function(input, dataMin, choices) {
+  reactive({
+    logInd <- rep(TRUE, nrow(dataMin))
+    if( length(input$gradeMin) < length(choices$gradeMin) ) {
+      ## Sélection active : certains grades ne sont pas sélectionnés.
+      logInd <- logInd & (dataMin$Diplôme %in% input$gradeMin)
+    }
+    if(input$isMinPerDomain) {
+      logInd <- logInd & ( grepl("^Ensemble ", dataMin$Discipline) | dataMin$Domaine %in% c("Masters enseignement", "Lettres, langues, arts" ))
+    } else {
+      logInd <- logInd & !grepl("^Ensemble ", dataMin$Discipline)
+    }
+    subset(dataMin, logInd)
+  })  
 }
 
 MakeResultatsOutput <- function(output, rpopulation) {
@@ -332,9 +374,9 @@ MakeEmploiOutput <- function(output, remploye) {
 }
 
 MakeCloudOutput <- function(output, rrepondants) {
-      ## Generate job word cloud
-    ## http://shiny.rstudio.com/gallery/word-cloud.html
-    ## Make the wordcloud drawing predictable during a session
+  ## Generate job word cloud
+  ## http://shiny.rstudio.com/gallery/word-cloud.html
+  ## Make the wordcloud drawing predictable during a session
   wordcloud_rep <- repeatable(wordcloud)
     
   output$nuageEmploi <- renderPlot({
@@ -353,6 +395,41 @@ shinyServer(
   function(input, output, session) {
     ## Run once each time a user visits the app
 
+    MakeMinSelectionOutput(input, output, choices)
+    MakeMinDebugOutput(input, output) ##DEBUG
+    rpopulationMin <- MakeMinReactiveData(input, dataMin, choices)
+
+    output$diplomeMin <- renderPlot({
+      x <- rpopulationMin()
+      x <- filterSituation(x)
+      if(input$isMinPerDomain) {
+        p <- ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Domaine))
+      } else {
+        p <- ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Discipline))
+      }
+      p + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs() + ggtitle("Nombre de diplômés") +
+        theme(axis.line=element_blank(),
+          axis.title.x=element_blank(),
+          axis.title.y=element_blank())
+          
+    })
+
+    output$insertionMin <- renderPlot({
+      x <- rpopulationMin()
+      x <- subset(x, !is.na(x$Taux.d.insertion))
+      ggplot(x, aes(x = Domaine, y = Taux.d.insertion, fill = situation)) + geom_bar(position = "dodge", stat = "identity") +
+        theme_gdocs() + scale_fill_ptol() +
+        theme(legend.position="bottom", legend.direction="horizontal")
+      })
+
+
+    ## ggplot(y, aes(x = Discipline, y = Taux.de.réponse)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() +  geom_text(aes(y = y$Taux.de.réponse/2, label=y$Taux.de.réponse), color = "white", size=10) +  theme_gdocs()
+
+
+    ## y <- subset(y, !is.na(y$Salaire.net.médian.des.emplois.à.temps.plein))
+## >   ggplot(y, aes(x = Discipline, y = Salaire.net.médian.des.emplois.à.temps.plein)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() +  theme_gdocs()
+    
+    
     MakeSelectionOutput(input, output, choices)
     ## MakeDebugOutput(input, output) ##DEBUG
     rpopulation <- MakeReactiveData(input, data, choices)
@@ -454,35 +531,6 @@ shinyServer(
     observeEvent(input$copyButton, {
       clipr::write_clip(url())
     })
-
-    
-    ## #################################
-    ## Generating downloadable reports
-    ## http://shiny.rstudio.com/articles/generating-reports.html
-     ## output$report <- downloadHandler(
-     ##  # For PDF output, change this to "report.pdf"
-     ##  filename = "report.pdf",
-     ##  content = function(file) {
-     ##    # Copy the report file to a temporary directory before processing it, in
-     ##    # case we don't have write permissions to the current working dir (which
-     ##    # can happen when deployed).
-     ##    tempReport <- file.path(tempdir(), "report.Rmd")
-     ##    file.copy("report.Rmd", tempReport, overwrite = TRUE)
-
-     ##    # Set up parameters to pass to Rmd document
-     ##    params <- list(n = 10, situationDiplome = situationDiplomePlot)
-
-     ##    # Knit the document, passing in the `params` list, and eval it in a
-     ##    # child of the global environment (this isolates the code in the document
-     ##    # from the code in this app).
-     ##    rmarkdown::render(tempReport, output_file = file,
-     ##      params = params,
-     ##      envir = new.env(parent = globalenv())
-     ##    )
-     ##  }
-     ## )
-
-    
   }
 )
 

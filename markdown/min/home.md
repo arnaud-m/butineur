@@ -36,7 +36,7 @@ diplômés 30 mois avant la date de l’enquête et qui n’ont jamais connu de 
 d’études depuis l’obtention de leur diplôme.
 ## Ressources ##
 
-- [Enquête relative à l’insertion professionnelle des diplômé.e.s de l’université](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle/)
-- [Enquête relative à l’insertion professionnelle des diplômé.e.s à l'Université Nice Sophia Antipolis](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle_etablissements/?disjunctive.discipline2&refine.diplome=MASTER_LMD&refine.annee=2013&refine.numero_de_l_etablissement=0060931E&sort=code_de_la_discipline) :  Exportation des principaux indicateurs (csv ou xls) par discipline sous forme de tableaux.
-- [Jeux de données Insertion professionnelle sur la plateforme open data du ministère](https://data.enseignementsup-recherche.gouv.fr/explore/?sort=modified&q=insertion)
-- [Notice méthodologique](http://c.par-la.fr/insertion/Notice%20de%20m%c3%a9thodologie_2016.pdf)
+* [Enquête relative à l’insertion professionnelle des diplômé.e.s de l’université](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle/)
+* [Enquête relative à l’insertion professionnelle des diplômé.e.s à l'Université Nice Sophia Antipolis](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle_etablissements/?disjunctive.discipline2&refine.diplome=MASTER_LMD&refine.annee=2013&refine.numero_de_l_etablissement=0060931E&sort=code_de_la_discipline) :  Exportation des principaux indicateurs (csv ou xls) par discipline sous forme de tableaux.
+* [Jeux de données Insertion professionnelle sur la plateforme open data du ministère](https://data.enseignementsup-recherche.gouv.fr/explore/?sort=modified&q=insertion)
+* [Notice méthodologique](http://c.par-la.fr/insertion/Notice%20de%20m%c3%a9thodologie_2016.pdf)
