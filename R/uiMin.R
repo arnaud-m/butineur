@@ -3,7 +3,8 @@ require(shiny)
 
 MakeMinAccueilPanel<- function() {
   tabPanel(
-    "Notice",
+    title = "Notice",
+    value = "minHomePanel",
     includeMarkdown(file.path("markdown", "min", "home.md"))
   )
 }
@@ -22,6 +23,21 @@ MakeMinDebugRow <- function() {
   fluidRow(
     column(3, verbatimTextOutput("gradeMin")),
     column(5, verbatimTextOutput("isMinPerDomain"))
+  )
+}
+
+MakeMinLPPanel<- function() {
+  tabPanel(
+    "LP par domaine",
+    h2("Foo")
+  )
+}
+
+
+MakeMinMasterPanel<- function() {
+  tabPanel(
+    "Master par domaine",
+    h2("Foo")
   )
 }
 

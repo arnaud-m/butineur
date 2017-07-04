@@ -112,7 +112,6 @@ BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, 
   x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE]))
   totFreq <- sum(x$Freq)
   ## Percentage labels
-  ## TODO bug with the percentage labels
   x$percentage <- 100 * x$Freq / totFreq
   x$percentage <-  GetPercentLabels(x$percentage, threshold = 2, digits = 0)
   x <- ddply(x, aesX, transform, pos = sum(Freq)-cumsum(Freq) + (0.5 * Freq), top = cumsum(Freq))
@@ -128,7 +127,7 @@ BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, 
   }
   
   if(labelX) {
-    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 6, hjust = -0.25, vjust = -0.5, position = "stack", fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.05)))
+    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 8, hjust = -0.25, vjust = -0.5, position = "stack", fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.05)))
   }
   
   if(is.null(legend.title)) {
@@ -158,8 +157,6 @@ MakeChoiceLists<- function(data, dataMin) {
 }
 
 choices <- MakeChoiceLists(data, dataMin)
-
-## TODO ? https://rstudio.github.io/shinythemes/
 
 MakeSelectionOutput <- function(input, output, choices) {
   output$checkboxAnnee <- renderUI( {
@@ -421,8 +418,9 @@ shinyServer(
         theme_gdocs() + scale_fill_ptol() +
         theme(legend.position="bottom", legend.direction="horizontal")
       })
-
-
+    ## TODO https://stackoverflow.com/questions/6017460/position-geom-text-on-dodged-barplot
+    ## TODO https://chrisalbon.com/r-stats/add-labels-to-bar-graph.html
+    
     ## ggplot(y, aes(x = Discipline, y = Taux.de.réponse)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() +  geom_text(aes(y = y$Taux.de.réponse/2, label=y$Taux.de.réponse), color = "white", size=10) +  theme_gdocs()
 
 
@@ -482,6 +480,8 @@ shinyServer(
     output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
     
 
+    ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
+    
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab
     ## session$onSessionEnded(stopApp)

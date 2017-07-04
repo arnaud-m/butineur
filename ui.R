@@ -9,7 +9,7 @@ library(shiny)
 
 MakeAccueilPanel<- function() {
   tabPanel(
-    "Accueil",
+    title = "Accueil", value="homePanel",
     includeMarkdown(file.path("markdown", "home.md"))
   )
 }
@@ -21,13 +21,18 @@ source(file.path("R", "uiRaw.R"), local = TRUE)
 
 ## Define UI
 navbarPage(
-  "Le butineur (en développement)!",
+  title = "Le butineur (en développement)!",
+  id = "navPage",
   theme = "bootstrap.min.css",
   MakeAccueilPanel(),
   tabPanel(
-    "Données Ministère 2013",
+    title = "Données Ministère 2013",
+    value = "minTabPanel",
     tabsetPanel(
+      id = "minTabsetPanel",
       MakeMinAccueilPanel(),
+      MakeMinLPPanel(),
+      MakeMinMasterPanel(),
       MakeMinResultatsPanel()
     )
   ),
@@ -45,5 +50,18 @@ navbarPage(
       MakeCloudPanel()
     )
   )
+  ## ,
+  ## tabPanel("Plot",
+  ##   sidebarLayout(
+  ##     sidebarPanel(
+  ##       radioButtons("plotType", "Plot type",
+  ##         c("Scatter"="p", "Line"="l")
+  ##       ), width = 2
+  ##     ),
+  ##     mainPanel(
+  ##       plotOutput("plot")
+  ##     )
+  ##   )
+  ##   )
 )
 
