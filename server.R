@@ -72,15 +72,40 @@ library(plyr)
 #write.csv(data, file.path("data", "int-uns-insertion_professionnelle-master.csv"), row.names=FALSE)
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle-master.csv"), header=TRUE)
 
-dataMin <- read.table(file = file.path("data", "fr-esr-insertion_professionnelle.csv"), header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
-dataMin$Nombre.de.diplômés <- round(dataMin$Nombre.de.réponses * 100 /  dataMin$Taux.de.réponse)
 
-filterSituation <-function(dataMin, after=30) {
+ReadMinIP <- function(file) {
+  df <- read.table(file = file, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
+  df$Nombre.de.diplômés <- round(df$Nombre.de.réponses * 100 /  df$Taux.de.réponse)
+  return(df)
+}
+
+FilterDomains <- function(dataMin) {
+  df <- aggregate(dataMin$Domaine, by = list(code = dataMin$Code.du.domaine), length)
+  domains <- subset(df$code, df$x == 2)
+  subset(dataMin, grepl("^Ensemble ", dataMin$Discipline) | dataMin$Code.du.domaine %in% domains)
+}
+
+FilterDisciplines <- function(dataMin) {
+  subset(dataMin, !grepl("^Ensemble ", dataMin$Discipline))
+}
+
+
+dataMinM <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-master.csv"))
+dataMinDomM <- FilterDomains(dataMinM)
+dataMinDiscM <- FilterDisciplines(dataMinM)
+
+dataMinLP <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-lp.csv"))
+dataMinDomLP <- FilterDomains(dataMinLP)
+dataMinDiscLP <- FilterDisciplines(dataMinLP)
+
+
+FilterSituation <-function(dataMin, after=30) {
   subset(
     dataMin,
     dataMin$situation == paste0(after, " mois après le diplôme")
   )
 }
+
 
 GetIndicateurs <- function(data) {
   population <- nrow(data)
@@ -151,12 +176,11 @@ MakeChoiceLists<- function(data, dataMin) {
   list(
     annee=su(data$annee),
     grade=su(data$libdip1),
-    diplome=list("Mention" = su(data$libdip2), "Spécialité" = su(data$libdip3), "Code SISE" = su(data$code_diplome)),
-    gradeMin=su(dataMin$Diplôme)
+    diplome=list("Mention" = su(data$libdip2), "Spécialité" = su(data$libdip3), "Code SISE" = su(data$code_diplome))
   )
 }
 
-choices <- MakeChoiceLists(data, dataMin)
+choices <- MakeChoiceLists(data)
 
 MakeSelectionOutput <- function(input, output, choices) {
   output$checkboxAnnee <- renderUI( {
@@ -229,12 +253,7 @@ MakeMinReactiveData <- function(input, dataMin, choices) {
       ## Sélection active : certains grades ne sont pas sélectionnés.
       logInd <- logInd & (dataMin$Diplôme %in% input$gradeMin)
     }
-    if(input$isMinPerDomain) {
-      logInd <- logInd & ( grepl("^Ensemble ", dataMin$Discipline) | dataMin$Domaine %in% c("Masters enseignement", "Lettres, langues, arts" ))
-    } else {
-      logInd <- logInd & !grepl("^Ensemble ", dataMin$Discipline)
-    }
-    subset(dataMin, logInd)
+    FilterDomains(dataMin)
   })  
 }
 
@@ -397,8 +416,8 @@ shinyServer(
     rpopulationMin <- MakeMinReactiveData(input, dataMin, choices)
 
     output$diplomeMin <- renderPlot({
-      x <- rpopulationMin()
-      x <- filterSituation(x)
+      x <- dataMinDomM
+      x <- FilterSituation(x)
       if(input$isMinPerDomain) {
         p <- ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Domaine))
       } else {
@@ -432,9 +451,6 @@ shinyServer(
     ## MakeDebugOutput(input, output) ##DEBUG
     rpopulation <- MakeReactiveData(input, data, choices)
         
-    ## TODO rpopulation -> rrepondant
-
-      
     MakeResultatsOutput(output, rpopulation)
     MakeInsertionOutput(output, rpopulation)
     MakeSituationOutput(output, rpopulation)
@@ -480,7 +496,7 @@ shinyServer(
     output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
     
 
-    ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
+    updateNavbarPage(session, "navPage", selected = "rawTabPanel")
     
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab

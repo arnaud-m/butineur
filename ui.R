@@ -37,8 +37,8 @@ navbarPage(
     )
   ),
   tabPanel(
-    "Données brutes 2014",
-    h4("Appliquer un filtre:"),
+    title = "Données brutes 2014",
+    value = "rawTabPanel",
     MakeSelectionRow(),
     ## MakeDebugRow(), ##DEBUG
     tabsetPanel(
@@ -49,19 +49,7 @@ navbarPage(
       MakeEmploiPanel(),
       MakeCloudPanel()
     )
-  )
-  ## ,
-  ## tabPanel("Plot",
-  ##   sidebarLayout(
-  ##     sidebarPanel(
-  ##       radioButtons("plotType", "Plot type",
-  ##         c("Scatter"="p", "Line"="l")
-  ##       ), width = 2
-  ##     ),
-  ##     mainPanel(
-  ##       plotOutput("plot")
-  ##     )
-  ##   )
-  ##   )
+    )
+    
 )
 

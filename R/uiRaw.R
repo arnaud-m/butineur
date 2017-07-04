@@ -1,17 +1,14 @@
 require(shiny)
 
 MakeSelectionRow <- function() {
-  fluidRow(
+  fluidRow( 
     column(1, uiOutput("checkboxAnnee")),
-    column(2, uiOutput("checkboxGrade")),
-    column(6, uiOutput("selectizeDiplome")),
+    column(1, uiOutput("checkboxGrade")),
+    column(4, uiOutput("selectizeDiplome")),
     column(1, checkboxGroupInput("sexe", "Sexe(s)", c("Femme", "Homme"), c("Femme", "Homme"))),
     column(2, actionButton("copyButton", "Copier l'URL dans le presse-papier."), align="center")
-  )
-  ## column(6,
-  ##        downloadButton("report", "Télecharger un rapport PDF"),
-  ##        align="center" 
-  ##        )
+    ##style = "background-color:#f5f5f5; border:1px solid #e3e3e3; box-shadow:0 1px 1px rgba(0, 0, 0, 0.05) inset"
+   )
 }
 
 MakeDebugRow <- function() {
