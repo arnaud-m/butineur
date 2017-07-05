@@ -1,68 +1,11 @@
 ## options(shiny.reactlog=TRUE)
 
-###########################
-## New MNESR Data analysis
-## x <- read.table(file = 'fr-esr-insertion_professionnelle-master.csv', header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
-## col.names <- c("domaine", "discipline", "situation", "emplois_cadre_ou_professions_intermediaires", "emplois_stables", "emplois_a_temps_plein")
-## col.times <- tail(col.names, -3)
-## row.domains <- !grepl("^Ensemble ", x$discipline)
-## y <- x[row.domains,col.names]
-## y <- subset(y, apply(y[,col.times], 1, function(x) !all(is.na(x))))
-## z <- reshape(y, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="value", timevar="characteristic", times=col.times)
-## library(ggplot2)
-## ggplot(z, aes(x = situation, y = value, fill = characteristic)) + 
-##       geom_bar(position = "dodge", stat = "identity") +
-##   facet_wrap( ~ discipline)
-
-## x$nombre_de_diplômés <- x$nombre_de_reponses * 100 /  x$taux_de_reponse
-## u <- x[row.domains,]
-## u <- subset(u, u$situation == "30 mois après le diplôme")
-## ggplot(u, aes(x = "", y = nombre_de_diplômés, fill = domaine)) + 
-##       geom_bar(stat = "identity") +  coord_polar("y", start=0) 
-
-## u <- x[row.domains,]
-## u <- subset(u, u$situation == "30 mois après le diplôme")
-## ggplot(u, aes(x = "", y = nombre_de_reponses, fill = discipline)) + 
-##       geom_bar(stat = "identity") +  coord_polar("y", start=0) 
-
-## u <- x[row.domains,]
-## u <- subset(u, !is.na(u$taux_dinsertion))
-## ggplot(u, aes(x = domaine, y = taux_dinsertion, fill = situation)) + 
-##   geom_bar(position = "dodge", stat = "identity")
-
-## u <- x[row.domains,]
-## u <- subset(u, !is.na(u$salaire_net_median_des_emplois_a_temps_plein))
-## ggplot(u, aes(x = domaine, y = salaire_net_median_des_emplois_a_temps_plein, fill = situation)) +
-##   geom_bar(position = "dodge", stat = "identity")
-###########################
-
 library(shiny)
 library(ggplot2)
 library(ggthemes)
 library(plyr)
 ## TODO Use interactive charts ?
 ## library(plotly)
-
-## n = 100000
-## m = 50
-## x <- matrix(runif(n = n*m), nrow=n)
-## k <- 5
-## thresh <- runif(k) 
-## sel1 <- function(x, thresh) {
-##   y <- x
-##   for(i in 1:k) {
-##     y <- subset(x, x[,i] <= thresh[i] )
-##   }
-##   y
-## }
-
-## sel2 <- function(x, thresh) {
-##   subset(x, all(x[,1:k] <= thresh) )
-## }
-
-## system.time(sel1(x, thresh))
-## system.time(sel2(x, thresh))
-## system.time(replicate(k, sel2(x, thresh)))
 
 ## Run once when the app is launched
 
@@ -128,9 +71,10 @@ GetPercentLabels <- function(x, threshold = 1, digits = 1) {
 ## http://www.sthda.com/french/wiki/ggplot2-barplots-guide-de-demarrage-rapide-logiciel-r-et-visualisation-de-donnees
 BarPlot <- function(x, threshold = 5, digits = 0) {
   x <- as.data.frame(table(x[drop=TRUE], useNA = "ifany"))
+  ## TODO Do not filter labels here
   x$label <- GetPercentLabels(100*x$Freq/sum(x$Freq), threshold, digits)
   pos <- x$Freq / 2
-  ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() + geom_text(aes(y = pos, label=label), color = "white", size=6) +  theme_gdocs() 
+  ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() + geom_text(aes(y = pos, label=label), color = "white", size=8) +  theme_gdocs() 
 }
 
 BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
@@ -148,6 +92,8 @@ BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, 
   p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
   
   if(labelF) {
+    ## FIXME Stopped working when changing the fluid page into a navbar page
+    ## commit cba64eb use a navbar page instead of a fluid page
     p <- p + geom_text(aes(y = pos, label = x$percentage, size = 6, position = "stack"), show.legend = FALSE)
   }
   
@@ -223,7 +169,8 @@ MakeDebugOutput <- function(input, output, choices) {
 
 
 
-  ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
+## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
+## TODO https://shiny.rstudio.com/articles/action-buttons.html
 MakeReactiveData <- function(input, data, choices) {
   reactive({
     logInd <- rep(TRUE, nrow(data))
@@ -415,36 +362,66 @@ shinyServer(
     MakeMinDebugOutput(input, output) ##DEBUG
     rpopulationMin <- MakeMinReactiveData(input, dataMin, choices)
 
-    output$diplomeMin <- renderPlot({
-      x <- dataMinDomM
+    output$minDiplomeLP <- renderPlot({
+      x <- dataMinDomLP
       x <- FilterSituation(x)
-      if(input$isMinPerDomain) {
-        p <- ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Domaine))
-      } else {
-        p <- ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Discipline))
-      }
-      p + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs() + ggtitle("Nombre de diplômés") +
-        theme(axis.line=element_blank(),
+      ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Domaine)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs() + ggtitle("Nombre de diplômés") +
+        theme(
+          axis.line=element_blank(),
           axis.title.x=element_blank(),
-          axis.title.y=element_blank())
-          
+          axis.title.y=element_blank()
+        )
     })
 
-    output$insertionMin <- renderPlot({
-      x <- rpopulationMin()
+    output$minInsertionLP <- renderPlot({
+      x <- dataMinDomLP
       x <- subset(x, !is.na(x$Taux.d.insertion))
       ggplot(x, aes(x = Domaine, y = Taux.d.insertion, fill = situation)) + geom_bar(position = "dodge", stat = "identity") +
         theme_gdocs() + scale_fill_ptol() +
-        theme(legend.position="bottom", legend.direction="horizontal")
+        theme(legend.position="bottom", legend.direction="horizontal") +
+         geom_text(aes(y = x$Taux.d.insertion, label = sprintf("%2.0f%%", x$Taux.d.insertion)), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") + ggtitle("Évolution du taux d'insertion des diplômés")
       })
     ## TODO https://stackoverflow.com/questions/6017460/position-geom-text-on-dodged-barplot
     ## TODO https://chrisalbon.com/r-stats/add-labels-to-bar-graph.html
     
     ## ggplot(y, aes(x = Discipline, y = Taux.de.réponse)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() +  geom_text(aes(y = y$Taux.de.réponse/2, label=y$Taux.de.réponse), color = "white", size=10) +  theme_gdocs()
 
+    output$minEmploiLP <- renderPlot({
+      x <- dataMinDomLP
+      col.names <- c("Domaine", "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
+      col.times <- tail(col.names, -2)
+      x <- subset(x, apply(x[,col.times], 1, function(x) !all(is.na(x))))
+      x <- reshape(x, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="valeur", timevar="characteristic", times=col.times)
+      x$characteristic <- factor(x$characteristic, levels = c("X..emplois.stables", "X..emplois.à.temps.plein", "X..emplois.cadre.ou.professions.intermédiaires"), labels =  c("% emplois stables", "% emplois à temps plein", "% emplois cadre ou professions intermédiaires"))
+      ggplot(x, aes(x = situation, y = valeur, fill = characteristic)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap( ~ Domaine) +
+        theme_gdocs() + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") + scale_fill_ptol() +
+        theme(legend.position="bottom", legend.direction="horizontal") 
 
-    ## y <- subset(y, !is.na(y$Salaire.net.médian.des.emplois.à.temps.plein))
-## >   ggplot(y, aes(x = Discipline, y = Salaire.net.médian.des.emplois.à.temps.plein)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() +  theme_gdocs()
+    })
+    
+    output$minSalaireLP <- renderPlot({
+      x <- dataMinDomLP
+      x <- subset(x, !is.na(x$Salaire.net.médian.des.emplois.à.temps.plein))
+      ggplot(x, aes(x = Domaine, y = Salaire.net.médian.des.emplois.à.temps.plein, fill = situation)) + geom_bar(position = "dodge", stat = "identity") +
+      theme_gdocs() + scale_fill_ptol() +
+      theme(legend.position="bottom", legend.direction="horizontal") +
+      geom_text(aes(y = x$Salaire.net.médian.des.emplois.à.temps.plein, label = sprintf("%4.0f", x$Salaire.net.médian.des.emplois.à.temps.plein)), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") + ggtitle("Progression du salaire net mensuel médian à temps plein")
+      })
+    
+
+     output$minFemmesLP <- renderPlot({
+      x <- dataMinDomLP
+      x <- FilterSituation(x)
+      x <- subset(x, !is.na( x$X..femmes))
+       ggplot(x, aes(x = Domaine, y = X..femmes)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + geom_text(aes(y = x$X..femmes, label=sprintf("%.0f%%", x$X..femmes)), color = "white", vjust=1.25, size=8) +  theme_gdocs() + ggtitle("Pourcentage de femmes")
+     })
+
+     output$minReponsesLP <- renderPlot({
+      x <- dataMinDomLP
+      x <- FilterSituation(x)
+      x <- subset(x, !is.na( x$Taux.de.réponse))
+       ggplot(x, aes(x = Domaine, y = Taux.de.réponse)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + geom_text(aes(y = x$Taux.de.réponse, label=sprintf("%.0f%%", x$Taux.de.réponse)), color = "white", vjust=1.25, size=8) +  theme_gdocs() + ggtitle("Taux de réponse")
+      })
     
     
     MakeSelectionOutput(input, output, choices)
@@ -496,8 +473,8 @@ shinyServer(
     output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
     
 
-    updateNavbarPage(session, "navPage", selected = "rawTabPanel")
-    
+    updateNavbarPage(session, "navPage", selected = "minTabPanel")
+    updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab
     ## session$onSessionEnded(stopApp)
@@ -543,7 +520,6 @@ shinyServer(
     })
     
     output$url <- renderText(url())
-    ## A reactive data source
     observeEvent(input$copyButton, {
       clipr::write_clip(url())
     })

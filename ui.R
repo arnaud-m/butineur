@@ -29,7 +29,7 @@ navbarPage(
     title = "Données Ministère 2013",
     value = "minTabPanel",
     tabsetPanel(
-      id = "minTabsetPanel",
+      id = "minTabSetPanel",
       MakeMinAccueilPanel(),
       MakeMinLPPanel(),
       MakeMinMasterPanel(),
@@ -42,6 +42,7 @@ navbarPage(
     MakeSelectionRow(),
     ## MakeDebugRow(), ##DEBUG
     tabsetPanel(
+      id = "rawTabSetPanel",
       MakeRawAccueilPanel(),
       MakeResultatslPanel(),
       MakePopulationPanel(),
@@ -49,7 +50,8 @@ navbarPage(
       MakeEmploiPanel(),
       MakeCloudPanel()
     )
-    )
+  ),
+  footer = list("TODO Copyright Universite Nice Sophia Antipolis")
     
 )
 

@@ -13,15 +13,28 @@ MakeMinAccueilPanel<- function() {
 
 MakeMinLPPanel<- function() {
   tabPanel(
-    "LP par domaine",
-    h2("Foo")
+    title = "LP par domaine",
+    value = "minLPPanel",
+    h3("Caractéristiques socio-démographiques"),
+    fluidRow(
+      column(4, plotOutput("minDiplomeLP")),
+      column(4, plotOutput("minReponsesLP")),
+      column(4, plotOutput("minFemmesLP"))
+    ),
+    h3("Conditions d'emploi"),
+    fluidRow(
+      column(6, plotOutput("minInsertionLP")),
+      column(6, plotOutput("minEmploiLP")),
+      column(6, plotOutput("minSalaireLP"))
+    )
   )
 }
 
 
 MakeMinMasterPanel<- function() {
   tabPanel(
-    "Master par domaine",
+    title = "Master par domaine",
+    value = "minMPanel",
     h2("Foo")
   )
 }
@@ -29,7 +42,8 @@ MakeMinMasterPanel<- function() {
 
 MakeMinResultatsPanel<- function() {
   tabPanel(
-    "Par discipline",
+    title = "Par discipline(s)",
+    value = "minDiscPanel",
     h2("TODO")
     ## fluidRow(
     ##   column(6, plotOutput("diplomeMin")),
