@@ -31,8 +31,8 @@ navbarPage(
     tabsetPanel(
       id = "minTabSetPanel",
       MakeMinAccueilPanel(),
-      MakeMinLPPanel(),
-      MakeMinMasterPanel(),
+      MinIndicatorsUI("licence", title = "Licence Pro par domaine", value = "minLPPanel"),
+      MinIndicatorsUI("master", title = "Master par domaine", value = "minMPanel"),
       MakeMinResultatsPanel()
     )
   ),

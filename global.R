@@ -3,6 +3,7 @@ library(SnowballC)
 library(wordcloud)
 library(memoise)
 
+source(file.path("R", "minIndicatorsPanel.R"), local = TRUE)
 
 ## https://www.r-bloggers.com/r-and-foreign-characters/
 

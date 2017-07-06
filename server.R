@@ -41,15 +41,6 @@ dataMinLP <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnell
 dataMinDomLP <- FilterDomains(dataMinLP)
 dataMinDiscLP <- FilterDisciplines(dataMinLP)
 
-
-FilterSituation <-function(dataMin, after=30) {
-  subset(
-    dataMin,
-    dataMin$situation == paste0(after, " mois après le diplôme")
-  )
-}
-
-
 GetIndicateurs <- function(data) {
   population <- nrow(data)
   indics <- c("population"= nrow(data))
@@ -78,46 +69,6 @@ BarPlotRaw <- function(x, threshold = 5, digits = 0) {
     coord_flip() + theme_gdocs() 
 }
 
-BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
-  df <- subset(df, !is.na( df[, aesY]))
-  p <- ggplot(df, aes_string(x = aesX, y = aesY)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + theme_gdocs() 
-  if(labelYPercent) {
-    labels <- GetPercentLabels(df[, aesY], digits=0)
-  } else {
-    labels <- as.character(df[, aesY])
-  }
-  p <- p + geom_text(aes(y = df[, aesY], label=labels), color = "white", vjust=1.25, size=8, fontface = 2)
-  return(p)
-}
-
-
-BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent = FALSE) {
-  x <- subset(df, !is.na(df[, aesY]))
-  if(labelYPercent) {
-    labels <- GetPercentLabels(x[, aesY], digits=0)
-  } else {
-    labels <- as.character(x[, aesY])
-  }
-  ggplot(x, aes_string(x = aesX, y = aesY, fill = aesF)) + geom_bar(position = "dodge", stat = "identity") +
-    geom_text(aes(y = x[, aesY], label = labels), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") +
-    theme_gdocs() + scale_fill_ptol() +
-    theme(legend.position="bottom", legend.direction="horizontal") 
-}
-
-
-BarFacetPlotMin <- function(df, aesFacet) {
-  col.names <- c("Domaine", "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
-  col.times <- tail(col.names, -2)
-  x <- subset(df, apply(df[,col.times], 1, function(x) !all(is.na(x))))
-  x <- reshape(x, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="valeur", timevar="indicateur", times=col.times)
-  x$indicateur <- factor(x$indicateur, levels = c("X..emplois.stables", "X..emplois.à.temps.plein", "X..emplois.cadre.ou.professions.intermédiaires"), labels =  c("% emplois stables", "% emplois à temps plein", "% emplois cadre ou professions intermédiaires"))
-  
-  ggplot(x, aes(x = situation, y = valeur, fill = indicateur)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap(aesFacet) +
-    theme_gdocs() + scale_fill_ptol() + theme(legend.position="bottom", legend.direction="horizontal") 
-}
-
-
-
 BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
   x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE]))
   totFreq <- sum(x$Freq)
@@ -135,11 +86,11 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   if(labelF) {
     ## FIXME Stopped working when changing the fluid page into a navbar page
     ## commit cba64eb use a navbar page instead of a fluid page
-    p <- p + geom_text(aes(y = pos, label = x$percentage, size = 6, position = "stack"), show.legend = FALSE)
+    p <- p + geom_text(aes(y = x$pos, label = x$percentage, size = 6, position = "stack"), show.legend = FALSE)
   }
   
   if(labelX) {
-    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 8, hjust = -0.25, vjust = -0.5, position = "stack", fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.05)))
+    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 8, hjust = -0.25, vjust = -0.5, position = "stack", fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
   }
   
   if(is.null(legend.title)) {
@@ -394,46 +345,14 @@ shinyServer(
     MakeMinSelectionOutput(input, output, choices)
     MakeMinDebugOutput(input, output) ##DEBUG
 
-    output$minDiplomeLP <- renderPlot({
-      x <- dataMinDomLP
-      x <- FilterSituation(x)
-      ggplot(x, aes(x = "", y = Nombre.de.diplômés, fill = Domaine)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs() + ggtitle("Nombre de diplômés") +
-        theme(
-          axis.line=element_blank(),
-          axis.title.x=element_blank(),
-          axis.title.y=element_blank()
-        )
-    })
+    callModule(
+      MinIndicators, "licence", dataMinDomLP
+    )
 
-    output$minInsertionLP <- renderPlot({
-      BarDodgedPlotMin(dataMinDomLP, aesX = "Domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
-        ggtitle("Évolution du taux d'insertion des diplômés")
-    })
-    
-    
-    output$minEmploiLP <- renderPlot({
-      BarFacetPlotMin(dataMinDomLP, "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") 
-    })
-    
-    output$minSalaireLP <- renderPlot({
-      BarDodgedPlotMin(dataMinDomLP, aesX = "Domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
-        ggtitle("Progression du salaire net mensuel médian à temps plein")
-      })
-    
-
-    output$minFemmesLP <- renderPlot({
-      x <- dataMinDomLP
-      x <- FilterSituation(x)
-      BarPlotMin(x, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes")
-    })
-    
-    output$minReponsesLP <- renderPlot({
-      x <- dataMinDomLP
-      x <- FilterSituation(x)
-      BarPlotMin(x, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse")
-     })
-    
-    
+    callModule(
+      MinIndicators, "master", dataMinDomM
+    )
+       
     MakeSelectionOutput(input, output, choices)
     ## MakeDebugOutput(input, output) ##DEBUG
     rpopulation <- MakeReactiveData(input, data, choices)
