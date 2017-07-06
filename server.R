@@ -102,6 +102,21 @@ BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent =
     theme_gdocs() + scale_fill_ptol() +
     theme(legend.position="bottom", legend.direction="horizontal") 
 }
+
+
+BarFacetPlotMin <- function(df, aesFacet) {
+  col.names <- c("Domaine", "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
+  col.times <- tail(col.names, -2)
+  x <- subset(df, apply(df[,col.times], 1, function(x) !all(is.na(x))))
+  x <- reshape(x, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="valeur", timevar="indicateur", times=col.times)
+  x$indicateur <- factor(x$indicateur, levels = c("X..emplois.stables", "X..emplois.à.temps.plein", "X..emplois.cadre.ou.professions.intermédiaires"), labels =  c("% emplois stables", "% emplois à temps plein", "% emplois cadre ou professions intermédiaires"))
+  
+  ggplot(x, aes(x = situation, y = valeur, fill = indicateur)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap(aesFacet) +
+    theme_gdocs() + scale_fill_ptol() + theme(legend.position="bottom", legend.direction="horizontal") 
+}
+
+
+
 BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
   x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE]))
   totFreq <- sum(x$Freq)
@@ -218,16 +233,6 @@ MakeReactiveData <- function(input, data, choices) {
   })
 }
 
-MakeMinReactiveData <- function(input, dataMin, choices) {
-  reactive({
-    logInd <- rep(TRUE, nrow(dataMin))
-    if( length(input$gradeMin) < length(choices$gradeMin) ) {
-      ## Sélection active : certains grades ne sont pas sélectionnés.
-      logInd <- logInd & (dataMin$Diplôme %in% input$gradeMin)
-    }
-    FilterDomains(dataMin)
-  })  
-}
 
 MakeResultatsOutput <- function(output, rpopulation) {
   output$recapReponse <- renderTable( {
@@ -387,7 +392,6 @@ shinyServer(
 
     MakeMinSelectionOutput(input, output, choices)
     MakeMinDebugOutput(input, output) ##DEBUG
-    rpopulationMin <- MakeMinReactiveData(input, dataMin, choices)
 
     output$minDiplomeLP <- renderPlot({
       x <- dataMinDomLP
@@ -407,16 +411,7 @@ shinyServer(
     
     
     output$minEmploiLP <- renderPlot({
-      x <- dataMinDomLP
-      col.names <- c("Domaine", "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
-      col.times <- tail(col.names, -2)
-      x <- subset(x, apply(x[,col.times], 1, function(x) !all(is.na(x))))
-      x <- reshape(x, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="valeur", timevar="characteristic", times=col.times)
-      x$characteristic <- factor(x$characteristic, levels = c("X..emplois.stables", "X..emplois.à.temps.plein", "X..emplois.cadre.ou.professions.intermédiaires"), labels =  c("% emplois stables", "% emplois à temps plein", "% emplois cadre ou professions intermédiaires"))
-      ggplot(x, aes(x = situation, y = valeur, fill = characteristic)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap( ~ Domaine) +
-        theme_gdocs() + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") + scale_fill_ptol() +
-        theme(legend.position="bottom", legend.direction="horizontal") 
-
+      BarFacetPlotMin(dataMinDomLP, "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") 
     })
     
     output$minSalaireLP <- renderPlot({
@@ -428,13 +423,13 @@ shinyServer(
     output$minFemmesLP <- renderPlot({
       x <- dataMinDomLP
       x <- FilterSituation(x)
-      BarPlotMin(x, "Domaine", "X..femmes", labelYPercent = TRUE)
+      BarPlotMin(x, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes")
     })
     
     output$minReponsesLP <- renderPlot({
       x <- dataMinDomLP
       x <- FilterSituation(x)
-      BarPlotMin(x, "Domaine", "Taux.de.réponse", labelYPercent = TRUE)
+      BarPlotMin(x, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse")
      })
     
     
@@ -465,6 +460,9 @@ shinyServer(
     population <- reactive({
       as.matrix(ftable(rpopulation()[, c("sexe", "boursier")], exclude = NULL))
     })
+
+    ## x <- as.data.frame(table(data[, c("sexe","boursier")]))
+    ## ggplot(x, aes(x = "", y = sexe, fill = boursier)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs()
     
     output$populationEffectifs <- renderTable(addmargins(population(), FUN = Total, quiet = TRUE), rownames = TRUE, digits = 0)
     output$populationPourcents <- renderTable({
