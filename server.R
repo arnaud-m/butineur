@@ -71,11 +71,12 @@ GetPercentLabels <- function(x, threshold = 1, digits = 1) {
 ## http://www.sthda.com/french/wiki/ggplot2-barplots-guide-de-demarrage-rapide-logiciel-r-et-visualisation-de-donnees
 BarPlotRaw <- function(x, threshold = 5, digits = 0) {
   x <- as.data.frame(table(x[drop=TRUE], useNA = "ifany"))
-  x$label <- GetPercentLabels(x$Freq/sum(x$Freq))
+  label <- GetPercentLabels(100*x$Freq/sum(x$Freq))
   pos <- x$Freq / 2
-  ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() + geom_text(aes(y = pos, label=label), color = "white", size=8, fontface = 2) +  theme_gdocs() 
+  ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) +
+    geom_text(aes(y = pos, label=label), color = "white", size=8, fontface = 2) +
+    coord_flip() + theme_gdocs() 
 }
-
 
 BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
   df <- subset(df, !is.na( df[, aesY]))
