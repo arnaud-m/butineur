@@ -69,15 +69,40 @@ GetPercentLabels <- function(x, threshold = 1, digits = 1) {
 ## http://stackoverflow.com/questions/21236229/stacked-bar-chart
 ## http://rstudio-pubs-static.s3.amazonaws.com/4305_8df3611f69fa48c2ba6bbca9a8367895.html
 ## http://www.sthda.com/french/wiki/ggplot2-barplots-guide-de-demarrage-rapide-logiciel-r-et-visualisation-de-donnees
-BarPlot <- function(x, threshold = 5, digits = 0) {
+BarPlotRaw <- function(x, threshold = 5, digits = 0) {
   x <- as.data.frame(table(x[drop=TRUE], useNA = "ifany"))
-  ## TODO Do not filter labels here
-  x$label <- GetPercentLabels(100*x$Freq/sum(x$Freq), threshold, digits)
+  x$label <- GetPercentLabels(x$Freq/sum(x$Freq))
   pos <- x$Freq / 2
-  ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() + geom_text(aes(y = pos, label=label), color = "white", size=8) +  theme_gdocs() 
+  ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() + geom_text(aes(y = pos, label=label), color = "white", size=8, fontface = 2) +  theme_gdocs() 
 }
 
-BarStackedPlot2 <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
+
+BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
+  df <- subset(df, !is.na( df[, aesY]))
+  p <- ggplot(df, aes_string(x = aesX, y = aesY)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + theme_gdocs() 
+  if(labelYPercent) {
+    labels <- GetPercentLabels(df[, aesY], digits=0)
+  } else {
+    labels <- as.character(df[, aesY])
+  }
+  p <- p + geom_text(aes(y = df[, aesY], label=labels), color = "white", vjust=1.25, size=8, fontface = 2)
+  return(p)
+}
+
+
+BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent = FALSE) {
+  x <- subset(df, !is.na(df[, aesY]))
+  if(labelYPercent) {
+    labels <- GetPercentLabels(x[, aesY], digits=0)
+  } else {
+    labels <- as.character(x[, aesY])
+  }
+  ggplot(x, aes_string(x = aesX, y = aesY, fill = aesF)) + geom_bar(position = "dodge", stat = "identity") +
+    geom_text(aes(y = x[, aesY], label = labels), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") +
+    theme_gdocs() + scale_fill_ptol() +
+    theme(legend.position="bottom", legend.direction="horizontal") 
+}
+BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
   x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE]))
   totFreq <- sum(x$Freq)
   ## Percentage labels
@@ -227,14 +252,14 @@ MakeSituationOutput <- function(output, rpopulation) {
     ## if(nrow(rdata()) > 0) {     ## no on the first tab anymore
     ## Avoid to run Before loading of UI and to cause Null parameters
     ## no on the first tab anymore
-    BarStackedPlot2(rpopulation(), "situationProN30", "etudeN30", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 30 mois") + labs(x="Situation professionnelle", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 30 mois") + labs(x="Situation professionnelle", y="Effectifs")
     ## }
   })
   
   output$situationDiplomeN18 <- renderPlot({
     ## if(nrow(rdata()) > 0) {     ## no on the first tab anymore
     ## Avoid to run Before loading of UI and to cause Null parameters
-    BarStackedPlot2(rpopulation(), "situationProN18", "etudeN18", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 18 mois") + labs(x="Situation professionnelle", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 18 mois") + labs(x="Situation professionnelle", y="Effectifs")
   }
   )
 }
@@ -278,14 +303,14 @@ MakePopulationOutput <- function(output, rpopulation) {
 
 MakeBaccalaureatOutput <- function(output, rpopulation) {
   output$serieBac2 <- renderPlot(
-    BarStackedPlot2(rpopulation(), "serieBac", "regionBac", "Région d'obtention du bac") + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "serieBac", "regionBac", "Région d'obtention du bac") + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs")
   )
   output$serieBac <- renderPlot(
-    BarPlot(rpopulation()$serieBac) + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs") 
+    BarPlotRaw(rpopulation()$serieBac) + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs") 
   )
 
   output$regionBac <- renderPlot(
-    BarPlot(rpopulation()$regionBac) + ggtitle("Région d'obtention du bac") + labs(x="Région d'obtention du bac", y="Effectifs") 
+    BarPlotRaw(rpopulation()$regionBac) + ggtitle("Région d'obtention du bac") + labs(x="Région d'obtention du bac", y="Effectifs") 
   )
 }
 
@@ -306,33 +331,34 @@ MakeSalaireOutput <- function(output, remploye) {
 
 MakeEmploiOutput <- function(output, remploye) {
     output$regionEmploi <- renderPlot({
-      BarStackedPlot2(remploye(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
+      BarStackedPlotRaw(remploye(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
         labs(x="Région d'emploi", y="Effectifs") +
         ggtitle("Localisation de l'emploi et mobilité des diplomés")
     })
 
     
     output$niveauEmploi2 <- renderPlot({
-      BarStackedPlot2(remploye(), "statutEmploiN30","niveauEmploiN30", "Niveau de l'emploi") + ggtitle("Statut de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
+      BarStackedPlotRaw(remploye(), "statutEmploiN30","niveauEmploiN30", "Niveau de l'emploi") + ggtitle("Statut de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
     })
     output$statutEmploi <- renderPlot({
-      BarPlot(remploye()$statutEmploiN30) + ggtitle("Statut de l'emploi") + labs(x="Statut de l'emploi", y="Effectifs") 
+      BarPlotRaw(remploye()$statutEmploiN30) + ggtitle("Statut de l'emploi") + labs(x="Statut de l'emploi", y="Effectifs") 
     })
     
     output$niveauEmploi <- renderPlot({
-      BarPlot(remploye()$niveauEmploiN30) + ggtitle("Niveau de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
+      BarPlotRaw(remploye()$niveauEmploiN30) + ggtitle("Niveau de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
     })
 
     output$typeEmployeur <- renderPlot({
-      BarPlot(remploye()$typeEmployeur) + ggtitle("Type d'employeur") + labs(x="Type d'employeur", y="Effectifs") 
+      BarPlotRaw(remploye()$typeEmployeur) + ggtitle("Type d'employeur") + labs(x="Type d'employeur", y="Effectifs") 
     })
     ## output$typeEmployeur <- renderPlot({
-    ##   BarStackedPlot2(remploye(), "typeEmployeur", "effectifsEmployeur", legend.title = "Effectifs de l'employeur") +
+    ##   BarStackedPlotRaw(remploye(), "typeEmployeur", "effectifsEmployeur", legend.title = "Effectifs de l'employeur") +
     ##     labs(x="Type d'employeur", y="Effectifs") +
     ##     ggtitle("Type d'employeur")
     ## })
+    
     output$activiteEcoEmployeur <- renderPlot({
-      BarPlot(remploye()$activiteEcoEmployeur) + ggtitle("Activité économique de l'entreprise") + labs(x="Secteur d'activité", y="Effectifs") 
+      BarPlotRaw(remploye()$activiteEcoEmployeur) + ggtitle("Activité économique de l'entreprise") + labs(x="Secteur d'activité", y="Effectifs") 
     })
 }
 
@@ -352,6 +378,7 @@ MakeCloudOutput <- function(output, rrepondants) {
                   colors=brewer.pal(8, "Dark2"))
   })  
 }
+
 
 shinyServer(
   ## Define server logic 
@@ -374,18 +401,11 @@ shinyServer(
     })
 
     output$minInsertionLP <- renderPlot({
-      x <- dataMinDomLP
-      x <- subset(x, !is.na(x$Taux.d.insertion))
-      ggplot(x, aes(x = Domaine, y = Taux.d.insertion, fill = situation)) + geom_bar(position = "dodge", stat = "identity") +
-        theme_gdocs() + scale_fill_ptol() +
-        theme(legend.position="bottom", legend.direction="horizontal") +
-         geom_text(aes(y = x$Taux.d.insertion, label = sprintf("%2.0f%%", x$Taux.d.insertion)), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") + ggtitle("Évolution du taux d'insertion des diplômés")
-      })
-    ## TODO https://stackoverflow.com/questions/6017460/position-geom-text-on-dodged-barplot
-    ## TODO https://chrisalbon.com/r-stats/add-labels-to-bar-graph.html
+      BarDodgedPlotMin(dataMinDomLP, aesX = "Domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
+        ggtitle("Évolution du taux d'insertion des diplômés")
+    })
     
-    ## ggplot(y, aes(x = Discipline, y = Taux.de.réponse)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + coord_flip() +  geom_text(aes(y = y$Taux.de.réponse/2, label=y$Taux.de.réponse), color = "white", size=10) +  theme_gdocs()
-
+    
     output$minEmploiLP <- renderPlot({
       x <- dataMinDomLP
       col.names <- c("Domaine", "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
@@ -400,28 +420,22 @@ shinyServer(
     })
     
     output$minSalaireLP <- renderPlot({
-      x <- dataMinDomLP
-      x <- subset(x, !is.na(x$Salaire.net.médian.des.emplois.à.temps.plein))
-      ggplot(x, aes(x = Domaine, y = Salaire.net.médian.des.emplois.à.temps.plein, fill = situation)) + geom_bar(position = "dodge", stat = "identity") +
-      theme_gdocs() + scale_fill_ptol() +
-      theme(legend.position="bottom", legend.direction="horizontal") +
-      geom_text(aes(y = x$Salaire.net.médian.des.emplois.à.temps.plein, label = sprintf("%4.0f", x$Salaire.net.médian.des.emplois.à.temps.plein)), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") + ggtitle("Progression du salaire net mensuel médian à temps plein")
+      BarDodgedPlotMin(dataMinDomLP, aesX = "Domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
+        ggtitle("Progression du salaire net mensuel médian à temps plein")
       })
     
 
-     output$minFemmesLP <- renderPlot({
+    output$minFemmesLP <- renderPlot({
       x <- dataMinDomLP
       x <- FilterSituation(x)
-      x <- subset(x, !is.na( x$X..femmes))
-       ggplot(x, aes(x = Domaine, y = X..femmes)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + geom_text(aes(y = x$X..femmes, label=sprintf("%.0f%%", x$X..femmes)), color = "white", vjust=1.25, size=8) +  theme_gdocs() + ggtitle("Pourcentage de femmes")
+      BarPlotMin(x, "Domaine", "X..femmes", labelYPercent = TRUE)
+    })
+    
+    output$minReponsesLP <- renderPlot({
+      x <- dataMinDomLP
+      x <- FilterSituation(x)
+      BarPlotMin(x, "Domaine", "Taux.de.réponse", labelYPercent = TRUE)
      })
-
-     output$minReponsesLP <- renderPlot({
-      x <- dataMinDomLP
-      x <- FilterSituation(x)
-      x <- subset(x, !is.na( x$Taux.de.réponse))
-       ggplot(x, aes(x = Domaine, y = Taux.de.réponse)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + geom_text(aes(y = x$Taux.de.réponse, label=sprintf("%.0f%%", x$Taux.de.réponse)), color = "white", vjust=1.25, size=8) +  theme_gdocs() + ggtitle("Taux de réponse")
-      })
     
     
     MakeSelectionOutput(input, output, choices)
