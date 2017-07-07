@@ -9,10 +9,13 @@ library(plyr)
 
 ## Run once when the app is launched
 
-## Load database IP
+#################################
+## Load IP raw database
 #source(file.path("R", "ReadIP.R'"), local = TRUE)
 #data <- ReadIP(file.path("data", "raw_data.csv"))
 #write.csv(data, file.path("data", "int-uns-insertion_professionnelle-master.csv"), row.names=FALSE)
+#################################
+
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle-master.csv"), header=TRUE)
 
 
@@ -62,7 +65,7 @@ GetPercentLabels <- function(x, threshold = 1, digits = 1) {
 ## http://www.sthda.com/french/wiki/ggplot2-barplots-guide-de-demarrage-rapide-logiciel-r-et-visualisation-de-donnees
 BarPlotRaw <- function(x, threshold = 5, digits = 0) {
   x <- as.data.frame(table(x[drop=TRUE], useNA = "ifany"))
-  label <- GetPercentLabels(100*x$Freq/sum(x$Freq))
+  label <- GetPercentLabels(100*x$Freq/sum(x$Freq), threshold = 2, digits = 0)
   pos <- x$Freq / 2
   ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) +
     geom_text(aes(y = pos, label=label), color = "white", size=8, fontface = 2) +
@@ -76,21 +79,21 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   x$percentage <- 100 * x$Freq / totFreq
   x$percentage <-  GetPercentLabels(x$percentage, threshold = 2, digits = 0)
   x <- ddply(x, aesX, transform, pos = sum(Freq)-cumsum(Freq) + (0.5 * Freq), top = cumsum(Freq))
-  x$toplab <-  GetPercentLabels(100 * x$top / totFreq, threshold = 0)
+  x$toplab <-  GetPercentLabels(100 * x$top / totFreq, threshold = 0, digits = 0)
   m <- length(unique(x[,aesF]))
   ## exploit recycling
   x$toplab[ append(rep(TRUE,m-1), FALSE) ] <- "" 
-
+  ## print(x)
   p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
   
   if(labelF) {
     ## FIXME Stopped working when changing the fluid page into a navbar page
     ## commit cba64eb use a navbar page instead of a fluid page
-    p <- p + geom_text(aes(y = x$pos, label = x$percentage, size = 6, position = "stack"), show.legend = FALSE)
+    p <- p + geom_text(aes(y = x$pos, label = x$percentage, size = 6), show.legend = FALSE)
   }
   
   if(labelX) {
-    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 8, hjust = -0.25, vjust = -0.5, position = "stack", fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
+    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 8, hjust = -0.25, vjust = -0.5, fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
   }
   
   if(is.null(legend.title)) {
@@ -109,7 +112,7 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
 ## Lettres-Langues-Arts (LLA)
 ## Sciences Humaines et sociales (SHS) 
 ## Sciences - Technologies-Santé (STS)
-MakeChoiceLists<- function(data, dataMin) {
+MakeChoiceLists<- function(data) {
   su <- function(x) sort(unique(x)) 
   list(
     annee=su(data$annee),
@@ -138,17 +141,6 @@ MakeSelectionOutput <- function(input, output, choices) {
       ), width = "800px"
     )
   })
-}
-
-MakeMinSelectionOutput <- function(input, output, choices) {
-  output$checkboxGradeMin <- renderUI( {
-    checkboxGroupInput("gradeMin", "Grade(s)", choices$gradeMin, choices$gradeMin)
-  })
-}
-
-MakeMinDebugOutput <- function(input, output, choices) {
-  output$gradeMin <- renderPrint(input$gradeMin)
-  output$isMinPerDomain <- renderPrint(input$isMinPerDomain)
 }
 
 
@@ -342,8 +334,6 @@ shinyServer(
   function(input, output, session) {
     ## Run once each time a user visits the app
 
-    MakeMinSelectionOutput(input, output, choices)
-    MakeMinDebugOutput(input, output) ##DEBUG
 
     callModule(
       MinIndicators, "licence", dataMinDomLP
