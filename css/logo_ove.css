@@ -1,0 +1,13 @@
+@media all
+{
+    body {
+	background-image: url(img/logo_ove.png);
+	background-attachment: local;
+	background-position: right 10px bottom 5px;
+	background-repeat: no-repeat;
+    }
+
+    footer {
+        height: 80px;
+    }
+}

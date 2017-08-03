@@ -13,7 +13,7 @@ library(plyr)
 ## Load IP raw database
 #source(file.path("R", "ReadIP.R'"), local = TRUE)
 #data <- ReadIP(file.path("data", "raw_data.csv"))
-#write.csv(data, file.path("data", "int-uns-insertion_professionnelle-master.csv"), row.names=FALSE)
+#write.csv(data, file.path("data", "all-uns-insertion_professionnelle-master.csv"), row.names=FALSE)
 #################################
 
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle-master.csv"), header=TRUE)
@@ -333,7 +333,6 @@ shinyServer(
   ## Define server logic 
   function(input, output, session) {
     ## Run once each time a user visits the app
-
 
     callModule(
       MinIndicators, "licence", dataMinDomLP

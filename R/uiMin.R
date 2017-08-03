@@ -1,4 +1,3 @@
-
 require(shiny)
 
 MakeMinAccueilPanel<- function() {

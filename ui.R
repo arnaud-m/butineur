@@ -23,7 +23,7 @@ source(file.path("R", "uiRaw.R"), local = TRUE)
 navbarPage(
   title = "Le butineur (en développement)!",
   id = "navPage",
-  theme = "bootstrap.min.css",
+  theme = "butineur.css",
   MakeAccueilPanel(),
   tabPanel(
     title = "Données Ministère 2013",
@@ -51,7 +51,6 @@ navbarPage(
       MakeCloudPanel()
     )
   ),
-  footer = list("TODO Copyright Universite Nice Sophia Antipolis")
-    
+  footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis."))
 )
 
