@@ -251,9 +251,6 @@ MakePopulationOutput <- function(output, rpopulation) {
 }
 
 MakeBaccalaureatOutput <- function(output, rpopulation) {
-  output$serieBac2 <- renderPlot(
-    BarStackedPlotRaw(rpopulation(), "serieBac", "regionBac", "Région d'obtention du bac") + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs")
-  )
   output$serieBac <- renderPlot(
     BarPlotRaw(rpopulation()$serieBac) + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs") 
   )

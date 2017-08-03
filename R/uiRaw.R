@@ -61,9 +61,8 @@ MakePopulationPanel<- function() {
     "Population",
     h2("Caractéristiques socio-démographiques (ensemble des diplômés)"),
     fluidRow(
-      column(3, h3("Tableau des effectifs"), tableOutput("populationEffectifs")),
-      column(3, h3("En pourcentage"),tableOutput("populationPourcents")),
-      column(6, plotOutput("serieBac2"))                
+      column(6, h3("Tableau des effectifs"), tableOutput("populationEffectifs")),
+      column(6, h3("En pourcentage"),tableOutput("populationPourcents"))
     ),
     h3("Baccalauréat"),
     fluidRow(
