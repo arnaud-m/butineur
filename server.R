@@ -13,10 +13,10 @@ library(plyr)
 ## Load IP raw database
 #source(file.path("R", "ReadIP.R'"), local = TRUE)
 #data <- ReadIP(file.path("data", "raw_data.csv"))
-#write.csv(data, file.path("data", "all-uns-insertion_professionnelle-master.csv"), row.names=FALSE)
+#write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
 #################################
 
-data <- read.csv(file.path("data", "all-uns-insertion_professionnelle-master.csv"), header=TRUE)
+data <- read.csv(file.path("data", "all-uns-insertion_professionnelle.csv"), header=TRUE)
 
 
 ReadMinIP <- function(file) {
