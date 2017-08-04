@@ -247,7 +247,21 @@ MakeInsertionOutput <- function(output, rpopulation) {
 }
 
 MakePopulationOutput <- function(output, rpopulation) {
+  population <- reactive({
+    as.matrix(ftable(rpopulation()[, c("sexe", "boursier")], exclude = NULL))
+  })
   
+  SummarySD <- function(x, margin) {
+    popcount <- sum(x)
+    FuncSD <- function(y) {
+      eff <- sum(y)
+      return(c("En effectifs"=eff, "En pourcentages"= 100*eff/popcount))
+    }
+    apply(x, margin, FuncSD)
+  }
+  
+  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, digits = 1)
+  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, digits = 1)
 }
 
 MakeBaccalaureatOutput <- function(output, rpopulation) {
@@ -363,23 +377,8 @@ shinyServer(
     ## ###############################################################
     ## Caractéristiques socio-démographiques (ensemble des diplômés)
 
-    population <- reactive({
-      as.matrix(ftable(rpopulation()[, c("sexe", "boursier")], exclude = NULL))
-    })
-
-    ## x <- as.data.frame(table(data[, c("sexe","boursier")]))
-    ## ggplot(x, aes(x = "", y = sexe, fill = boursier)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs()
-    
-    output$populationEffectifs <- renderTable(addmargins(population(), FUN = Total, quiet = TRUE), rownames = TRUE, digits = 0)
-    output$populationPourcents <- renderTable({
-      x <- population()
-      x <- 100*x /sum(x)
-      addmargins(x, FUN = Total, quiet = TRUE)
-    }, rownames = TRUE, digits = 1)
-    
+    MakePopulationOutput(output, rpopulation)
     MakeBaccalaureatOutput(output, rpopulation)
-
-    
 
     ## #####################
     ## Diplômés en emploi
@@ -390,9 +389,14 @@ shinyServer(
     output$nbEmployes <- renderText(paste("Il y a", nrow(remploye()), "répondants en emploi"))
     output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
     
+    ## #####################
+    ## DEBUG Set active panel
+    ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
+    ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
 
-    updateNavbarPage(session, "navPage", selected = "minTabPanel")
-    updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
+    updateNavbarPage(session, "navPage", selected = "rawTabPanel")
+    updateTabsetPanel(session, "rawTabSetPanel", selected = "rawPopPanel")
+
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab
     ## session$onSessionEnded(stopApp)
