@@ -125,18 +125,32 @@ ReadIP <- function(file) {
   ColToFactor("q7_1", "situationProN18", situationPro)
 
   
+  ## statutEmploi <- c( 
+  ##   "Prof. libérale, indépendant,\n chef d’entreprise, auto-entrepreneur",
+  ##   "Fonctionnaire\n(y compris fonctionnaire stagiaire ou élève fonctionnaire)",
+  ##   "CDI",
+  ##   "Contrat spécifique au doctorat\n(contrat doctoral, allocation recherche, CIFRE….)",
+  ##   "CDD (hors contrat spécifique au doctorat et \ny compris contractuel de la fonction publique...)",
+  ##   "Vacataire",
+  ##   "Intérimaire",
+  ##   "Intermittent du spectacle, pigiste",
+  ##   "Contrat d’apprentissage",
+  ##   "Contrat de professionnalisation",
+  ##   "Emplois aidés (Contrat Initiative Emploi…)",
+  ##   "Volontariat international",
+  ##   "Service civique")
   statutEmploi <- c( 
     "Prof. libérale, indépendant,\n chef d’entreprise, auto-entrepreneur",
-    "Fonctionnaire\n(y compris fonctionnaire stagiaire ou élève fonctionnaire)",
+    "Fonctionnaire",
     "CDI",
-    "Contrat spécifique au doctorat\n(contrat doctoral, allocation recherche, CIFRE….)",
-    "CDD (hors contrat spécifique au doctorat et \ny compris contractuel de la fonction publique...)",
+    "Contrat spécifique au doctorat",
+    "CDD",
     "Vacataire",
     "Intérimaire",
     "Intermittent du spectacle, pigiste",
     "Contrat d’apprentissage",
     "Contrat de professionnalisation",
-    "Emplois aidés (Contrat Initiative Emploi…)",
+    "Emplois aidés",
     "Volontariat international",
     "Service civique")
 
@@ -146,20 +160,26 @@ ReadIP <- function(file) {
   ## L'emploi stable correspond à la part des diplômés en emploi sous contrat de CDI, sous statut de la Fonction publique ou en qualité de travailleur indépendant.
   res$emploiStableN30 <- df$q6_5 <= 3
   res$emploiStableN18 <- df$q8_1 <= 3
-  
-  niveauEmploi <- c(
-    "personnel de catégorie A de la fonction publique",
-    "ingénieur, cadre, professions libérales, professions intellectuelles supérieures",
-    "personnel de catégorie B de la fonction publique",
-    "emploi de niveau intermédiaire : technicien, agent de maîtrise, maîtrise administrative et commerciale, VRP",
-    "personnel de catégorie C de la fonction publique",
-    "manœuvre, ouvrier",
-    "employé de bureau, de commerce, personnel de service"
 
-  )
-  ## Prof. intermédiaire jusqu'à Cat. C 
-  ColToFactor("q8_2r", "niveauEmploiN18", niveauEmploi)
-  ColToFactor("q6_6r", "niveauEmploiN30", niveauEmploi)
+ 
+  ## niveauEmploi <- c(
+  ##   "personnel de catégorie A de la fonction publique",
+  ##   "ingénieur, cadre, professions libérales, professions intellectuelles supérieures",
+  ##   "personnel de catégorie B de la fonction publique",
+  ##   "emploi de niveau intermédiaire : technicien, agent de maîtrise, maîtrise administrative et commerciale, VRP",
+  ##   "personnel de catégorie C de la fonction publique",
+  ##   "manœuvre, ouvrier",
+  ##   "employé de bureau, de commerce, personnel de service"
+  ## )
+  ## ColToFactor("q8_2r", "niveauEmploiN18", niveauEmploi)
+  ## ColToFactor("q6_6r", "niveauEmploiN30", niveauEmploi)
+
+  res$niveauEmploiN18 <- factor(df$q8_2r)
+  levels(res$niveauEmploiN18) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
+
+  res$niveauEmploiN30 <- factor(df$q6_6r)
+  levels(res$niveauEmploiN30) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
+  
   ## https://fr.wikipedia.org/wiki/Professions_et_cat%C3%A9gories_socioprofessionnelles_en_France
   res$emploiSupIntN30 <- df$q6_6r <= 4
   res$emploiSupIntN18 <- df$q8_2r <= 4

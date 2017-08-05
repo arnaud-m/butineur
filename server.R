@@ -11,7 +11,7 @@ library(plyr)
 
 #################################
 ## Load IP raw database
-#source(file.path("R", "ReadIP.R'"), local = TRUE)
+#source(file.path("R", "ReadIP.R"), local = TRUE)
 #data <- ReadIP(file.path("data", "raw_data.csv"))
 #write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
 #################################

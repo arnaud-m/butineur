@@ -105,9 +105,9 @@ MakeEmploiPanel<- function() {
       column(6, textOutput("nbEmployes"))
     ),
     fluidRow(
+      column(6, includeMarkdown(file.path("markdown", "raw", "emploi.md"))),
       column(6, plotOutput("regionEmploi"))
     ),
-    tags$p("Emploi stable : contrat en CDI, fonctionnaire ou travailleur indépendant."),
     fluidRow(
       column(6,plotOutput("statutEmploi")),
       column(6,plotOutput("niveauEmploi"))

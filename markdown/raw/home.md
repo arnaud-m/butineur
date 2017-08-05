@@ -23,6 +23,4 @@ Le taux d’insertion correspond au nombre de diplômés en emploi au regard du 
 
 Les données de l’enquête sont en partie transmises  au Ministère de l’Enseignement Supérieur et de la Recherche. Celui-ci, en effet, cible la population à enquêter selon des critères restrictifs: il évalue la situation professionnelle des diplômés français  de moins de 30 ans issus de la formation initiale et n’ayant pas poursuivi ou repris d’études dans les 2 années suivant l’obtention de leur diplôme. 11 indicateurs sont déclinés par domaine (Droit-Economie-Gestion, Lettres-Langues-Arts, Sciences humaines et sociales, Sciences-Technologies-Santé) et par discipline de diplôme. Les résultats édités par le ministère sont consultables dans l'onglet "DONNÉES MINISTÈRE 2013".
 
- * [Publications sur les précédentes enquêtes](http://unice.fr/unicepro/enquetes-et-statistiques/nos-publications/insertion-professionnelle)
-
 
