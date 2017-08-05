@@ -46,8 +46,8 @@ navbarPage(
       MakeRawAccueilPanel(),
       MakeResultatslPanel(),
       MakePopulationPanel(),
-      MakeSalairePanel(),
       MakeEmploiPanel(),
+      MakeSalairePanel(),
       MakeCloudPanel()
     )
   ),

@@ -49,8 +49,7 @@ GetIndicateurs <- function(data) {
   indics <- c("population"= nrow(data))
 }
 
-## Rename sum function for addmargins
-Total <- function(x) sum(x)
+
 
 ## Compute percentage labels of bar plots
 GetPercentLabels <- function(x, threshold = 1, digits = 1) {
@@ -275,15 +274,20 @@ MakeBaccalaureatOutput <- function(output, rpopulation) {
 }
 
 MakeSalaireOutput <- function(output, remploye) {
-  output$salaireParSexe <- renderTable( {
-    x <- subset(remploye()[,c("salaireEmploiN30", "sexe")], remploye()$tempsPleinN30)
-    x <- as.matrix(aggregate(x$salaireEmploiN30, list(x$sexe), summary))
-    colnames(x) <- c( "Sexe", substring(colnames(x)[-1], 3))
-    x
+  remployeTP <- reactive({
+    subset(remploye()[,c("salaireEmploiN30", "sexe")], remploye()$tempsPleinN30)
   })
+
+  output$salaireParSexe <- renderTable( {
+    x <- summary(remployeTP()$salaireEmploiN30)
+    y <- aggregate(remployeTP()$salaireEmploiN30, list(remployeTP()$sexe), summary)
+    x <- rbind(x, y[,-1])
+    rownames(x) <- c("Femme/Homme", as.character(y[,1]))
+    x[,c(-1, -6)]
+  }, rownames = TRUE, digits = 1)
     
   output$salaire <- renderPlot( {
-    salary <- subset(remploye()$salaireEmploiN30, remploye()$tempsPleinN30)
+    salary <- remployeTP()$salaireEmploiN30
     salary <- subset(salary, salary < 10000) 
     ggplot() + aes(salary) + geom_histogram(binwidth = 250,  fill = ptol_pal()(1)) + ggtitle("Niveau de rémunération (salaire mensuel net hors primes)") +  theme_gdocs() + labs(x="Salaire", y="Effectifs")
   })

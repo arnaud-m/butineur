@@ -80,7 +80,7 @@ MakeSalairePanel<- function() {
   tabPanel(
     title = "Salaire",
     value = "rawSalPanel",
-    h2("Diplômés en emploi"),
+    h2("Diplômés en emploi à temps plein"),
     fluidRow(
       column(
         6,

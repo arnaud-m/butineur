@@ -38,22 +38,22 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
      runApp()
    #+END_SRC
 
-** Deploy the application 
+** TODO Deploy the application 
    For administrators.
 
 ** Dependencies
-   This project requires additional R packages:
-  - Shiny 1.0+
-  - ggplot2 2.2+
-  - ggthemes 3.4+
-  - plyr_1.8+        
-
-   The project requires other additionnal packages for the word cloud.
-  - SnowballC 0.5+
-  - memoise 1.1+
-  - wordcloud 2.5+
-  - RColorBrewer 1.1+
-  - tm 0.7+
+   
+  - This project requires additional R packages:
+    - Shiny 1.0+
+    - ggplot2 2.2+
+    - ggthemes 3.4+
+    - plyr 1.8+
+  - The project requires other additionnal R packages for the word cloud.
+    - SnowballC 0.5+
+    - memoise 1.1+
+    - wordcloud 2.5+
+    - RColorBrewer 1.1+
+    - tm 0.7+
 
 
 
