@@ -1,0 +1,10 @@
+@media all
+{
+    li {
+        max-width: 1000px;
+    }
+    
+    p {
+        max-width: 1100px;
+    }
+}
