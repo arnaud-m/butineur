@@ -67,8 +67,6 @@ navbarPageWithInputs(
     )
   ),
   footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis.")),
-  inputs = actionButton("getLinkButton", "Copier l'URL dans le presse-papier.")
+  inputs = tags$button(id="getLinkButton", type="button", class="btn btn-secondary action-button shiny-bound-input", "data-toggle"="tooltip", "data-placement"="bottom", title = "Cliquer sur le bouton, puis coller l'URL à partir du presse-papiers (ctrl+v ou pomme+v).", strong(HTML("Copier l'URL dans le presse-papier")))
 )
 
-##  tags$button(id="getLinkButton", type="button", class="btn btn-default action-button btn-primary shiny-bound-input", strong(HTML('<i class="icon-star">  </i>Copier l'URL dans le presse-papier.')))
-## <button id="getLinkButton" type="button" class="btn btn-default action-button shiny-bound-input">Copier l'URL dans le presse-papier.</button>
