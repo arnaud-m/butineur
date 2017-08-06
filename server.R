@@ -474,7 +474,7 @@ shinyServer(
     ## Get Link Button
     ## http://stackoverflow.com/questions/32872222/how-do-you-pass-parameters-to-a-shiny-app-via-url
     output$url <- renderText(url())
-    observeEvent(input$copyButton, {
+    observeEvent(input$getLinkButton, {
       clipr::write_clip(url())
     })
   }

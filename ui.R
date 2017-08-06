@@ -19,8 +19,23 @@ source(file.path("R", "uiMin.R"), local = TRUE)
 source(file.path("R", "uiRaw.R"), local = TRUE)
 
 
+## ###########################
+## Action button in the navbar
+## https://github.com/daattali/advanced-shiny/blob/master/navbar-add-text/app.R
+
+## Call this function with an input (such as `textInput("text", NULL, "Search")`) if you
+## want to add an input to the navbar
+navbarPageWithInputs <- function(..., inputs) {
+  navbar <- navbarPage(...)
+  form <- tags$form(class = "navbar-form navbar-right", inputs)
+  navbar[[3]][[1]]$children[[1]] <- htmltools::tagAppendChild(
+    navbar[[3]][[1]]$children[[1]], form)
+  navbar
+}
+
+## ################
 ## Define UI
-navbarPage(
+navbarPageWithInputs(
   title = "Le butineur (en développement)!",
   id = "navPage",
   theme = "butineur.css",
@@ -51,6 +66,9 @@ navbarPage(
       MakeCloudPanel()
     )
   ),
-  footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis."))
+  footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis.")),
+  inputs = actionButton("getLinkButton", "Copier l'URL dans le presse-papier.")
 )
 
+##  tags$button(id="getLinkButton", type="button", class="btn btn-default action-button btn-primary shiny-bound-input", strong(HTML('<i class="icon-star">  </i>Copier l'URL dans le presse-papier.')))
+## <button id="getLinkButton" type="button" class="btn btn-default action-button shiny-bound-input">Copier l'URL dans le presse-papier.</button>
