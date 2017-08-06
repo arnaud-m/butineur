@@ -398,8 +398,8 @@ shinyServer(
     ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
     ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
 
-    updateNavbarPage(session, "navPage", selected = "rawTabPanel")
-    updateTabsetPanel(session, "rawTabSetPanel", selected = "rawPopPanel")
+    ## updateNavbarPage(session, "navPage", selected = "rawTabPanel")
+    ## updateTabsetPanel(session, "rawTabSetPanel", selected = "rawPopPanel")
 
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab
@@ -408,43 +408,71 @@ shinyServer(
     ## #########################################
     ## pass parameters to a shiny app via URL
     ## http://stackoverflow.com/questions/32872222/how-do-you-pass-parameters-to-a-shiny-app-via-url
-    updateFromURL <- function(session, query, nameval, uifunc = updateCheckboxGroupInput) {
+    updateParamFromURL <- function(session, query, nameval, inputID = nameval, uifunc = updateCheckboxGroupInput) {
       valuetoupdate <- query[[nameval]]
-      if (!is.null(query[[nameval]])) {
+      if (!is.null(valuetoupdate)) {
         valuetoupdate <- unlist(strsplit(valuetoupdate, ","))
-        uifunc(session, nameval, selected = valuetoupdate)
+        uifunc(session, inputID, selected = valuetoupdate)
       }
     }
+
+    updateLocationFromURL <- function(session, query) {
+      page <- query[["page"]]
+      if(!is.null(page)) {
+        updateNavbarPage(session, "navPage", selected = page)
+        tabSetPanels = c(rawTabPanel="rawTabSetPanel", minTabPanel="minTabSetPanel")
+        panel <- query[["panel"]]
+        if(!is.null(panel)) {
+          updateTabsetPanel(session, unname(tabSetPanels[page]), selected = panel)
+        }
+      }
+    }
+   
     observe({
       query <- parseQueryString(session$clientData$url_search)
-      updateFromURL(session, query, "annee")
-      updateFromURL(session, query, "grade")
-      updateFromURL(session, query, "diplome", updateSelectizeInput)
-      updateFromURL(session, query, "sexe")
+      updateLocationFromURL(session, query)
+      updateParamFromURL(session, query, "annee")
+      updateParamFromURL(session, query, "grade")
+      updateParamFromURL(session, query, "diplome", updateSelectizeInput)
+      updateParamFromURL(session, query, "sexe")
       ## TODO Go to the right place into the UI 
     })
 
-    sprintQuery <- function(nameval, x, maxlen) {
+    sprintQuery <- function(nameval, x, maxlen = Inf) {
       if( !is.null(x) && length(x) < maxlen) return(paste0(nameval,"=", paste0(x, collapse = ",")))
       else return(NULL)
     }
     
     ## generate the URL for the current selection
     url <- reactive({
-      ##url <- "http://127.0.0.1:3141/?"
-      query <- c(
-        sprintQuery("annee", input$annee, length(choices$annee)),
-        sprintQuery("grade", input$grade, length(choices$grade)),
-        sprintQuery("diplome", input$diplome, Inf),
-        sprintQuery("sexe", input$sexe, 2)
-      )
+      ## Get the active page 
+      query <- sprintQuery("page", input$navPage)
+      ## Get the active panel and its paramters
+      if(input$navPage == "rawTabPanel") {
+        query <- c(
+          query,
+          sprintQuery("panel", input$rawTabSetPanel),
+          sprintQuery("annee", input$annee, length(choices$annee)),
+          sprintQuery("grade", input$grade, length(choices$grade)),
+          sprintQuery("diplome", input$diplome),
+          sprintQuery("sexe", input$sexe, 2)
+        )
+      } else {
+        query <- append(query, sprintQuery("panel", input$minTabSetPanel))
+      }
+      ## Add URL Prefix
+      ##url <- "http://127.0.0.1:3141/?" ## DEBUG
       url <- "http://unicepro-ove.shinyapps.io/oveshinyip/"
       if(length(query) > 0) {
         url <- paste0(url, "?", paste0(query, collapse="&"))
       }
+      ##print(url)
       url
     })
-    
+
+    ## #########################################
+    ## Get Link Button
+    ## http://stackoverflow.com/questions/32872222/how-do-you-pass-parameters-to-a-shiny-app-via-url
     output$url <- renderText(url())
     observeEvent(input$copyButton, {
       clipr::write_clip(url())
