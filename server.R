@@ -4,6 +4,7 @@ library(shiny)
 library(ggplot2)
 library(ggthemes)
 library(plyr)
+library(reshape)
 ## TODO Use interactive charts ?
 ## library(plotly)
 
@@ -224,23 +225,25 @@ MakeInsertionOutput <- function(output, rpopulation) {
   }, digits = 1)
   
   output$insertionTaux <- renderPlot({
-    ## df=data.frame(
-    ##   year=rep(c("2010","2011"),each=4),
-    ##   treatment=rep(c("Impact","Control")),
-    ##   type=rep(c("Phylum1","Phylum2"),each=2),
-    ##   total=sample(1:100,8))
-    ## ggplot(df, aes(x = year, y = total, fill = type)) +
-    ##     geom_bar(position = "stack", stat = "identity") +
-    ##   facet_wrap( ~ treatment)
     x <- rpopulation()
-    y <- aggregate( 100*x[,c("insertionN18","insertionN30", "emploiStableN18", "emploiStableN30", "emploiSupIntN18", "emploiSupIntN30")], by = list(x$libdip1), mean, na.rm=TRUE)
-    ## TODO Use melt instead
-    y <- data.frame(rep(c("Insertion", "Stabilité", "Cadre ou Interm."), each = 4), rep(c("N+18", "N+30"),each=4), y$Group.1, as.numeric(c(as.matrix(y)[,-1])))
-    colnames(y) <- c("Indicateur", "Grade", "NM", "Taux")
+    indicateurs <- c("insertion", "emploiStable", "emploiSupInt")
+    labels <- c("insertion", "emploi stable", "emploi cadre ou prof. interm.")
+    y <- aggregate( 100*x[,c(paste0(indicateurs, "N18"), paste0(indicateurs, "N30"))], by = list(grade = x$libdip1), mean, na.rm=TRUE)
+    ## print(y)
+    ## colnames(y) <- gsub("(N18|N30)", "", colnames(y))
+    colnames(y) <- c("grade", labels, labels)
     
-    ggplot(y, aes(x = Grade, y = Taux, fill = Indicateur)) + 
+    z <- rbind(
+      cbind(date = "N+18", melt(y[,1:4], "grade")),
+      cbind(date = "N+30", melt(y[,c(1,5:7)], "grade"))
+    )
+    ## print(z)
+    ggplot(z, aes(x = date, y = value, fill = variable)) + 
       geom_bar(position = "dodge", stat = "identity") +
-      facet_wrap( ~ NM)
+      facet_wrap( ~ grade) + 
+      theme_gdocs() + scale_fill_ptol() +
+      labs(x="Situation à N+M mois", y="Taux (%)") +
+      theme(legend.position="bottom", legend.direction="horizontal") 
   }
   )
 }
@@ -349,6 +352,7 @@ shinyServer(
   function(input, output, session) {
     ## Run once each time a user visits the app
 
+    
     callModule(
       MinIndicators, "licence", dataMinDomLP
     )
@@ -360,16 +364,16 @@ shinyServer(
     MakeSelectionOutput(input, output, choices)
     ## MakeDebugOutput(input, output) ##DEBUG
     rpopulation <- MakeReactiveData(input, data, choices)
-        
     MakeResultatsOutput(output, rpopulation)
-    MakeInsertionOutput(output, rpopulation)
-    MakeSituationOutput(output, rpopulation)
-
+    
     rrepondants <- reactive({
       x <- rpopulation()
       subset(x, x$repondant)
     })
-    
+
+    MakeInsertionOutput(output, rrepondants)
+    MakeSituationOutput(output, rrepondants)
+
     remploye <- reactive({
       x <- rrepondants()
       subset(x, x$employe)
@@ -398,8 +402,8 @@ shinyServer(
     ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
     ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
 
-    ## updateNavbarPage(session, "navPage", selected = "rawTabPanel")
-    ## updateTabsetPanel(session, "rawTabSetPanel", selected = "rawPopPanel")
+    updateNavbarPage(session, "navPage", selected = "rawTabPanel")
+    updateTabsetPanel(session, "rawTabSetPanel", selected = "rawResultPanel")
 
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab
