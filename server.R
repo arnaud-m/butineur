@@ -63,9 +63,9 @@ GetPercentLabels <- function(x, threshold = 1, digits = 1) {
 ## http://stackoverflow.com/questions/21236229/stacked-bar-chart
 ## http://rstudio-pubs-static.s3.amazonaws.com/4305_8df3611f69fa48c2ba6bbca9a8367895.html
 ## http://www.sthda.com/french/wiki/ggplot2-barplots-guide-de-demarrage-rapide-logiciel-r-et-visualisation-de-donnees
-BarPlotRaw <- function(x, threshold = 5, digits = 0) {
+BarPlotRaw <- function(x, threshold = 1, digits = 0) {
   x <- as.data.frame(table(x[drop=TRUE], useNA = "ifany"))
-  label <- GetPercentLabels(100*x$Freq/sum(x$Freq), threshold = 2, digits = 0)
+  label <- GetPercentLabels(100*x$Freq/sum(x$Freq), threshold = threshold, digits = digits)
   pos <- x$Freq / 2
   ggplot(x, aes(x = Var1, y = Freq)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) +
     geom_text(aes(y = pos, label=label), color = "white", size=8, fontface = 2) +
@@ -79,7 +79,7 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   x$percentage <- 100 * x$Freq / totFreq
   x$percentage <-  GetPercentLabels(x$percentage, threshold = 2, digits = 0)
   x <- ddply(x, aesX, transform, pos = sum(Freq)-cumsum(Freq) + (0.5 * Freq), top = cumsum(Freq))
-  x$toplab <-  GetPercentLabels(100 * x$top / totFreq, threshold = 0, digits = 0)
+  x$toplab <-  GetPercentLabels(100 * x$top / totFreq, threshold = 1, digits = 0)
   m <- length(unique(x[,aesF]))
   ## exploit recycling
   x$toplab[ append(rep(TRUE,m-1), FALSE) ] <- "" 
@@ -282,12 +282,14 @@ MakeSalaireOutput <- function(output, remploye) {
   })
 
   output$salaireParSexe <- renderTable( {
-    x <- summary(remployeTP()$salaireEmploiN30)
-    y <- aggregate(remployeTP()$salaireEmploiN30, list(remployeTP()$sexe), summary)
-    x <- rbind(x, y[,-1])
-    rownames(x) <- c("Femme/Homme", as.character(y[,1]))
-    x[,c(-1, -6)]
-  }, rownames = TRUE, digits = 1)
+    x <- rbind(
+      "Femme/Homme"=summary(remployeTP()$salaireEmploiN30),
+      "Femme"=summary( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Femme")),
+      "Homme"=summary( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Homme"))
+      )
+    ## x[,c(-1, -6)]
+    x
+  }, rownames = TRUE, digits = 0)
     
   output$salaire <- renderPlot( {
     salary <- remployeTP()$salaireEmploiN30
@@ -303,18 +305,10 @@ MakeEmploiOutput <- function(output, remploye) {
         ggtitle("Localisation de l'emploi et mobilité des diplomés")
     })
 
-    
-    output$niveauEmploi2 <- renderPlot({
-      BarStackedPlotRaw(remploye(), "statutEmploiN30","niveauEmploiN30", "Niveau de l'emploi") + ggtitle("Statut de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
-    })
-    output$statutEmploi <- renderPlot({
-      BarPlotRaw(remploye()$statutEmploiN30) + ggtitle("Statut de l'emploi") + labs(x="Statut de l'emploi", y="Effectifs") 
-    })
-    
     output$niveauEmploi <- renderPlot({
       BarPlotRaw(remploye()$niveauEmploiN30) + ggtitle("Niveau de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
     })
-
+     
     output$typeEmployeur <- renderPlot({
       BarPlotRaw(remploye()$typeEmployeur) + ggtitle("Type d'employeur") + labs(x="Type d'employeur", y="Effectifs") 
     })
@@ -323,7 +317,11 @@ MakeEmploiOutput <- function(output, remploye) {
     ##     labs(x="Type d'employeur", y="Effectifs") +
     ##     ggtitle("Type d'employeur")
     ## })
-    
+
+    output$statutEmploi <- renderPlot({
+      BarStackedPlotRaw(remploye(), "statutEmploiN30","niveauEmploiN30", "Niveau de l'emploi") + ggtitle("Statut de l'emploi") + labs(x="Statut de l'emploi", y="Effectifs") 
+    })
+   
     output$activiteEcoEmployeur <- renderPlot({
       BarPlotRaw(remploye()$activiteEcoEmployeur) + ggtitle("Activité économique de l'entreprise") + labs(x="Secteur d'activité", y="Effectifs") 
     })
@@ -346,13 +344,12 @@ MakeCloudOutput <- function(output, rrepondants) {
   })  
 }
 
-
+########################
 shinyServer(
   ## Define server logic 
   function(input, output, session) {
     ## Run once each time a user visits the app
 
-    
     callModule(
       MinIndicators, "licence", dataMinDomLP
     )
@@ -403,7 +400,7 @@ shinyServer(
     ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
 
     updateNavbarPage(session, "navPage", selected = "rawTabPanel")
-    updateTabsetPanel(session, "rawTabSetPanel", selected = "rawResultPanel")
+    updateTabsetPanel(session, "rawTabSetPanel", selected = "rawSalPanel")
 
     ## #########################################################
     ## Automatically stop a Shiny app when closing the browser tab
@@ -439,7 +436,6 @@ shinyServer(
       updateParamFromURL(session, query, "grade")
       updateParamFromURL(session, query, "diplome", updateSelectizeInput)
       updateParamFromURL(session, query, "sexe")
-      ## TODO Go to the right place into the UI 
     })
 
     sprintQuery <- function(nameval, x, maxlen = Inf) {

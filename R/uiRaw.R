@@ -107,14 +107,11 @@ MakeEmploiPanel<- function() {
       column(6, plotOutput("regionEmploi"))
     ),
     fluidRow(
+      column(6,plotOutput("niveauEmploi")),
+      column(6,plotOutput("typeEmployeur"))
+    ),
+    fluidRow(
       column(6,plotOutput("statutEmploi")),
-      column(6,plotOutput("niveauEmploi"))
-    ),
-    fluidRow(
-      column(8,plotOutput("niveauEmploi2"))
-    ),
-    fluidRow(
-      column(6,plotOutput("typeEmployeur")),
       column(6,plotOutput("activiteEcoEmployeur"))
     ))
 }
