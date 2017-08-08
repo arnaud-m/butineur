@@ -128,16 +128,6 @@ MakeSelectionOutput <- function(input, output, choices) {
   })
 }
 
-
-MakeDebugOutput <- function(input, output, choices) {
-  output$annee <- renderPrint(input$annee)
-  output$grade <- renderPrint(input$grade)
-  output$diplome <- renderPrint(input$diplome)
-  output$sexe <- renderPrint(input$sexe)
-}
-
-
-
 ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
 ## https://shiny.rstudio.com/articles/action-buttons.html
 MakeReactiveData <- function(input, data, choices) {
@@ -344,7 +334,6 @@ function(input, output, session) {
   )
   
   MakeSelectionOutput(input, output, choices)
-  ## MakeDebugOutput(input, output) ##DEBUG
   rpopulation <- MakeReactiveData(input, data, choices)
   MakeResultatsOutput(output, rpopulation)
   
@@ -362,7 +351,6 @@ function(input, output, session) {
   })
   
   MakeCloudOutput(output, rrepondants)
-  
   
   ## ###############################################################
   ## Caractéristiques socio-démographiques (ensemble des diplômés)

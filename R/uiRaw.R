@@ -9,16 +9,6 @@ MakeSelectionRow <- function() {
   )
 }
 
-MakeDebugRow <- function() {
-  fluidRow(
-    column(1, verbatimTextOutput("annee")),
-    column(2, verbatimTextOutput("grade")),
-    column(4, verbatimTextOutput("diplome")),
-    column(2, verbatimTextOutput("sexe")),
-    column(3, verbatimTextOutput("url"), align="left")
-  )
-}
-
 MakeRawAccueilPanel<- function() {
   tabPanel(
     title = "Notice",

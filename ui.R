@@ -55,7 +55,6 @@ function(request) {
     title = "Données brutes 2014",
     value = "rawTabPanel",
     MakeSelectionRow(),
-    ## MakeDebugRow(), ##DEBUG
     tabsetPanel(
       id = "rawTabSetPanel",
       MakeRawAccueilPanel(),
