@@ -159,7 +159,6 @@ MakeResultatsOutput <- function(output, rpopulation) {
   )
   
   output$statutReponse <- renderTable({
-    ##table(rdata()[,"statutReponse"][drop=TRUE], useNA = "ifany", dnn= "Réponse")
     table(rpopulation()[,"statutReponse"][drop=TRUE], useNA = "ifany")
   }, colnames = FALSE)
 }
@@ -250,14 +249,19 @@ MakeSalaireOutput <- function(output, remploye) {
   })
 
   output$salaireParSexe <- renderTable( {
+    SummaryWithNAs <- function(x) {
+      s <- summary(x)[c(-1, -6)]
+      if(is.na(s["NA's"])) {
+        s["NA's"] <- 0
+      }
+      return(s)
+    }
     ## FIXME problem with Nas in only one gender !
-    x <- rbind(
-      "Femme/Homme"=summary(remployeTP()$salaireEmploiN30),
-      "Femme"=summary( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Femme")),
-      "Homme"=summary( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Homme"))
+    rbind(
+      "Femme/Homme"=SummaryWithNAs(remployeTP()$salaireEmploiN30),
+      "Femme"=SummaryWithNAs( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Femme")),
+      "Homme"=SummaryWithNAs( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Homme"))
       )
-    x[,c(-1, -6)]
-    x
   }, rownames = TRUE, digits = 0)
     
   output$salaire <- renderPlot( {

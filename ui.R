@@ -46,8 +46,7 @@ function(request) {
       id = "minTabSetPanel",
       MakeMinAccueilPanel(),
       MinIndicatorsUI("licence", title = "Licence Pro par domaine", value = "minLPPanel"),
-      MinIndicatorsUI("master", title = "Master par domaine", value = "minMPanel"),
-      MakeMinResultatsPanel()
+      MinIndicatorsUI("master", title = "Master par domaine", value = "minMPanel")
     )
   ),
   tabPanel(
