@@ -19,7 +19,6 @@ library(reshape)
 
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle.csv"), header=TRUE)
 
-
 ReadMinIP <- function(file) {
   df <- read.table(file = file, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
   df$Nombre.de.diplômés <- round(df$Nombre.de.réponses * 100 /  df$Taux.de.réponse)
@@ -44,13 +43,6 @@ dataMinDiscM <- FilterDisciplines(dataMinM)
 dataMinLP <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-lp.csv"))
 dataMinDomLP <- FilterDomains(dataMinLP)
 dataMinDiscLP <- FilterDisciplines(dataMinLP)
-
-GetIndicateurs <- function(data) {
-  population <- nrow(data)
-  indics <- c("population"= nrow(data))
-}
-
-
 
 ## Compute percentage labels of bar plots
 GetPercentLabels <- function(x, threshold = 1, digits = 1) {
@@ -106,14 +98,8 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
 }
 
 
-
-## TODO Add Domain/Discipline
-## Droit-Economie-Gestion (DEG) 
-## Lettres-Langues-Arts (LLA)
-## Sciences Humaines et sociales (SHS) 
-## Sciences - Technologies-Santé (STS)
 MakeChoiceLists<- function(data) {
-  su <- function(x) sort(unique(x)) 
+  su <- function(x) sort(unique(x))
   list(
     annee=su(data$annee),
     grade=su(data$libdip1),
@@ -134,10 +120,9 @@ MakeSelectionOutput <- function(input, output, choices) {
     
   output$selectizeDiplome <- renderUI( {
     selectizeInput(
-      'diplome', 'Sélectionner une ou plusieurs mentions, spécialités ou codes SISE : ', choices$diplome, multiple = TRUE, 
+      'diplome', 'Sélectionner une ou plusieurs mentions, spécialités ou codes SISE : ', choices$diplome, selected = NULL, multiple = TRUE, 
       options = list(
-        placeholder = "Taper la sélection ici.",
-        onInitialize = I('function() { this.setValue(""); }')
+        placeholder = "Taper la sélection ici."
       ), width = "800px"
     )
   })
@@ -154,7 +139,7 @@ MakeDebugOutput <- function(input, output, choices) {
 
 
 ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
-## TODO https://shiny.rstudio.com/articles/action-buttons.html
+## https://shiny.rstudio.com/articles/action-buttons.html
 MakeReactiveData <- function(input, data, choices) {
   reactive({
     logInd <- rep(TRUE, nrow(data))
@@ -282,12 +267,13 @@ MakeSalaireOutput <- function(output, remploye) {
   })
 
   output$salaireParSexe <- renderTable( {
+    ## FIXME problem with Nas in only one gender !
     x <- rbind(
       "Femme/Homme"=summary(remployeTP()$salaireEmploiN30),
       "Femme"=summary( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Femme")),
       "Homme"=summary( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Homme"))
       )
-    ## x[,c(-1, -6)]
+    x[,c(-1, -6)]
     x
   }, rownames = TRUE, digits = 0)
     
@@ -345,140 +331,68 @@ MakeCloudOutput <- function(output, rrepondants) {
 }
 
 ########################
-shinyServer(
-  ## Define server logic 
-  function(input, output, session) {
-    ## Run once each time a user visits the app
-
-    callModule(
-      MinIndicators, "licence", dataMinDomLP
-    )
-
-    callModule(
-      MinIndicators, "master", dataMinDomM
-    )
-       
-    MakeSelectionOutput(input, output, choices)
-    ## MakeDebugOutput(input, output) ##DEBUG
-    rpopulation <- MakeReactiveData(input, data, choices)
-    MakeResultatsOutput(output, rpopulation)
+## Define server logic 
+function(input, output, session) {
+  ## Run once each time a user visits the app
     
-    rrepondants <- reactive({
-      x <- rpopulation()
-      subset(x, x$repondant)
-    })
-
-    MakeInsertionOutput(output, rrepondants)
-    MakeSituationOutput(output, rrepondants)
-
-    remploye <- reactive({
-      x <- rrepondants()
-      subset(x, x$employe)
-    })
-    
-    MakeCloudOutput(output, rrepondants)
-    
-    
-    ## ###############################################################
-    ## Caractéristiques socio-démographiques (ensemble des diplômés)
-
-    MakePopulationOutput(output, rpopulation)
-    MakeBaccalaureatOutput(output, rpopulation)
-
-    ## #####################
-    ## Diplômés en emploi
-    
-    MakeSalaireOutput(output, remploye)
-    MakeEmploiOutput(output, remploye)
-
-    output$nbEmployes <- renderText(paste("Il y a", nrow(remploye()), "répondants en emploi"))
-    output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
-    
-    ## #####################
-    ## DEBUG Set active panel
-    ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
-    ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
-
-    updateNavbarPage(session, "navPage", selected = "rawTabPanel")
-    updateTabsetPanel(session, "rawTabSetPanel", selected = "rawSalPanel")
-
-    ## #########################################################
-    ## Automatically stop a Shiny app when closing the browser tab
-    ## session$onSessionEnded(stopApp)
-    
-    ## #########################################
-    ## pass parameters to a shiny app via URL
-    ## http://stackoverflow.com/questions/32872222/how-do-you-pass-parameters-to-a-shiny-app-via-url
-    updateParamFromURL <- function(session, query, nameval, inputID = nameval, uifunc = updateCheckboxGroupInput) {
-      valuetoupdate <- query[[nameval]]
-      if (!is.null(valuetoupdate)) {
-        valuetoupdate <- unlist(strsplit(valuetoupdate, ","))
-        uifunc(session, inputID, selected = valuetoupdate)
-      }
-    }
-
-    updateLocationFromURL <- function(session, query) {
-      page <- query[["page"]]
-      if(!is.null(page)) {
-        updateNavbarPage(session, "navPage", selected = page)
-        tabSetPanels = c(rawTabPanel="rawTabSetPanel", minTabPanel="minTabSetPanel")
-        panel <- query[["panel"]]
-        if(!is.null(panel)) {
-          updateTabsetPanel(session, unname(tabSetPanels[page]), selected = panel)
-        }
-      }
-    }
-   
-    observe({
-      query <- parseQueryString(session$clientData$url_search)
-      updateLocationFromURL(session, query)
-      updateParamFromURL(session, query, "annee")
-      updateParamFromURL(session, query, "grade")
-      updateParamFromURL(session, query, "diplome", updateSelectizeInput)
-      updateParamFromURL(session, query, "sexe")
-    })
-
-    sprintQuery <- function(nameval, x, maxlen = Inf) {
-      if( !is.null(x) && length(x) < maxlen) return(paste0(nameval,"=", paste0(x, collapse = ",")))
-      else return(NULL)
-    }
-    
-    ## generate the URL for the current selection
-    url <- reactive({
-      ## Get the active page 
-      query <- sprintQuery("page", input$navPage)
-      ## Get the active panel and its paramters
-      if(input$navPage == "rawTabPanel") {
-        query <- c(
-          query,
-          sprintQuery("panel", input$rawTabSetPanel),
-          sprintQuery("annee", input$annee, length(choices$annee)),
-          sprintQuery("grade", input$grade, length(choices$grade)),
-          sprintQuery("diplome", input$diplome),
-          sprintQuery("sexe", input$sexe, 2)
-        )
-      } else {
-        query <- append(query, sprintQuery("panel", input$minTabSetPanel))
-      }
-      ## Add URL Prefix
-      ##url <- "http://127.0.0.1:3141/?" ## DEBUG
-      url <- "http://unicepro-ove.shinyapps.io/oveshinyip/"
-      if(length(query) > 0) {
-        url <- paste0(url, "?", paste0(query, collapse="&"))
-      }
-      ##print(url)
-      url
-    })
-
-    ## #########################################
-    ## Get Link Button
-    ## http://stackoverflow.com/questions/32872222/how-do-you-pass-parameters-to-a-shiny-app-via-url
-    output$url <- renderText(url())
-    observeEvent(input$getLinkButton, {
-      clipr::write_clip(url())
-    })
+  callModule(
+    MinIndicators, "licence", dataMinDomLP
+  )
+  
+  callModule(
+    MinIndicators, "master", dataMinDomM
+  )
+  
+  MakeSelectionOutput(input, output, choices)
+  ## MakeDebugOutput(input, output) ##DEBUG
+  rpopulation <- MakeReactiveData(input, data, choices)
+  MakeResultatsOutput(output, rpopulation)
+  
+  rrepondants <- reactive({
+    x <- rpopulation()
+    subset(x, x$repondant)
+  })
+  
+  MakeInsertionOutput(output, rrepondants)
+  MakeSituationOutput(output, rrepondants)
+  
+  remploye <- reactive({
+    x <- rrepondants()
+    subset(x, x$employe)
+  })
+  
+  MakeCloudOutput(output, rrepondants)
+  
+  
+  ## ###############################################################
+  ## Caractéristiques socio-démographiques (ensemble des diplômés)
+  
+  MakePopulationOutput(output, rpopulation)
+  MakeBaccalaureatOutput(output, rpopulation)
+  
+  ## #####################
+  ## Diplômés en emploi
+  
+  MakeSalaireOutput(output, remploye)
+  MakeEmploiOutput(output, remploye)
+  
+  output$nbEmployes <- renderText(paste("Il y a", nrow(remploye()), "répondants en emploi"))
+  output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
+  
+  ## #####################
+  ## DEBUG Set active panel
+  ## updateNavbarPage(session, "navPage", selected = "minTabPanel")
+  ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
+  
+  ## updateNavbarPage(session, "navPage", selected = "rawTabPanel")
+  ## updateTabsetPanel(session, "rawTabSetPanel", selected = "rawSalPanel")
+  
+  ## #########################################################
+  ## Automatically stop a Shiny app when closing the browser tab
+  ## session$onSessionEnded(stopApp)
+  
+  
   }
-)
 
 
 

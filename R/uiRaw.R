@@ -4,7 +4,7 @@ MakeSelectionRow <- function() {
   fluidRow( 
     column(1, uiOutput("checkboxAnnee")),
     column(1, uiOutput("checkboxGrade")),
-    column(4, uiOutput("selectizeDiplome")),
+    column(6, uiOutput("selectizeDiplome")),
     column(1, checkboxGroupInput("sexe", "Sexe(s)", c("Femme", "Homme"), c("Femme", "Homme")))
   )
 }

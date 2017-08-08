@@ -18,7 +18,6 @@ source(file.path("R", "uiMin.R"), local = TRUE)
 
 source(file.path("R", "uiRaw.R"), local = TRUE)
 
-
 ## ###########################
 ## Action button in the navbar
 ## https://github.com/daattali/advanced-shiny/blob/master/navbar-add-text/app.R
@@ -35,7 +34,8 @@ navbarPageWithInputs <- function(..., inputs) {
 
 ## ################
 ## Define UI
-navbarPageWithInputs(
+function(request) {
+  navbarPageWithInputs(
   title = "Le butineur (en développement)!",
   id = "navPage",
   theme = "butineur.css",
@@ -67,6 +67,6 @@ navbarPageWithInputs(
     )
   ),
   footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis.")),
-  inputs = tags$button(id="getLinkButton", type="button", class="btn btn-secondary action-button shiny-bound-input", "data-toggle"="tooltip", "data-placement"="bottom", title = "Cliquer sur le bouton, puis coller l'URL à partir du presse-papiers (ctrl+v ou pomme+v).", strong(HTML("Copier l'URL dans le presse-papier")))
+  inputs = bookmarkButton(class = "btn-primary")
 )
-
+}

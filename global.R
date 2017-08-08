@@ -29,3 +29,7 @@ getTermMatrix <- memoise(function(text) {
   
   sort(rowSums(m), decreasing = TRUE)
 })
+
+## https://shiny.rstudio.com/articles/bookmarking-state.html
+## https://shiny.rstudio.com/articles/advanced-bookmarking.html
+enableBookmarking(store = "url")
