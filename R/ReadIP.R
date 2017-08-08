@@ -6,8 +6,12 @@ ReadIP <- function(file) {
   df <- read.csv(file = file, row.names = NULL, na.strings = c("NA", ""))
   ##res <- data.frame(matrix(, nrow=nrow(df), ncol=0))
   ## TODO Add attribute_27_dom_mention_SISE_BO instead attribute_6_diplôme_lib_BO
-  res <- df[,c("annee", "Diplôme", "code_dip", "attribute_5_specialite_SISE_BO", "attribute_6_diplôme_lib_BO", "attribute_25_composante_lib_BO")]
-  colnames(res) <- c("annee", "libdip1", "code_diplome", "libdip3", "libdip2", "composante_lib_BO")
+  res <- df[,c("annee", "Diplôme", "code_dip")] ## "attribute_5_specialite_SISE_BO", "attribute_6_diplôme_lib_BO", "attribute_25_composante_lib_BO")]
+  
+  colnames(res) <- c("annee", "libdip1", "code_diplome") ##, "libdip3", "libdip2", "composante_lib_BO")
+  res$libdom  <- factor(gsub('[[:blank:]]*-.*$','', df$attribute_27_dom_mention_SISE_BO)) ## domaine
+  res$libdip2 <- factor(gsub('^[^-]*-[[:blank:]]','', df$attribute_27_dom_mention_SISE_BO)) ## mention
+  res$libdip3 <- df$attribute_5_specialite_SISE_BO ## spécialité
   ColToFactor <- function(fromCol, toCol, labels, levels = seq_along(labels)) {
     res[,toCol] <<- factor(df[, fromCol], levels = levels, labels = labels)
   }
@@ -219,4 +223,9 @@ ReadIP <- function(file) {
   ColToFactor("q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
   
   return(res)
+}
+
+GenerateShinyRawDb <- function( file = file.path("data", "raw_data.csv")) {
+  data <- ReadIP(file.path("data", "raw_data.csv"))
+  write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
 }

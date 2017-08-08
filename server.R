@@ -10,13 +10,6 @@ library(reshape)
 
 ## Run once when the app is launched
 
-#################################
-## Load IP raw database
-#source(file.path("R", "ReadIP.R"), local = TRUE)
-#data <- ReadIP(file.path("data", "raw_data.csv"))
-#write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
-#################################
-
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle.csv"), header=TRUE)
 
 ReadMinIP <- function(file) {
@@ -103,7 +96,7 @@ MakeChoiceLists<- function(data) {
   list(
     annee=su(data$annee),
     grade=su(data$libdip1),
-    diplome=list("Mention" = su(data$libdip2), "Spécialité" = su(data$libdip3), "Code SISE" = su(data$code_diplome))
+    diplome=list("Domaine"= su(data$libdom), "Mention" = su(data$libdip2), "Spécialité" = su(data$libdip3), "Code SISE" = su(data$code_diplome))
   )
 }
 
@@ -120,7 +113,7 @@ MakeSelectionOutput <- function(input, output, choices) {
     
   output$selectizeDiplome <- renderUI( {
     selectizeInput(
-      'diplome', 'Sélectionner une ou plusieurs mentions, spécialités ou codes SISE : ', choices$diplome, selected = NULL, multiple = TRUE, 
+      'diplome', 'Sélectionner un ou plusieurs domaines, mentions, spécialités ou codes SISE : ', choices$diplome, selected = NULL, multiple = TRUE, 
       options = list(
         placeholder = "Taper la sélection ici."
       ), width = "800px"
@@ -146,7 +139,7 @@ MakeReactiveData <- function(input, data, choices) {
       logInd <- logInd & (data$sexe %in% input$sexe)
     }
     if(! is.null(input$diplome) ) {
-      logInd <- logInd & (data$libdip2 %in% input$diplome | data$libdip3 %in% input$diplome | data$code_diplome %in% input$diplome)
+      logInd <- logInd & (data$libdom %in% input$diplome | data$libdip2 %in% input$diplome | data$libdip3 %in% input$diplome | data$code_diplome %in% input$diplome)
     }
     subset(data, logInd)
   })

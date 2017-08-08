@@ -3,9 +3,8 @@
 library(shiny)
 ## library(plotly)
 
-## TODO http://deanattali.com/blog/advanced-shiny-tips/
+## http://deanattali.com/blog/advanced-shiny-tips/
 ## http://zevross.com/blog/2016/04/19/r-powered-web-applications-with-shiny-a-tutorial-and-cheat-sheet-with-40-example-apps/
-## https://github.com/aoles/shinyURL
 
 MakeAccueilPanel<- function() {
   tabPanel(
