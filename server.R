@@ -161,6 +161,11 @@ MakeResultatsOutput <- function(output, rpopulation) {
   output$statutReponse <- renderTable({
     table(rpopulation()[,"statutReponse"][drop=TRUE], useNA = "ifany")
   }, colnames = FALSE)
+
+  output$statutReponsePlot <- renderPlot({
+    BarPlotRaw(rpopulation()$statutReponse) + ggtitle("Statut des réponses") + labs(x="Statut de la réponse", y="Effectifs") 
+  })
+
 }
 
 MakeSituationOutput <- function(output, rpopulation) {

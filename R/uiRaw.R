@@ -1,7 +1,7 @@
 require(shiny)
 
 MakeSelectionRow <- function() {
-  fluidRow( 
+  fluidRow(
     column(1, uiOutput("checkboxAnnee")),
     column(1, uiOutput("checkboxGrade")),
     column(6, uiOutput("selectizeDiplome")),
@@ -23,24 +23,14 @@ MakeResultatslPanel<- function() {
     title = "Résultats",
     value = "rawResultPanel",
     fluidRow(
+      h2("Résultats de l'enquête"),
       column(
         6,
-        h3("Résultats de l'enquête"),
         column(6, h4("Taux de réponse"), tableOutput("recapReponse")),
         column(6, h4("Statut des réponses"),tableOutput("statutReponse")),
-        h3("Taux de poursuite d’études et évolution du taux d’insertion (en %)"),
-        tableOutput("etudeInsertionTaux")
+        plotOutput("statutReponsePlot")
       ),
-      column(
-        6,
-        h3("Progression des conditions d’emploi (en %)"),
-        plotOutput("insertionTaux")
-      )
-    ),
-    h2("Évolution de la situation des diplomé.e.s à 18 et 30 mois (en %)"),
-    fluidRow(
-      column(6, plotOutput("situationDiplomeN18")),
-      column(6, plotOutput("situationDiplomeN30"))
+      column(6, includeMarkdown(file.path("markdown", "raw", "resultats.md")))
     )
   )
 }
@@ -63,22 +53,27 @@ MakePopulationPanel<- function() {
   )
 }
 
-
-MakeSalairePanel<- function() {
+MakeInsertionPanel<- function() {
   tabPanel(
-    title = "Salaire",
-    value = "rawSalPanel",
-    h2("Diplômés en emploi à temps plein"),
+    title = "Insertion",
+    value = "rawInsPanel",
+    h2("Insertion professionnelle des diplômés"),
     fluidRow(
       column(
         6,
-        textOutput("nbSalaries"),
-        includeMarkdown(file.path("markdown", "raw", "salaire.md")),
-        column(6, tableOutput("salaireParSexe"))
+        h3("Taux de poursuite d’études et évolution du taux d’insertion (en %)"),
+        tableOutput("etudeInsertionTaux")
       ),
-      fluidRow(
-      column(6, plotOutput("salaire"))
-    )
+      column(
+        6,
+        h3("Progression des conditions d’emploi (en %)"),
+        plotOutput("insertionTaux")
+      )
+    ),
+    h2("Évolution de la situation des diplomé.e.s à 18 et 30 mois (en %)"),
+    fluidRow(
+      column(6, plotOutput("situationDiplomeN18")),
+      column(6, plotOutput("situationDiplomeN30"))
     )
   )
 }
@@ -105,6 +100,26 @@ MakeEmploiPanel<- function() {
       column(6,plotOutput("activiteEcoEmployeur"))
     ))
 }
+
+MakeSalairePanel<- function() {
+  tabPanel(
+    title = "Salaire",
+    value = "rawSalPanel",
+    h2("Diplômés en emploi à temps plein"),
+    fluidRow(
+      column(
+        6,
+        textOutput("nbSalaries"),
+        includeMarkdown(file.path("markdown", "raw", "salaire.md")),
+        column(6, tableOutput("salaireParSexe"))
+      ),
+      fluidRow(
+      column(6, plotOutput("salaire"))
+    )
+    )
+  )
+}
+
 
 MakeCloudPanel<- function() {
   tabPanel(

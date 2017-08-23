@@ -58,12 +58,13 @@ function(request) {
       MakeRawAccueilPanel(),
       MakeResultatslPanel(),
       MakePopulationPanel(),
+      MakeInsertionPanel(),
       MakeEmploiPanel(),
       MakeSalairePanel(),
       MakeCloudPanel()
     )
   ),
-  footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis.")),
+  footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis")),
   inputs = bookmarkButton(class = "btn-primary")
 )
 }

@@ -49,29 +49,12 @@ ReadIP <- function(file) {
   res$salaireEmploiN18 <- as.numeric(df$q8_5)
   
 
-  ## TODO Trouver la formule pour le taux d'insertion
-  ## Le taux d’insertion est défini comme le taux net d’emploi c’est-à-dire la part des diplômés occupant un emploi, quel qu’il soit,
-  ## sur l’ensemble des diplômés présents sur le marché du travail (en emploi ou au chômage).
   res$insertionN30 <- df$q4_3 == 1
   res$tempsPleinN30 <- df$q6_7 == 1
   
   res$insertionN18 <- df$q7_1 == 1
   res$tempsPleinN18 <- df$q8_3 == 1
   
-  ColToFactor(
-    "statut_reponse", "statutReponse",
-    c(
-      "Deuxième diplôme dans le cas d'un double diplôme",
-      "Décédé",
-      "Erreur sur le diplôme :\n diplômé n’ayant pas validé le diplôme",
-      "téléphone",
-      "internet",
-      "papier",
-      "Diplômé issu d'une formation délocalisée\n(pour les diplômés étrangers uniquement)",
-      "Autre"
-    )
-  )
-
   ##   ColToFactor(
   ##   "statut_reponse", "statutReponse",
   ##   c(
@@ -88,7 +71,7 @@ ReadIP <- function(file) {
    ColToFactor(
     "statut_reponse", "statutReponse",
     c(
-      "Deuxième diplôme (double diplôme)",
+      "Deuxième diplôme\n(double diplôme)",
       "Décédé",
       "Erreur : non validé",
       "téléphone",
