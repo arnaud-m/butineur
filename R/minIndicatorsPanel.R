@@ -6,7 +6,7 @@ FilterSituation <-function(dataMin, after=30) {
   )
 }
 
-GetPercentLabels <- function(x, threshold = 1, digits = 1) {
+GetPercentLabels <- function(x, threshold = 1, digits = 0) {
   ind <- x >= threshold
   r <- rep("", length(x))
   r[ind] <- sprintf(paste0("%.", digits, "f%%"), x[ind])
@@ -17,7 +17,7 @@ BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
   df <- subset(df, !is.na( df[, aesY]))
   p <- ggplot(df, aes_string(x = aesX, y = aesY)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + theme_gdocs() 
   if(labelYPercent) {
-    labels <- GetPercentLabels(df[, aesY], digits=0)
+    labels <- GetPercentLabels(df[, aesY])
   } else {
     labels <- as.character(df[, aesY])
   }
@@ -28,7 +28,7 @@ BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
 BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent = FALSE) {
   x <- subset(df, !is.na(df[, aesY]))
   if(labelYPercent) {
-    labels <- GetPercentLabels(x[, aesY], digits=0)
+    labels <- GetPercentLabels(x[, aesY])
   } else {
     labels <- as.character(x[, aesY])
   }
@@ -47,7 +47,7 @@ BarFacetPlotMin <- function(df, aesFacet) {
   x$indicateur <- factor(x$indicateur, levels = c("X..emplois.stables", "X..emplois.à.temps.plein", "X..emplois.cadre.ou.professions.intermédiaires"), labels =  c("% emplois stables", "% emplois à temps plein", "% emplois cadre ou professions intermédiaires"))
   
   ggplot(x, aes(x = situation, y = valeur, fill = indicateur)) + geom_bar(position = "dodge", stat = "identity") + facet_wrap(aesFacet) +
-    theme_gdocs() + scale_fill_ptol() + theme(legend.position="bottom", legend.direction="horizontal") 
+    theme_gdocs() + scale_fill_ptol() + theme(legend.position="bottom", legend.direction="horizontal") + labs(y = "Taux (%)")
 }
 
 
@@ -66,7 +66,8 @@ MinIndicatorsUI <- function(id, title, value) {
     fluidRow(
       column(6, plotOutput(ns("tauxInsertion"))),
       column(6, plotOutput(ns("conditionEmploi"))),
-      column(6, plotOutput(ns("salaireMedian")))
+      column(6, plotOutput(ns("salaireMedian"))),
+      column(6, plotOutput(ns("tauxMobilite")))
     )
   )
 }
@@ -87,26 +88,30 @@ MinIndicators <- function(input, output, session, data) {
   
     output$tauxInsertion <- renderPlot({
       BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
-        ggtitle("Évolution du taux d'insertion des diplômés")
+        ggtitle("Évolution du taux d'insertion des diplômés") + labs(y = "Taux d'insertion (%)")
     })
     
     
   output$conditionEmploi <- renderPlot({
     BarFacetPlotMin(data, "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") 
-    })
+  })
   
   output$salaireMedian <- renderPlot({
     BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
-      ggtitle("Progression du salaire net mensuel médian à temps plein")
+      ggtitle("Progression du salaire net mensuel médian à temps plein") +labs(y = "euros")
   })
   
   
   output$pourcentFemmes <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes")
+    BarPlotMin(fdata, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(y = "Taux de femmes (%)")
   })
   
   output$tauxReponse <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse")
+    BarPlotMin(fdata, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(y = "Taux de réponse (%)")
   })
+
+  output$tauxMobilite <- renderPlot({
+    BarPlotMin(fdata, "Domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(y = "% emplois extérieurs à la région de l’université")
+  }) 
 }
 
