@@ -58,8 +58,7 @@ BarPlotRaw <- function(x, threshold = 1, digits = 0) {
 }
 
 BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
-  x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE]))
-  ## TODO x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE], exclude= NaN))
+  x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE], exclude= NaN))
   totFreq <- sum(x$Freq)
   ## Percentage labels
   x$percentage <- 100 * x$Freq / totFreq
@@ -69,7 +68,6 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   m <- length(unique(x[,aesF]))
   ## exploit recycling
   x$toplab[ append(rep(TRUE,m-1), FALSE) ] <- "" 
-  ## print(x)
   p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
   
   if(labelF) {
@@ -83,9 +81,9 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   }
   
   if(is.null(legend.title)) {
-    p <- p + scale_fill_ptol()
+    p <- p + scale_fill_ptol( na.value = "grey80") 
   } else {
-    p <- p + scale_fill_ptol(name=legend.title) 
+    p <- p + scale_fill_ptol(name=legend.title, na.value = "grey80") 
   }
   p <- p + theme(legend.position="bottom", legend.direction="horizontal")
   return(p)
@@ -171,16 +169,10 @@ MakeResultatsOutput <- function(output, rpopulation) {
 
 MakeSituationOutput <- function(output, rpopulation) {
   output$situationDiplomeN30 <- renderPlot({
-    ## if(nrow(rdata()) > 0) {     ## no on the first tab anymore
-    ## Avoid to run Before loading of UI and to cause Null parameters
-    ## no on the first tab anymore
     BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 30 mois") + labs(x="Situation professionnelle", y="Effectifs")
-    ## }
   })
   
   output$situationDiplomeN18 <- renderPlot({
-    ## if(nrow(rdata()) > 0) {     ## no on the first tab anymore
-    ## Avoid to run Before loading of UI and to cause Null parameters
     BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 18 mois") + labs(x="Situation professionnelle", y="Effectifs")
   }
   )
@@ -188,13 +180,11 @@ MakeSituationOutput <- function(output, rpopulation) {
 
 MakeInsertionOutput <- function(output, rpopulation) {
   output$etudeInsertionTaux <- renderTable({
-    ##if(nrow(rdata()) > 0) {     ## no on the first tab anymore
     x <- rpopulation()
     x <- subset (x, x$repondant)
     x <- aggregate( 100*x[,c("poursuiteEtude", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
     colnames(x) <- c("Grade", "Poursuite d'étude", "IP à 18 mois", "IP à 30 mois")
     x
-    ## }
   }, digits = 1)
   
   output$insertionTaux <- renderPlot({
@@ -203,7 +193,6 @@ MakeInsertionOutput <- function(output, rpopulation) {
     labels <- c("emploi stable", "emploi à temps plein", "emploi cadre ou prof. interm.")
     y <- aggregate( 100*x[,c(paste0(indicateurs, "N18"), paste0(indicateurs, "N30"))], by = list(grade = x$libdip1), mean, na.rm=TRUE)
     ## print(y)
-    ## colnames(y) <- gsub("(N18|N30)", "", colnames(y))
     colnames(y) <- c("grade", labels, labels)
     
     z <- rbind(
