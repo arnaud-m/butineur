@@ -73,10 +73,12 @@ MinIndicatorsUI <- function(id, title, value) {
 }
 
 MinIndicators <- function(input, output, session, data) {
-  # Yields the data frame with an additional column "selected_"
-  # that indicates whether that observation is brushed
+
+  ## Keep only data at N+30 months
   fdata <- FilterSituation(data)
   
+  ## ######################
+  ## Ensemble des diplômés
   output$diplomes <- renderPlot({
     ggplot(fdata, aes(x = "", y = Nombre.de.diplômés, fill = Domaine)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs() + ggtitle("Nombre de diplômés") +
       theme(
@@ -85,31 +87,31 @@ MinIndicators <- function(input, output, session, data) {
         axis.title.y=element_blank()
       )
   })
+
+  output$tauxReponse <- renderPlot({
+    BarPlotMin(fdata, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(y = "Taux de réponse (%)")
+  })
   
-    output$tauxInsertion <- renderPlot({
-      BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
-        ggtitle("Évolution du taux d'insertion des diplômés") + labs(y = "Taux d'insertion (%)")
-    })
-    
-    
+  output$pourcentFemmes <- renderPlot({
+    BarPlotMin(fdata, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(y = "Taux de femmes (%)")
+  })
+
+  ## ######################
+  ## Diplômés en emploi
+  output$tauxInsertion <- renderPlot({
+    BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
+      ggtitle("Évolution du taux d'insertion des diplômés", subtitle = sprintf("Le taux de chomage régional est de %.1f%%", data[1, "Taux.de.chômage.régional"])) + labs(y = "Taux d'insertion (%)")
+  })
+  
   output$conditionEmploi <- renderPlot({
     BarFacetPlotMin(data, "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") 
   })
   
   output$salaireMedian <- renderPlot({
     BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
-      ggtitle("Progression du salaire net mensuel médian à temps plein") +labs(y = "euros")
+      ggtitle("Progression du salaire net mensuel médian à temps plein", subtitle = sprintf("Le salaire net mensuel médian régional est de %d euros.",data[1, "Salaire.net.mensuel.médian.régional"])) +labs(y = "euros") 
   })
   
-  
-  output$pourcentFemmes <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(y = "Taux de femmes (%)")
-  })
-  
-  output$tauxReponse <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(y = "Taux de réponse (%)")
-  })
-
   output$tauxMobilite <- renderPlot({
     BarPlotMin(fdata, "Domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(y = "% emplois extérieurs à la région de l’université")
   }) 
