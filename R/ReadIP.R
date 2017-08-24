@@ -40,20 +40,7 @@ ReadIP <- function(file) {
   
   res$repondant <- df$statut_reponse %in% 4:6
 
-  ## Rename 
-  res$employe <- res$repondant & df$q4_3 == 1
 
-  
-  res$intituleEmploi <- as.character(df$q6_4)
-  res$salaireEmploiN30 <- as.numeric(df$q6_9)
-  res$salaireEmploiN18 <- as.numeric(df$q8_5)
-  
-
-  res$insertionN30 <- df$q4_3 == 1
-  res$tempsPleinN30 <- df$q6_7 == 1
-  
-  res$insertionN18 <- df$q7_1 == 1
-  res$tempsPleinN18 <- df$q8_3 == 1
   
   ##   ColToFactor(
   ##   "statut_reponse", "statutReponse",
@@ -80,7 +67,9 @@ ReadIP <- function(file) {
       "Formation délocalisée",
       "Autre"
     )
-  )
+   )
+
+  
   ## TODO add parameter
   ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d’autres critères", "Non"))
   res$boursier <- as.factor(df$q2_2)
@@ -104,13 +93,28 @@ ReadIP <- function(file) {
   ##   "Vous n’avez pas d’emploi et\n vous ne cherchez pas de travail"
   ## )
   situationPro <- c(
-    "En emploi ",
+    "En emploi",
     "En recherche d'emploi",
     "Ne recherche pas d'emploi"
   )
   ColToFactor("q4_3", "situationProN30", situationPro)
   ColToFactor("q7_1", "situationProN18", situationPro)
 
+  ColToFactor("q4_3", "situationProN30r", c(situationPro, "En études"))
+  res$situationProN30r[ df$q4_1 != 3 & df$q4_2r == 1 & df$q6_5 != 10 ] <- "En études"
+  res$situationProN30r[ df$q4_1 != 3 & df$q4_3 == 1 & df$q6_5 == 9 ] <- "En études"
+  res$situationProN30r[ df$q4_1 != 3 & df$q4_3 == 1 & df$q6_5 == 10 ] <- "En emploi"
+
+
+  ColToFactor("q7_1", "situationProN18r", c(situationPro, "En études"))
+  ## Pas de question sur l'activite principale à N+18
+  res$situationProN18r[ df$q3_1_2 != 3 & df$q7_1 == 1 & df$q8_1 == 9 ] <- "En études"
+  res$situationProN18r[ df$q3_1_2 != 3 & df$q7_1 == 1 & df$q8_1 == 10 ] <- "En emploi"
+
+  res$insertionN30 <- res$situationProN30r == "En emploi"
+  res$insertionN30[ res$situationProN30r %in% c("Ne recherche pas d'emploi","En études") ] <- NA
+  res$insertionN18 <- res$situationProN18r == "En emploi"
+  res$insertionN18[ res$situationProN18r %in% c("Ne recherche pas d'emploi","En études") ] <- NA
   
   ## statutEmploi <- c( 
   ##   "Prof. libérale, indépendant,\n chef d’entreprise, auto-entrepreneur",
@@ -126,8 +130,9 @@ ReadIP <- function(file) {
   ##   "Emplois aidés (Contrat Initiative Emploi…)",
   ##   "Volontariat international",
   ##   "Service civique")
+  
   statutEmploi <- c( 
-    "Prof. libérale, indépendant,\n chef d’entreprise, auto-entrepreneur",
+    "Prof. libérale, indépendant,\nchef d’entreprise, auto-entrepreneur",
     "Fonctionnaire",
     "CDI",
     "Contrat spécifique au doctorat",
@@ -144,11 +149,22 @@ ReadIP <- function(file) {
   ColToFactor("q6_5", "statutEmploiN30", statutEmploi)
   ColToFactor("q8_1", "statutEmploiN18", statutEmploi)
 
+  ## Diplômés en emploi
+  emploiN30 <- res$insertionN30 %in% TRUE
+  emploiN18 <- res$insertionN18 %in% TRUE
+  
   ## L'emploi stable correspond à la part des diplômés en emploi sous contrat de CDI, sous statut de la Fonction publique ou en qualité de travailleur indépendant.
-  res$emploiStableN30 <- df$q6_5 <= 3
-  res$emploiStableN18 <- df$q8_1 <= 3
+  res$emploiStableN30 <- NA
+  res$emploiStableN30[emploiN30] <- df$q6_5[emploiN30] <= 3
+  res$emploiStableN18 <- NA
+  res$emploiStableN18[emploiN18] <- df$q8_1[emploiN18] <= 3 
 
- 
+  res$emploiPleinN30 <- NA
+  res$emploiPleinN30[emploiN30] <- df$q6_7[emploiN30] == 1
+  res$emploiPleinN18 <- NA
+  res$emploiPleinN18[emploiN18] <- df$q8_3[emploiN18] == 1
+
+
   ## niveauEmploi <- c(
   ##   "personnel de catégorie A de la fonction publique",
   ##   "ingénieur, cadre, professions libérales, professions intellectuelles supérieures",
@@ -168,10 +184,15 @@ ReadIP <- function(file) {
   levels(res$niveauEmploiN30) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
   
   ## https://fr.wikipedia.org/wiki/Professions_et_cat%C3%A9gories_socioprofessionnelles_en_France
-  res$emploiSupIntN30 <- df$q6_6r <= 4
-  res$emploiSupIntN18 <- df$q8_2r <= 4
+  res$emploiSupIntN30 <- NA
+  res$emploiSupIntN30[emploiN30] <- df$q6_6r[emploiN30] <= 4
+  res$emploiSupIntN18 <- NA
+  res$emploiSupIntN18[emploiN18] <- df$q8_2r[emploiN18] <= 4
 
-  ##TODO Create a second column
+  ## Salaire de tous les emplois
+  res$salaireEmploiN30 <- as.numeric(df$q6_9)
+  res$salaireEmploiN18 <- as.numeric(df$q8_5)
+
   ## typeEmployeur <- c(
   ##   "vous-même",
   ##   "la fonction publique\n (d'Etat, territoriale ou hospitalière)",
@@ -204,6 +225,8 @@ ReadIP <- function(file) {
     "Autres activités de service"
   )
   ColToFactor("q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
+
+  res$intituleEmploi <- as.character(df$q6_4)
   
   return(res)
 }

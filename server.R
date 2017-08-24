@@ -59,6 +59,7 @@ BarPlotRaw <- function(x, threshold = 1, digits = 0) {
 
 BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
   x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE]))
+  ## TODO x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE], exclude= NaN))
   totFreq <- sum(x$Freq)
   ## Percentage labels
   x$percentage <- 100 * x$Freq / totFreq
@@ -191,15 +192,15 @@ MakeInsertionOutput <- function(output, rpopulation) {
     x <- rpopulation()
     x <- subset (x, x$repondant)
     x <- aggregate( 100*x[,c("poursuiteEtude", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
-    colnames(x) <- c("Grade", "Poursuite d'étude", "IP à 18 mois", "IP\nà 30 mois")
+    colnames(x) <- c("Grade", "Poursuite d'étude", "IP à 18 mois", "IP à 30 mois")
     x
     ## }
   }, digits = 1)
   
   output$insertionTaux <- renderPlot({
     x <- rpopulation()
-    indicateurs <- c("insertion", "emploiStable", "emploiSupInt")
-    labels <- c("insertion", "emploi stable", "emploi cadre ou prof. interm.")
+    indicateurs <- c("emploiStable", "emploiPlein", "emploiSupInt")
+    labels <- c("emploi stable", "emploi à temps plein", "emploi cadre ou prof. interm.")
     y <- aggregate( 100*x[,c(paste0(indicateurs, "N18"), paste0(indicateurs, "N30"))], by = list(grade = x$libdip1), mean, na.rm=TRUE)
     ## print(y)
     ## colnames(y) <- gsub("(N18|N30)", "", colnames(y))
@@ -248,9 +249,33 @@ MakeBaccalaureatOutput <- function(output, rpopulation) {
   )
 }
 
-MakeSalaireOutput <- function(output, remploye) {
-  remployeTP <- reactive({
-    subset(remploye()[,c("salaireEmploiN30", "sexe")], remploye()$tempsPleinN30)
+MakeEmploiOutput <- function(output, remployes) {
+    output$regionEmploi <- renderPlot({
+      BarStackedPlotRaw(remployes(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
+        labs(x="Région d'emploi", y="Effectifs") +
+        ggtitle("Localisation de l'emploi et mobilité des diplomés")
+    })
+
+    output$niveauEmploi <- renderPlot({
+      BarPlotRaw(remployes()$niveauEmploiN30) + ggtitle("Niveau de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
+    })
+     
+    output$typeEmployeur <- renderPlot({
+      BarPlotRaw(remployes()$typeEmployeur) + ggtitle("Type d'employeur") + labs(x="Type d'employeur", y="Effectifs") 
+    })
+
+    output$statutEmploi <- renderPlot({
+      BarStackedPlotRaw(remployes(), "statutEmploiN30","niveauEmploiN30", "Niveau de l'emploi") + ggtitle("Statut de l'emploi") + labs(x="Statut de l'emploi", y="Effectifs") 
+    })
+   
+    output$activiteEcoEmployeur <- renderPlot({
+      BarPlotRaw(remployes()$activiteEcoEmployeur) + ggtitle("Activité économique de l'entreprise") + labs(x="Secteur d'activité", y="Effectifs") 
+    })
+}
+
+MakeSalaireOutput <- function(output, remployes) {
+  remployesTP <- reactive({
+    subset(remployes()[,c("salaireEmploiN30", "sexe")], remployes()$emploiPleinN30)
   })
 
   output$salaireParSexe <- renderTable( {
@@ -261,49 +286,21 @@ MakeSalaireOutput <- function(output, remploye) {
       }
       return(s)
     }
-    ## FIXME problem with Nas in only one gender !
     rbind(
-      "Femme/Homme"=SummaryWithNAs(remployeTP()$salaireEmploiN30),
-      "Femme"=SummaryWithNAs( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Femme")),
-      "Homme"=SummaryWithNAs( subset(remployeTP()$salaireEmploiN30, remployeTP()$sexe == "Homme"))
+      "Femme/Homme"=SummaryWithNAs(remployesTP()$salaireEmploiN30),
+      "Femme"=SummaryWithNAs( subset(remployesTP()$salaireEmploiN30, remployesTP()$sexe == "Femme")),
+      "Homme"=SummaryWithNAs( subset(remployesTP()$salaireEmploiN30, remployesTP()$sexe == "Homme"))
       )
   }, rownames = TRUE, digits = 0)
     
   output$salaire <- renderPlot( {
-    salary <- remployeTP()$salaireEmploiN30
+    salary <- remployesTP()$salaireEmploiN30
     salary <- subset(salary, salary < 10000) 
     ggplot() + aes(salary) + geom_histogram(binwidth = 250,  fill = ptol_pal()(1)) + ggtitle("Niveau de rémunération (salaire mensuel net hors primes)") +  theme_gdocs() + labs(x="Salaire", y="Effectifs")
   })
 }
 
-MakeEmploiOutput <- function(output, remploye) {
-    output$regionEmploi <- renderPlot({
-      BarStackedPlotRaw(remploye(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
-        labs(x="Région d'emploi", y="Effectifs") +
-        ggtitle("Localisation de l'emploi et mobilité des diplomés")
-    })
 
-    output$niveauEmploi <- renderPlot({
-      BarPlotRaw(remploye()$niveauEmploiN30) + ggtitle("Niveau de l'emploi") + labs(x="Niveau de l'emploi", y="Effectifs") 
-    })
-     
-    output$typeEmployeur <- renderPlot({
-      BarPlotRaw(remploye()$typeEmployeur) + ggtitle("Type d'employeur") + labs(x="Type d'employeur", y="Effectifs") 
-    })
-    ## output$typeEmployeur <- renderPlot({
-    ##   BarStackedPlotRaw(remploye(), "typeEmployeur", "effectifsEmployeur", legend.title = "Effectifs de l'employeur") +
-    ##     labs(x="Type d'employeur", y="Effectifs") +
-    ##     ggtitle("Type d'employeur")
-    ## })
-
-    output$statutEmploi <- renderPlot({
-      BarStackedPlotRaw(remploye(), "statutEmploiN30","niveauEmploiN30", "Niveau de l'emploi") + ggtitle("Statut de l'emploi") + labs(x="Statut de l'emploi", y="Effectifs") 
-    })
-   
-    output$activiteEcoEmployeur <- renderPlot({
-      BarPlotRaw(remploye()$activiteEcoEmployeur) + ggtitle("Activité économique de l'entreprise") + labs(x="Secteur d'activité", y="Effectifs") 
-    })
-}
 
 MakeCloudOutput <- function(output, rrepondants) {
   ## Generate job word cloud
@@ -326,7 +323,10 @@ MakeCloudOutput <- function(output, rrepondants) {
 ## Define server logic 
 function(input, output, session) {
   ## Run once each time a user visits the app
-    
+
+  ## ######################
+  ## Page: Ministere 
+  
   callModule(
     MinIndicators, "licence", dataMinDomLP
   )
@@ -334,11 +334,23 @@ function(input, output, session) {
   callModule(
     MinIndicators, "master", dataMinDomM
   )
-  
+
+  ## ######################
+  ## Page: Brut 
+
   MakeSelectionOutput(input, output, choices)
+ 
+  ## #######################
+  ## Ensemble des diplômés
   rpopulation <- MakeReactiveData(input, data, choices)
+  
   MakeResultatsOutput(output, rpopulation)
   
+  MakePopulationOutput(output, rpopulation)
+  MakeBaccalaureatOutput(output, rpopulation)
+
+  ## #######################
+  ## Ensemble des répondants
   rrepondants <- reactive({
     x <- rpopulation()
     subset(x, x$repondant)
@@ -346,28 +358,24 @@ function(input, output, session) {
   
   MakeInsertionOutput(output, rrepondants)
   MakeSituationOutput(output, rrepondants)
-  
-  remploye <- reactive({
-    x <- rrepondants()
-    subset(x, x$employe)
-  })
-  
-  MakeCloudOutput(output, rrepondants)
-  
-  ## ###############################################################
-  ## Caractéristiques socio-démographiques (ensemble des diplômés)
-  
-  MakePopulationOutput(output, rpopulation)
-  MakeBaccalaureatOutput(output, rpopulation)
-  
+
   ## #####################
   ## Diplômés en emploi
+  remployes <- reactive({
+    x <- rrepondants()
+    subset(x, x$insertionN30)
+  })
   
-  MakeSalaireOutput(output, remploye)
-  MakeEmploiOutput(output, remploye)
-  
-  output$nbEmployes <- renderText(paste("Il y a", nrow(remploye()), "répondants en emploi"))
-  output$nbSalaries <- renderText(paste("Il y a", sum(remploye()$tempsPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
+  MakeEmploiOutput(output, remployes)
+  output$nbEmployes <- renderText(paste("Il y a", nrow(remployes()), "répondants en emploi"))
+
+  MakeCloudOutput(output, remployes)
+
+  ## ###############################
+  ## Diplômés en emploi à temps plein
+  MakeSalaireOutput(output, remployes)
+  output$nbSalaries <- renderText(paste("Il y a", sum(remployes()$emploiPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
+
   
   ## #####################
   ## DEBUG Set active panel
@@ -375,7 +383,7 @@ function(input, output, session) {
   ## updateTabsetPanel(session, "minTabSetPanel", selected = "minLPPanel")
   
   ## updateNavbarPage(session, "navPage", selected = "rawTabPanel")
-  ## updateTabsetPanel(session, "rawTabSetPanel", selected = "rawSalPanel")
+  ## updateTabsetPanel(session, "rawTabSetPanel", selected = "rawInsPanel")
   
   ## #########################################################
   ## Automatically stop a Shiny app when closing the browser tab
