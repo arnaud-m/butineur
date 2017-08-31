@@ -38,8 +38,8 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
      runApp()
    #+END_SRC
 
-** TODO Deploy the application 
-   For administrators.
+** Deploy the application on shinyapps.io
+   Administrators must follow the instructions given [[http://docs.rstudio.com/shinyapps.io/getting-started.html#using-your-r-packages-in-the-cloud][here]].
 
 ** Dependencies
    

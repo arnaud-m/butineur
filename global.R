@@ -2,6 +2,7 @@ library(tm)
 library(SnowballC)
 library(wordcloud)
 library(memoise)
+library(markdown) ## required for shinyapps.io. Otherwise the package is not installed.
 
 source(file.path("R", "minIndicatorsPanel.R"), local = TRUE)
 

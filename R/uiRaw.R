@@ -28,9 +28,9 @@ MakeResultatslPanel<- function() {
         6,
         column(6, h4("Taux de réponse"), tableOutput("recapReponse")),
         column(6, h4("Statut des réponses"),tableOutput("statutReponse")),
-        plotOutput("statutReponsePlot")
-      ),
-      column(6, includeMarkdown(file.path("markdown", "raw", "resultats.md")))
+        column(12, includeMarkdown(file.path("markdown", "raw", "resultats.md")))        
+        ),
+      column(6, plotOutput("statutReponsePlot"))
     )
   )
 }

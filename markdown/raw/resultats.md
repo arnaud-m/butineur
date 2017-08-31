@@ -1,4 +1,3 @@
-## TODO ##
 
 L’enquête est effectuée en ligne avec le logiciel Lime Survey.
 Afin d’obtenir des taux de réponses élevés, des relances sont faites par téléphone avec le logiciel CatiSurvey.
