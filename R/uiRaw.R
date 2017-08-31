@@ -40,7 +40,7 @@ MakePopulationPanel<- function() {
   tabPanel(
     title = "Population",
     value = "rawPopPanel",
-    h2("Caractéristiques socio-démographiques (ensemble des diplômés)"),
+    h2(textOutput("populationHeader")),
     fluidRow(
       column(6, h3("Genre"), tableOutput("populationGenre")),
       column(6, h3("Bourse"),tableOutput("populationBourse"))
@@ -57,7 +57,7 @@ MakeInsertionPanel<- function() {
   tabPanel(
     title = "Insertion",
     value = "rawInsPanel",
-    h2("Insertion professionnelle des diplômés"),
+    h2(textOutput("insertionHeader")),
     fluidRow(
       column(
         6,
@@ -83,10 +83,7 @@ MakeEmploiPanel<- function() {
   tabPanel(
     title = "Emploi",
     value = "rawJobPanel",
-    h2("Diplômés en emploi"),
-    fluidRow(
-      column(6, textOutput("nbEmployes"))
-    ),
+    h2(textOutput("emploiHeader")),
     fluidRow(
       column(6, includeMarkdown(file.path("markdown", "raw", "emploi.md"))),
       column(6, plotOutput("regionEmploi"))
@@ -105,11 +102,10 @@ MakeSalairePanel<- function() {
   tabPanel(
     title = "Salaire",
     value = "rawSalPanel",
-    h2("Diplômés en emploi à temps plein"),
+    h2(textOutput("salaireHeader")),
     fluidRow(
       column(
         6,
-        textOutput("nbSalaries"),
         includeMarkdown(file.path("markdown", "raw", "salaire.md")),
         column(6, tableOutput("salaireParSexe"))
       ),
@@ -125,6 +121,7 @@ MakeCloudPanel<- function() {
   tabPanel(
     title = "Nuage d'emplois",
     value = "rawCloudPanel",
+    h2(textOutput("cloudHeader")),
     plotOutput("nuageEmploi")
   )
 }

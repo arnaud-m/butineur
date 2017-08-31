@@ -167,14 +167,32 @@ MakeResultatsOutput <- function(output, rpopulation) {
 
 }
 
-MakeSituationOutput <- function(output, rpopulation) {
-  output$situationDiplomeN30 <- renderPlot({
-    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 30 mois") + labs(x="Situation professionnelle", y="Effectifs")
+MakePopulationOutput <- function(output, rpopulation) {
+  output$populationHeader <- renderText(paste0("Caractéristiques socio-démographiques (", nrow(rpopulation())," diplômés)"))
+  population <- reactive({
+    as.matrix(ftable(rpopulation()[, c("sexe", "boursier")], exclude = NULL))
   })
   
-  output$situationDiplomeN18 <- renderPlot({
-    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 18 mois") + labs(x="Situation professionnelle", y="Effectifs")
+  SummarySD <- function(x, margin) {
+    popcount <- sum(x)
+    FuncSD <- function(y) {
+      eff <- sum(y)
+      return(c("En effectifs"=eff, "En pourcentages"= 100*eff/popcount))
+    }
+    apply(x, margin, FuncSD)
   }
+  
+  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, digits = 1)
+  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, digits = 1)
+}
+
+MakeBaccalaureatOutput <- function(output, rpopulation) {
+  output$serieBac <- renderPlot(
+    BarPlotRaw(rpopulation()$serieBac) + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs") 
+  )
+
+  output$regionBac <- renderPlot(
+    BarPlotRaw(rpopulation()$regionBac) + ggtitle("Région d'obtention du bac") + labs(x="Région d'obtention du bac", y="Effectifs") 
   )
 }
 
@@ -209,32 +227,15 @@ MakeInsertionOutput <- function(output, rpopulation) {
   }
   )
 }
-
-MakePopulationOutput <- function(output, rpopulation) {
-  population <- reactive({
-    as.matrix(ftable(rpopulation()[, c("sexe", "boursier")], exclude = NULL))
+  
+MakeSituationOutput <- function(output, rpopulation) {
+  output$situationDiplomeN30 <- renderPlot({
+    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 30 mois") + labs(x="Situation professionnelle", y="Effectifs")
   })
   
-  SummarySD <- function(x, margin) {
-    popcount <- sum(x)
-    FuncSD <- function(y) {
-      eff <- sum(y)
-      return(c("En effectifs"=eff, "En pourcentages"= 100*eff/popcount))
-    }
-    apply(x, margin, FuncSD)
+  output$situationDiplomeN18 <- renderPlot({
+    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "Poursuite d'étude") + ggtitle("Situation des diplômés à N + 18 mois") + labs(x="Situation professionnelle", y="Effectifs")
   }
-  
-  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, digits = 1)
-  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, digits = 1)
-}
-
-MakeBaccalaureatOutput <- function(output, rpopulation) {
-  output$serieBac <- renderPlot(
-    BarPlotRaw(rpopulation()$serieBac) + ggtitle("Bac obtenu") + labs(x="Bac obtenu", y="Effectifs") 
-  )
-
-  output$regionBac <- renderPlot(
-    BarPlotRaw(rpopulation()$regionBac) + ggtitle("Région d'obtention du bac") + labs(x="Région d'obtention du bac", y="Effectifs") 
   )
 }
 
@@ -291,19 +292,18 @@ MakeSalaireOutput <- function(output, remployes) {
 
 
 
-MakeCloudOutput <- function(output, rrepondants) {
+MakeCloudOutput <- function(output, remployes) {
   ## Generate job word cloud
   ## http://shiny.rstudio.com/gallery/word-cloud.html
   ## Make the wordcloud drawing predictable during a session
   wordcloud_rep <- repeatable(wordcloud)
-    
   output$nuageEmploi <- renderPlot({
     v <- withProgress({
         setProgress(message = "Processing corpus...")
-        getTermMatrix(as.character(rrepondants()$intituleEmploi))
+        getTermMatrix(as.character(remployes()$intituleEmploi))
     })
-    wordcloud_rep(names(v), v, scale=c(4,0.5),
-                  min.freq = 2, max.words=100,
+    wordcloud_rep(names(v), v, scale=c(3.5,0.5),
+                  min.freq = 3, max.words=100,
                   colors=brewer.pal(8, "Dark2"))
   })  
 }
@@ -328,13 +328,16 @@ function(input, output, session) {
   ## Page: Brut 
 
   MakeSelectionOutput(input, output, choices)
- 
+
+
+  
+  
   ## #######################
   ## Ensemble des diplômés
   rpopulation <- MakeReactiveData(input, data, choices)
   
   MakeResultatsOutput(output, rpopulation)
-  
+
   MakePopulationOutput(output, rpopulation)
   MakeBaccalaureatOutput(output, rpopulation)
 
@@ -344,7 +347,8 @@ function(input, output, session) {
     x <- rpopulation()
     subset(x, x$repondant)
   })
-  
+
+  output$insertionHeader <- renderText(paste0("Insertion professionnelle des diplômés (", nrow(rrepondants())," répondants)"))
   MakeInsertionOutput(output, rrepondants)
   MakeSituationOutput(output, rrepondants)
 
@@ -354,16 +358,18 @@ function(input, output, session) {
     x <- rrepondants()
     subset(x, x$insertionN30)
   })
-  
-  MakeEmploiOutput(output, remployes)
-  output$nbEmployes <- renderText(paste("Il y a", nrow(remployes()), "répondants en emploi"))
 
+  output$emploiHeader <- renderText(paste0("Caractéristiques des emplois (", nrow(remployes())," diplomés en emploi)"))
+  MakeEmploiOutput(output, remployes)
+
+  output$cloudHeader <- renderText(paste0("Nuage d'emplois (", nrow(remployes())," diplomés en emploi)"))
   MakeCloudOutput(output, remployes)
 
   ## ###############################
   ## Diplômés en emploi à temps plein
+  output$salaireHeader <- renderText(paste0("Distribution des salaires (", sum(remployes()$emploiPleinN30, na.rm=TRUE)," diplomés en emploi à temps plein)"))
   MakeSalaireOutput(output, remployes)
-  output$nbSalaries <- renderText(paste("Il y a", sum(remployes()$emploiPleinN30, na.rm=TRUE), "répondants en emploi à temps plein"))
+  
 
   
   ## #####################
