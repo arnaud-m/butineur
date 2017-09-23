@@ -240,10 +240,11 @@ MakeSituationOutput <- function(output, rpopulation) {
 }
 
 MakeEmploiOutput <- function(output, remployes) {
-    output$regionEmploi <- renderPlot({
+  output$regionEmploi <- renderPlot({
+      tauxMobilite <- 100*mean(remployes()$regionEmploi == "Étranger" | remployes()$regionEmploi == "Hors PACA", na.rm = TRUE)
       BarStackedPlotRaw(remployes(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
         labs(x="Région d'emploi", y="Effectifs") +
-        ggtitle("Localisation de l'emploi et mobilité des diplomés")
+        ggtitle("Localisation de l'emploi et mobilité des diplomés", subtitle = sprintf("Le taux de mobilité des diplomés est de %.1f%%", tauxMobilite))
     })
 
     output$niveauEmploi <- renderPlot({

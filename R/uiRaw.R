@@ -85,15 +85,12 @@ MakeEmploiPanel<- function() {
     value = "rawJobPanel",
     h2(textOutput("emploiHeader")),
     fluidRow(
-      column(6, includeMarkdown(file.path("markdown", "raw", "emploi.md"))),
-      column(6, plotOutput("regionEmploi"))
-    ),
-    fluidRow(
-      column(6,plotOutput("niveauEmploi")),
-      column(6,plotOutput("typeEmployeur"))
+      column(6,plotOutput("niveauEmploi"), includeMarkdown(file.path("markdown", "raw", "niveauEmploi.md"))),
+      column(6,plotOutput("typeEmployeur"), includeMarkdown(file.path("markdown", "raw", "typeEmployeur.md")))
     ),
     fluidRow(
       column(6,plotOutput("statutEmploi")),
+      column(6, plotOutput("regionEmploi")),
       column(6,plotOutput("activiteEcoEmployeur"))
     ))
 }

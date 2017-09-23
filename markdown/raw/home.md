@@ -25,6 +25,7 @@ Une dizaine d’indicateurs sont disponibles au regard des diplomés ayant repon
  * Le taux d’insertion correspond au nombre de diplômés en emploi au regard du nombre total d’actifs (qui sont en emploi ou en recherche d’emploi).
  * L'emploi stable correspond à la part des diplômés en emploi sous contrat de CDI, sous statut de la Fonction publique ou en qualité de travailleur indépendant.
  * Le taux d’emploi à temps plein correspond au nombre de diplômés en emploi à temps plein au regard du nombre total de diplomés en emploi.
+ * Le taux de mobilité correspond au pourcentage des emplois extérieurs à la région de l’université d’origine, y compris à l’étranger.
  * D'autres indicateurs permettent d’évaluer la qualité de l’insertion professionnelle.
      * le statut de l’emploi
      * le niveau de l’emploi
