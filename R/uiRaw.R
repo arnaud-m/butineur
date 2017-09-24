@@ -58,19 +58,20 @@ MakeInsertionPanel<- function() {
     title = "Insertion",
     value = "rawInsPanel",
     h2(textOutput("insertionHeader")),
+    h3("Évolution de l'insertion des diplomé.e.s à 18 et 30 mois"),
     fluidRow(
       column(
         6,
-        h3("Taux de poursuite d’études et évolution du taux d’insertion (en %)"),
-        tableOutput("etudeInsertionTaux")
+        includeMarkdown(file.path("markdown", "raw", "insertion.md")),
+        tableOutput("insertionMNESR")
       ),
       column(
         6,
-        h3("Progression des conditions d’emploi (en %)"),
+        tableOutput("etudeInsertionTaux"),
         plotOutput("insertionTaux")
       )
     ),
-    h2("Évolution de la situation des diplomé.e.s à 18 et 30 mois (en %)"),
+    h3("Évolution de la situation des diplomé.e.s à 18 et 30 mois (en %)"),
     fluidRow(
       column(6, plotOutput("situationDiplomeN18")),
       column(6, plotOutput("situationDiplomeN30"))

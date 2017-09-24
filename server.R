@@ -11,6 +11,7 @@ library(reshape)
 ## Run once when the app is launched
 
 data <- read.csv(file.path("data", "all-uns-insertion_professionnelle.csv"), header=TRUE)
+data$mobiliteEmploi <- data$regionEmploi == "Étranger" | data$regionEmploi == "Hors PACA"
 
 ReadMinIP <- function(file) {
   df <- read.table(file = file, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
@@ -200,9 +201,46 @@ MakeInsertionOutput <- function(output, rpopulation) {
   output$etudeInsertionTaux <- renderTable({
     x <- rpopulation()
     x <- aggregate( 100*x[,c("poursuiteEtude", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
-    colnames(x) <- c("Grade", "Poursuite d'étude", "IP à 18 mois", "IP à 30 mois")
+    colnames(x) <- c("Grade", "Poursuite d'étude", "Insertion à 18 mois", "Insertion à 30 mois")
     x
   }, digits = 1, spacing = 'l')
+
+  output$insertionMNESR <- renderTable({
+    x <- rpopulation()
+   ## browser()
+    y <- x[,c("poursuiteEtude", "mobiliteEmploi", 
+              "insertionN18","insertionN30",
+              "emploiStableN18", "emploiStableN30",
+              "emploiPleinN18", "emploiPleinN30",
+              "emploiSupIntN18", "emploiSupIntN30")]
+    y <- 100*sapply(y, mean, na.rm = TRUE)
+    df <- data.frame(
+      c(
+        y["insertionN18"],
+        NA,
+        y[c("emploiStableN18", "emploiPleinN18", "emploiSupIntN18")],
+        NA,
+        mean(x$salaireEmploiN18[x$emploiPleinN18], na.rm=TRUE)
+      ),
+      c(
+        y[c("insertionN30", "poursuiteEtude",
+            "emploiStableN30", "emploiPleinN30", "emploiSupIntN30",
+            "mobiliteEmploi")],
+        mean(x$salaireEmploiN30[x$emploiPleinN30], na.rm=TRUE)
+      ),
+      row.names = c("Taux d'insertion", "Poursuite d'étude", 
+                    "Part des emplois stables",
+                    "Part des emplois à temps plein",
+                    "Part des emplois de niveau cadre ou profession intermédiaire",
+                    "Part des emplois situés en dehors de la région de l'établissement (y compris à l'étranger)",
+                    "Salaire net mensuel médian des emplois à temps plein (en euros)"
+                    )
+    )
+    colnames(df) <- c("N+18", "N+30")
+    df
+  }, digits = 1, rownames= TRUE, spacing = 'l', striped = TRUE)
+
+  
   
   output$insertionTaux <- renderPlot({
     x <- rpopulation()
@@ -221,8 +259,10 @@ MakeInsertionOutput <- function(output, rpopulation) {
       geom_bar(position = "dodge", stat = "identity") +
       facet_wrap( ~ grade) + 
       theme_gdocs() + scale_fill_ptol() +
+      ggtitle("Progression des conditions d’emploi (en %)") +
       labs(x="Situation à N+M mois", y="Taux (%)") +
       theme(legend.position="bottom", legend.direction="horizontal") 
+      
   }
   )
 }
@@ -240,7 +280,7 @@ MakeSituationOutput <- function(output, rpopulation) {
 
 MakeEmploiOutput <- function(output, remployes) {
   output$regionEmploi <- renderPlot({
-      tauxMobilite <- 100*mean(remployes()$regionEmploi == "Étranger" | remployes()$regionEmploi == "Hors PACA", na.rm = TRUE)
+      tauxMobilite <- 100*mean(remployes()$mobiliteEmploi, na.rm = TRUE)
       BarStackedPlotRaw(remployes(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
         labs(x="Région d'emploi", y="Effectifs") +
         ggtitle("Localisation de l'emploi et mobilité des diplomés", subtitle = sprintf("Le taux de mobilité des diplomés est de %.1f%%", tauxMobilite))
