@@ -1,4 +1,0 @@
-
-## Résultats
-
-À compéter.

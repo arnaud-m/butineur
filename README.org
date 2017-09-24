@@ -7,7 +7,7 @@
 
 [[https://opensource.org/licenses/MIT][https://img.shields.io/badge/License-MIT-yellow.svg]]
 
-The butineur is a web application powered by [[https://shiny.rstudio.com/][shiny]] that analyses the professional integration of the graduate coming the Université Nice Sophia Antipolis.
+The butineur is a web application powered by [[https://shiny.rstudio.com/][shiny]] that analyses the professional integration of the graduate coming from the Université Nice Sophia Antipolis.
 
 butineur is distributed under MIT License.\\
 Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis. 

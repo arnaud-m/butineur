@@ -23,8 +23,9 @@ L'OVE-IP mène deux enquêtes annuelles visant à étudier l'insertion professio
 
 ### Le butineur de l'OVE
 
-Le butineur est une application web ...
-**TODO**
+Le butineur est une application web d'analyse des données obtenues pendant les enquêtes d'insertion professionnelle des diplômés.
+Elle analyse les données officielles du ministère, mais aussi les données brutes de l'OVE.
+Le butineur est un logiciel libre sous licence [MIT](https://opensource.org/licenses/MIT) disponible sur [github](https://github.com/arnaud-m/butineur).
 
 ### L'équipe ###
 

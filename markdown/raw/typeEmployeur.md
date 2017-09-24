@@ -3,7 +3,7 @@ La variable "Type d'employeur" qui comportait 7 modalités a été recodée de l
    * vous-même
    * une entreprise publique
    * une entreprise privée
-   * une personne exerçant une profession libérale ou un indépendant (cabinet, étude notariale, ...),
+   * une personne exerçant une profession libérale ou un indépendant (cabinet, étude notariale ...),
    * un particulier
  * Fonction Publique
    * la fonction publique (d'Etat, territoriale ou hospitalière)

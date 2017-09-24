@@ -28,12 +28,6 @@ Ils sont accompagnés de quatre éléments de contexte socio-économique :
 * le pourcentage de femmes (indicateur structurel), le pourcentage de diplômés boursiers de l’université (source : enquête insertion, diplômés de master), le taux de chômage régional (source : INSEE, 4ème trimestre 2015), le salaire net mensuel médian régional des jeunes âgés de 25 à 29 ans employés à temps plein dans les catégories cadres ou professions intermédiaires (source : INSEE DADS 2013).
 
 
-## Définition du taux d'insertion ##
-Source: [indicateurs communs](https://www.performance-publique.budget.gouv.fr/sites/performance_publique/files/files/circulaires/pieces_jointes/2009/2MPAP-09-3024/6-indicateurs_communs.pdf)
-
-Pour chaque année considérée, parmi la population répondante, mesure de l’insertion des étudiants
-diplômés 30 mois avant la date de l’enquête et qui n’ont jamais connu de poursuites ou de reprises
-d’études depuis l’obtention de leur diplôme.
 ## Ressources ##
 
 * [Enquête relative à l’insertion professionnelle des diplômé.e.s de l’université](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle/)
