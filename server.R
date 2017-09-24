@@ -199,7 +199,6 @@ MakeBaccalaureatOutput <- function(output, rpopulation) {
 MakeInsertionOutput <- function(output, rpopulation) {
   output$etudeInsertionTaux <- renderTable({
     x <- rpopulation()
-    x <- subset (x, x$repondant)
     x <- aggregate( 100*x[,c("poursuiteEtude", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
     colnames(x) <- c("Grade", "Poursuite d'étude", "IP à 18 mois", "IP à 30 mois")
     x
