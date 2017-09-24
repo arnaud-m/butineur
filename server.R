@@ -154,12 +154,12 @@ MakeResultatsOutput <- function(output, rpopulation) {
       c("Nombre de diplômés", "Questionnaires exploités", "Taux de réponse"),
       c(n, q, sprintf("%.1f%%", 100*q/n))
     )
-  }, colnames = FALSE
+  }, colnames = FALSE, striped = TRUE,  spacing = 'l'
   )
   
   output$statutReponse <- renderTable({
     table(rpopulation()[,"statutReponse"][drop=TRUE], useNA = "ifany")
-  }, colnames = FALSE)
+  }, colnames = FALSE, striped = TRUE,  spacing = 'l')
 
   output$statutReponsePlot <- renderPlot({
     BarPlotRaw(rpopulation()$statutReponse) + ggtitle("Statut des réponses") + labs(x="Statut de la réponse", y="Effectifs") 
@@ -182,8 +182,8 @@ MakePopulationOutput <- function(output, rpopulation) {
     apply(x, margin, FuncSD)
   }
   
-  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, digits = 1)
-  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, digits = 1)
+  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, digits = 1, spacing = 'l')
+  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, digits = 1, spacing = 'l')
 }
 
 MakeBaccalaureatOutput <- function(output, rpopulation) {
@@ -203,7 +203,7 @@ MakeInsertionOutput <- function(output, rpopulation) {
     x <- aggregate( 100*x[,c("poursuiteEtude", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
     colnames(x) <- c("Grade", "Poursuite d'étude", "IP à 18 mois", "IP à 30 mois")
     x
-  }, digits = 1)
+  }, digits = 1, spacing = 'l')
   
   output$insertionTaux <- renderPlot({
     x <- rpopulation()
@@ -282,7 +282,7 @@ MakeSalaireOutput <- function(output, remployes) {
       "Femme"=SummaryWithNAs( subset(remployesTP()$salaireEmploiN30, remployesTP()$sexe == "Femme")),
       "Homme"=SummaryWithNAs( subset(remployesTP()$salaireEmploiN30, remployesTP()$sexe == "Homme"))
       )
-  }, rownames = TRUE, digits = 0)
+  }, rownames = TRUE, digits = 0, striped = TRUE,  spacing = 'l')
     
   output$salaire <- renderPlot( {
     salary <- remployesTP()$salaireEmploiN30
