@@ -30,11 +30,11 @@ Le butineur est un logiciel libre sous licence [MIT](https://opensource.org/lice
 ### L'équipe ###
 
 Directrice : Catherine LLATY  
-Tél. : 04 92 00 13 72  
+Tél. : 04 89 15 21 82  
 Courriel : catherine.llaty@unice.fr
 
 Chargée Développement Enquêtes : Marie-Annick DENCHE  
-Tél. : 04 92 00 11 78  
+Tél. : 04 89 15 21 83  
 Courriel : Marie-Annick.DENCHE@unice.fr
 
 Référent informatique : Arnaud MALAPERT  

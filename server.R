@@ -209,13 +209,13 @@ MakePopulationOutput <- function(output, rpopulation) {
     popcount <- sum(x)
     FuncSD <- function(y) {
       eff <- sum(y)
-      return(c("En effectifs"=eff, "En pourcentages"= 100*eff/popcount))
+      return(c("En effectifs"=as.character(eff), "En pourcentages"= sprintf("%.1f",100*eff/popcount)))
     }
     apply(x, margin, FuncSD)
   }
   
-  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, digits = 1, spacing = 'l')
-  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, digits = 1, spacing = 'l')
+  output$populationGenre <- renderTable(SummarySD(population(), 1), rownames = TRUE, spacing = 'l')
+  output$populationBourse <- renderTable(SummarySD(population(), 2), rownames = TRUE, spacing = 'l')
 }
 
 MakeBaccalaureatOutput <- function(output, rpopulation) {

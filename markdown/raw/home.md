@@ -12,7 +12,7 @@ Le fichier des diplômés avec le nom du ou des diplômes et avec les caractéri
 La spécialité correspond à l’intitulé du diplôme. Les spécialités sont regroupées par mention, les mentions étant regroupées par domaine.
 Les données portent sur les étudiants en formation initiale (y compris en contrat d’apprentissage et de professionnalisation) et en formation continue.
 
-L’enquête est effectuée en ligne avec le logiciel Lime Survey. Afin d’obtenir des taux de réponse élevés, des relances sont faites par téléphone avec le logiciel CatiSurvey. 
+L’enquête est effectuée en ligne avec le logiciel Lime Survey. Afin d’obtenir des taux de réponse élevés, des relances sont faites par téléphone avec le logiciel TelSurvey. 
 Nous avons choisi de présenter les résultats au niveau des spécialités composant l’ensemble des domaines de formation de l’UNS.
 Par conséquent, les pourcentages sont parfois calculés sur des effectifs faibles; ils sont à considérer avec prudence.
 Les diplômés ne répondent pas tous à l'enquête, et les répondants ne répondent pas toujours à toutes les questions.
