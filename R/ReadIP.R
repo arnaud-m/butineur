@@ -9,7 +9,10 @@ ReadIP <- function(file) {
   res <- df[,c("annee", "Diplôme", "code_dip")] ## "attribute_5_specialite_SISE_BO", "attribute_6_diplôme_lib_BO", "attribute_25_composante_lib_BO")]
   
   colnames(res) <- c("annee", "libdip1", "code_diplome") ##, "libdip3", "libdip2", "composante_lib_BO")
+
   res$libdom  <- factor(gsub('[[:blank:]]*-.*$','', df$attribute_27_dom_mention_SISE_BO)) ## domaine
+  ## LP has only a 'mention' 
+  res$libdom[res$libdip1=="LP"] <- NA
   res$libdip2 <- factor(gsub('^[^-]*-[[:blank:]]','', df$attribute_27_dom_mention_SISE_BO)) ## mention
   res$libdip3 <- df$attribute_5_specialite_SISE_BO ## spécialité
   ColToFactor <- function(fromCol, toCol, labels, levels = seq_along(labels)) {
@@ -73,7 +76,7 @@ ReadIP <- function(file) {
   ## TODO add parameter
   ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d’autres critères", "Non"))
   res$boursier <- as.factor(df$q2_2)
-  levels(res$boursier) <- list(Boursier=1:2, Non=3)
+  levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
   
   poursuiteEtude <- c(
     "En doctorat (Master) / en Master (LP)",
