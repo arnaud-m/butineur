@@ -21,7 +21,7 @@ BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
   } else {
     labels <- as.character(df[, aesY])
   }
-  p <- p + geom_text(aes(y = df[, aesY], label=labels), color = "white", vjust=1.25, size=8, fontface = 2)
+  p <- p + geom_text(aes(y = df[, aesY], label=labels), color = "white", vjust=1.25, size=7, fontface = 2)
   return(p)
 }
 
@@ -33,7 +33,7 @@ BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent =
     labels <- as.character(x[, aesY])
   }
   ggplot(x, aes_string(x = aesX, y = aesY, fill = aesF)) + geom_bar(position = "dodge", stat = "identity") +
-    geom_text(aes(y = x[, aesY], label = labels), position = position_dodge(width = 1), size = 8, fontface = 2, vjust=1.25, color = "white") +
+    geom_text(aes(y = x[, aesY], label = labels), position = position_dodge(width = 1), size = 7, fontface = 2, vjust=1.25, color = "white") +
     theme_gdocs() + scale_fill_ptol() +
     theme(legend.position="bottom", legend.direction="horizontal") 
 }
