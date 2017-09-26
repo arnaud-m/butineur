@@ -177,24 +177,25 @@ MakeReactiveData <- function(input, data, choices) {
 }
 
 
-MakeResultatsOutput <- function(output, rpopulation) {
+MakeResultatsOutput <- function(output, rdiplomes) {
   output$recapReponse <- renderTable( {
-    df <- rpopulation()
+    df <- rdiplomes()
     n <- nrow(df)
-    q <- sum(df$repondant)
+    m <- n - sum(df$statutReponse == "Deuxième diplôme\n(double diplôme)", na.rm = TRUE)
+    p <- sum(df$repondant)
     data.frame(
-      c("Nombre de diplômés", "Questionnaires exploités", "Taux de réponse"),
-      c(n, q, sprintf("%.1f%%", 100*q/n))
+      c("Nombre de diplômes", "Nombre de diplômés", "Questionnaires exploités", "Taux de réponse"),
+      c(n, m, p, sprintf("%.1f%%", 100*p/m))
     )
   }, colnames = FALSE, striped = TRUE,  spacing = 'l'
   )
   
   output$statutReponse <- renderTable({
-    table(rpopulation()[,"statutReponse"][drop=TRUE], useNA = "ifany")
+    table(rdiplomes()[,"statutReponse"][drop=TRUE], useNA = "ifany")
   }, colnames = FALSE, striped = TRUE,  spacing = 'l')
 
   output$statutReponsePlot <- renderPlot({
-    BarPlotRaw(rpopulation()$statutReponse) + ggtitle("Statut des réponses") + labs(x="Statut de la réponse", y="Effectifs") 
+    BarPlotRaw(rdiplomes()$statutReponse) + ggtitle("Statut des réponses") + labs(x="Statut de la réponse", y="Effectifs") 
   })
 
 }
@@ -405,10 +406,15 @@ function(input, output, session) {
   
   ## #######################
   ## Ensemble des diplômés
-  rpopulation <- MakeReactiveData(input, data, choices)
+  rdiplomes <- MakeReactiveData(input, data, choices)
   
-  MakeResultatsOutput(output, rpopulation)
-
+  MakeResultatsOutput(output, rdiplomes)
+  
+  rpopulation <- reactive({
+    x <- rdiplomes()
+    subset(x, is.na(x$statutReponse) | x$statutReponse!= "Deuxième diplôme\n(double diplôme)")
+  })
+  
   MakePopulationOutput(output, rpopulation)
   MakeBaccalaureatOutput(output, rpopulation)
 
