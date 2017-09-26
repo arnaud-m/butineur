@@ -10,7 +10,9 @@ library(reshape)
 
 ## Run once when the app is launched
 
-data <- read.csv(file.path("data", "all-uns-insertion_professionnelle.csv"), header=TRUE)
+## data <- read.csv(file.path("data", "all-uns-insertion_professionnelle.csv"), header=TRUE)
+data <- readRDS(file.path("data", "all-uns-insertion_professionnelle.rda"))
+
 data$mobiliteEmploi <- data$regionEmploi == "Étranger" | data$regionEmploi == "Hors PACA"
 
 ReadMinIP <- function(file) {

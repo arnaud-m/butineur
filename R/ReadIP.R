@@ -236,5 +236,6 @@ ReadIP <- function(file) {
 
 GenerateShinyRawDb <- function( file = file.path("data", "raw_data.csv")) {
   data <- ReadIP(file.path("data", "raw_data.csv"))
-  write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
+  ## write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
+  saveRDS(data, file.path("data", "all-uns-insertion_professionnelle.rda"))
 }
