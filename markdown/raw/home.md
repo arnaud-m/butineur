@@ -13,9 +13,10 @@ La spécialité correspond à l’intitulé du diplôme. Les spécialités sont 
 Les données portent sur les étudiants en formation initiale (y compris en contrat d’apprentissage et de professionnalisation) et en formation continue.
 
 L’enquête est effectuée en ligne avec le logiciel Lime Survey. Afin d’obtenir des taux de réponse élevés, des relances sont faites par téléphone avec le logiciel TelSurvey. 
-Nous avons choisi de présenter les résultats au niveau des spécialités composant l’ensemble des domaines de formation de l’UNS.
-Par conséquent, les pourcentages sont parfois calculés sur des effectifs faibles; ils sont à considérer avec prudence.
-Les diplômés ne répondent pas tous à l'enquête, et les répondants ne répondent pas toujours à toutes les questions.
+
+Les données de l’enquête sont en partie transmises  au Ministère de l’Enseignement Supérieur et de la Recherche. Celui-ci, en effet, cible la population à enquêter selon des critères restrictifs: il évalue la situation professionnelle des diplômés français  de moins de 30 ans issus de la formation initiale et n’ayant pas poursuivi ou repris d’études dans les 2 années suivant l’obtention de leur diplôme. 11 indicateurs sont déclinés par domaine (Droit-Economie-Gestion, Lettres-Langues-Arts, Sciences humaines et sociales, Sciences-Technologies-Santé) et par discipline de diplôme. Les résultats édités par le ministère sont consultables dans l'onglet "DONNÉES MINISTÈRE 2013".
+
+### Principaux indicateurs ###
 
 Une dizaine d’indicateurs sont disponibles au regard des diplômés ayant répondu à l'enquête.
 
@@ -37,6 +38,6 @@ Une dizaine d’indicateurs sont disponibles au regard des diplômés ayant rép
      * l'intitulé de l’emploi
 
 
-Les données de l’enquête sont en partie transmises  au Ministère de l’Enseignement Supérieur et de la Recherche. Celui-ci, en effet, cible la population à enquêter selon des critères restrictifs: il évalue la situation professionnelle des diplômés français  de moins de 30 ans issus de la formation initiale et n’ayant pas poursuivi ou repris d’études dans les 2 années suivant l’obtention de leur diplôme. 11 indicateurs sont déclinés par domaine (Droit-Economie-Gestion, Lettres-Langues-Arts, Sciences humaines et sociales, Sciences-Technologies-Santé) et par discipline de diplôme. Les résultats édités par le ministère sont consultables dans l'onglet "DONNÉES MINISTÈRE 2013".
-
-
+Nous avons choisi de présenter les résultats au niveau des spécialités composant l’ensemble des domaines de formation de l’UNS.
+Les pourcentages sont donc à considérer avec prudence quand ils sont calculés sur des effectifs faibles.
+De plus, les diplômés ne répondent pas tous à l'enquête, et les répondants ne répondent pas toujours à toutes les questions.
