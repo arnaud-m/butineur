@@ -89,18 +89,18 @@ MinIndicators <- function(input, output, session, data) {
   })
 
   output$tauxReponse <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(y = "Taux de réponse (%)")
+    BarPlotMin(fdata, "Code.du.domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(x = "Domaine", y = "Taux de réponse (%)")
   })
   
   output$pourcentFemmes <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(y = "Taux de femmes (%)")
+    BarPlotMin(fdata, "Code.du.domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(x = "Domaine", y = "Taux de femmes (%)")
   })
 
   ## ######################
   ## Diplômés en emploi
   output$tauxInsertion <- renderPlot({
-    BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
-      ggtitle("Évolution du taux d'insertion des diplômés", subtitle = sprintf("Le taux de chomage régional est de %.1f%%", data[1, "Taux.de.chômage.régional"])) + labs(y = "Taux d'insertion (%)")
+    BarDodgedPlotMin(data, aesX = "Code.du.domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
+      ggtitle("Évolution du taux d'insertion des diplômés", subtitle = sprintf("Le taux de chomage régional est de %.1f%%", data[1, "Taux.de.chômage.régional"])) + labs(x = "Domaine", y = "Taux d'insertion (%)")
   })
   
   output$conditionEmploi <- renderPlot({
@@ -108,12 +108,12 @@ MinIndicators <- function(input, output, session, data) {
   })
   
   output$salaireMedian <- renderPlot({
-    BarDodgedPlotMin(data, aesX = "Domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
-      ggtitle("Progression du salaire net mensuel médian à temps plein", subtitle = sprintf("Le salaire net mensuel médian régional est de %d euros.",data[1, "Salaire.net.mensuel.médian.régional"])) +labs(y = "euros") 
+    BarDodgedPlotMin(data, aesX = "Code.du.domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
+      ggtitle("Progression du salaire net mensuel médian à temps plein", subtitle = sprintf("Le salaire net mensuel médian régional est de %d euros.",data[1, "Salaire.net.mensuel.médian.régional"])) +labs(x = "Domaine", y = "euros") 
   })
   
   output$tauxMobilite <- renderPlot({
-    BarPlotMin(fdata, "Domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(y = "% emplois extérieurs à la région de l’université")
+    BarPlotMin(fdata, "Code.du.domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(x = "Domaine", y = "% emplois extérieurs à la région de l’université")
   }) 
 }
 
