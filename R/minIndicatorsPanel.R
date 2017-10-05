@@ -56,7 +56,7 @@ MinIndicatorsUI <- function(id, title, value) {
   tabPanel(
     title = title,
     value = value,
-    h3("Résultats et caractéristiques socio-démographiques"),
+    h3(textOutput(ns("minHeader"))),
     fluidRow(
       column(3, tableOutput(ns("domaineCodes"))),
       column(3, plotOutput(ns("tauxReponse"))),
@@ -85,14 +85,15 @@ MinIndicators <- function(input, output, session, data) {
   ## Keep only data at N+30 months
   fdata <- FilterSituation(data)
 
-
+  output$minHeader <- renderText(paste0("Résultats et caractéristiques socio-démographiques (", sum(fdata$Nombre.de.diplômés)," diplômés)"))
+  
   ## ######################
   ## Tableau des domaines
   output$domaineCodes <- renderTable({
-    x <- unique(data[, c("Domaine", "Code.du.domaine")])
-    colnames(x) <- c("Domaine", "Code")
-    x <- x[ order(x$Code), ]
-  }, rownames = FALSE, colnames = TRUE, striped = TRUE,  spacing = 'l')
+    x <- unique(fdata[, c("Domaine", "Code.du.domaine", "Nombre.de.diplômés")])
+    colnames(x) <- c("Domaine", "Code", "Diplômés")
+    x[ order(x$Code), ]
+  }, rownames = FALSE, colnames = TRUE, digits = 0, striped = TRUE,  spacing = 'l')
   
   ## ######################
   ## Ensemble des diplômés
@@ -104,7 +105,6 @@ MinIndicators <- function(input, output, session, data) {
         axis.title.y=element_blank(),
         legend.position="bottom",
         legend.direction="horizontal") 
-
   })
 
   output$tauxReponse <- renderPlot({
