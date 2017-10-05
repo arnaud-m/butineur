@@ -1,6 +1,6 @@
 
 
-## Insertion professionnelle des diplômés de l'université (2013) ##
+## Insertion professionnelle des diplômés de l'UNS (2013) ##
 
 Les résultats présentés sont issus de la sixième enquête nationale sur l’insertion professionnelle des diplômés de l’université.
 Elle a pour objet d’évaluer la situation professionnelle, 18 mois puis 30 mois après l’obtention du diplôme, des diplômés français issus de la formation initiale, n'ayant pas poursuivi ou repris d'études dans les deux années suivant l’obtention de leur diplôme.
@@ -30,6 +30,6 @@ Ils sont accompagnés de quatre éléments de contexte socio-économique :
 ### Ressources ###
 
 * [Enquête relative à l’insertion professionnelle des diplômé.e.s de l’université](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle/)
-* [Enquête relative à l’insertion professionnelle des diplômé.e.s à l'Université Nice Sophia Antipolis](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle_etablissements/?disjunctive.discipline2&refine.diplome=MASTER_LMD&refine.annee=2013&refine.numero_de_l_etablissement=0060931E&sort=code_de_la_discipline) :  Exportation des principaux indicateurs (csv ou xls) par discipline sous forme de tableaux.
+* [Enquête relative à l’insertion professionnelle des diplômé.e.s de l'Université Nice Sophia Antipolis](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle_etablissements/?disjunctive.discipline2&refine.diplome=MASTER_LMD&refine.annee=2013&refine.numero_de_l_etablissement=0060931E&sort=code_de_la_discipline) :  Exportation des principaux indicateurs (csv ou xls) par discipline sous forme de tableaux.
 * [Jeux de données Insertion professionnelle sur la plateforme open data du ministère](https://data.enseignementsup-recherche.gouv.fr/explore/?sort=modified&q=insertion)
 * [Notice méthodologique](http://c.par-la.fr/insertion/Notice%20de%20m%c3%a9thodologie_2016.pdf)

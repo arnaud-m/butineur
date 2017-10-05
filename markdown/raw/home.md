@@ -1,5 +1,5 @@
 
-## Insertion professionnelle des diplômés de l'université Nice Sophia Antipolis (2014)
+## Insertion professionnelle des diplômés de l'UNS (2014)
 
 Les enquêtes IP de l’OVE-IP sont réalisées auprès de tous les diplômés de licences professionnelles et de masters quels que soient l’âge, la nationalité et le statut d’inscription.
 Seuls les diplômés par Validation des Acquis de l’Expérience (VAE) sont écartés.
