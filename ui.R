@@ -1,8 +1,9 @@
-# http://www.ats.ucla.edu/stat/r/faq/barplotplus.htm
+
 
 library(shiny)
 ## library(plotly)
 
+## http://www.ats.ucla.edu/stat/r/faq/barplotplus.htm
 ## http://deanattali.com/blog/advanced-shiny-tips/
 ## http://zevross.com/blog/2016/04/19/r-powered-web-applications-with-shiny-a-tutorial-and-cheat-sheet-with-40-example-apps/
 
@@ -14,7 +15,6 @@ MakeAccueilPanel<- function() {
 }
 
 source(file.path("R", "uiMin.R"), local = TRUE)
-
 source(file.path("R", "uiRaw.R"), local = TRUE)
 
 ## ###########################
@@ -35,7 +35,7 @@ navbarPageWithInputs <- function(..., inputs) {
 ## Define UI
 function(request) {
   navbarPageWithInputs(
-  title = "Le butineur (en développement)!",
+  title = "Le butineur",
   id = "navPage",
   theme = "butineur.css",
   MakeAccueilPanel(),
