@@ -5,7 +5,6 @@
 Les résultats présentés sont issus de la sixième enquête nationale sur l’insertion professionnelle des diplômés de l’université.
 Elle a pour objet d’évaluer la situation professionnelle, 18 mois puis 30 mois après l’obtention du diplôme, des diplômés français issus de la formation initiale, n'ayant pas poursuivi ou repris d'études dans les deux années suivant l’obtention de leur diplôme.
 Résultats de l'enquête sur les diplômé.e.s 2013 : enquête réalisée entre décembre 2015 et avril 2016
- * de D.U.T.,
  * de licence professionnelle,
  * de master.
 

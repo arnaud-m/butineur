@@ -2,7 +2,7 @@
 ## Présention de l'Observatoire de la Vie Étudiante (OVE) ##
 
 Créé en 1993, l’Observatoire de la Vie Etudiante et de l'Insertion Professionnelle (OVE-IP) réalise des enquêtes sur les conditions de vie des étudiants et sur leur devenir.
-Les résultats de ces études sont disponibles dans la rubrique ["nos publications"]((http://unice.fr/ove) du site web de l'Université Nice Sophia Antipolis.
+Les résultats de ces études sont disponibles dans la rubrique ["nos publications"](http://unice.fr/ove) du site web de l'Université Nice Sophia Antipolis.
 L'équipe, constituée d'une directrice, d'une chargée d'enquêtes et d'un référent informatique, emploie chaque année entre 8 et 10 enquêteurs téléphoniques ainsi que des stagiaires en statistique.
 
 [Observatoire de la vie étudiante et de l’insertion professionnelle](http://unice.fr/ove)  
