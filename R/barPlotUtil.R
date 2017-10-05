@@ -56,7 +56,7 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   totFreq <- sum(x$Freq)
   ## Percentage labels
   x$percentage <- 100 * x$Freq / totFreq
-  x$percentage <-  GetPercentLabels(x$percentage, threshold = 2, digits = 0)
+  x$percentage <-  GetPercentLabels(x$percentage, threshold = 3, digits = 0)
   x <- ddply(x, aesX, transform, pos = sum(Freq)-cumsum(Freq) + (0.5 * Freq), top = cumsum(Freq))
   x$toplab <-  GetPercentLabels(100 * x$top / totFreq, threshold = 1, digits = 0)
   m <- length(unique(x[,aesF]))
@@ -66,13 +66,11 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
   
   if(labelF) {
-    ## FIXME Stopped working when changing the fluid page into a navbar page
-    ## commit cba64eb use a navbar page instead of a fluid page
-    p <- p + geom_text(aes(y = x$pos, label = x$percentage, size = 6), show.legend = FALSE)
+    p <- p + geom_text(aes(y = x$pos, label = x$percentage), size = 5, show.legend = FALSE)
   }
   
   if(labelX) {
-    p <- p + geom_text(aes(y = x$top, label = x$toplab, size = 8, hjust = -0.25, vjust = -0.5, fontface = 2), show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
+    p <- p + geom_text(aes(y = x$top, label = x$toplab), size = 7, hjust = -0.25, vjust = -0.5, fontface = 2, show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
   }
   
   if(is.null(legend.title)) {
