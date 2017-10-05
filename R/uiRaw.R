@@ -87,9 +87,7 @@ MakeEmploiPanel<- function() {
     h2(textOutput("emploiHeader")),
     fluidRow(
       column(6,plotOutput("niveauEmploi"), includeMarkdown(file.path("markdown", "raw", "niveauEmploi.md"))),
-      column(6,plotOutput("typeEmployeur"), includeMarkdown(file.path("markdown", "raw", "typeEmployeur.md")))
-    ),
-    fluidRow(
+      column(6,plotOutput("typeEmployeur"), includeMarkdown(file.path("markdown", "raw", "typeEmployeur.md"))),
       column(6,plotOutput("statutEmploi")),
       column(6, plotOutput("regionEmploi")),
       column(6,plotOutput("activiteEcoEmployeur"))
@@ -105,11 +103,9 @@ MakeSalairePanel<- function() {
       column(
         6,
         includeMarkdown(file.path("markdown", "raw", "salaire.md")),
-        column(6, tableOutput("salaireParSexe"))
+        tableOutput("salaireParSexe")
       ),
-      fluidRow(
       column(6, plotOutput("salaire"))
-    )
     )
   )
 }

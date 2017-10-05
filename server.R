@@ -269,12 +269,14 @@ MakeSalaireOutput <- function(output, remployes) {
       }
       return(s)
     }
-    rbind(
+    df <- rbind(
       "Femme/Homme"=SummaryWithNAs(remployesTP()$salaireEmploiN30),
       "Femme"=SummaryWithNAs( subset(remployesTP()$salaireEmploiN30, remployesTP()$sexe == "Femme")),
       "Homme"=SummaryWithNAs( subset(remployesTP()$salaireEmploiN30, remployesTP()$sexe == "Homme"))
-      )
-  }, rownames = TRUE, digits = 0, striped = TRUE,  spacing = 'l')
+    )
+    colnames(df) <- c("1er Qu.", "Médiane", "Moyenne", "3ème Qu.", "NA's")
+    df
+  }, rownames = TRUE, digits = 0, striped = TRUE,  spacing = 'l', width = "80%")
     
   output$salaire <- renderPlot( {
     salary <- remployesTP()$salaireEmploiN30
