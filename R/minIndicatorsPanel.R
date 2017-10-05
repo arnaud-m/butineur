@@ -56,17 +56,25 @@ MinIndicatorsUI <- function(id, title, value) {
   tabPanel(
     title = title,
     value = value,
-    h3("Caractéristiques socio-démographiques"),
+    h3("Résultats et caractéristiques socio-démographiques"),
     fluidRow(
-      column(4, plotOutput(ns("diplomes"))),
-      column(4, plotOutput(ns("tauxReponse"))),
-      column(4, plotOutput(ns("pourcentFemmes")))
+      column(3, tableOutput(ns("domaineCodes"))),
+      column(3, plotOutput(ns("tauxReponse"))),
+      column(3, plotOutput(ns("diplomes"))),
+      column(3, plotOutput(ns("pourcentFemmes")))
     ),
     h3("Conditions d'emploi"),
     fluidRow(
       column(6, plotOutput(ns("tauxInsertion"))),
-      column(6, plotOutput(ns("conditionEmploi"))),
-      column(6, plotOutput(ns("salaireMedian"))),
+      column(6, plotOutput(ns("conditionEmploi")))
+      ),
+    h3("Conditions salariales"),
+    fluidRow(
+      column(6, plotOutput(ns("salaireNetMensuel"))),
+      column(6, plotOutput(ns("salaireBrutAnnuel")))
+    ),
+    h3("Mobilité"),
+    fluidRow(
       column(6, plotOutput(ns("tauxMobilite")))
     )
   )
@@ -76,16 +84,27 @@ MinIndicators <- function(input, output, session, data) {
 
   ## Keep only data at N+30 months
   fdata <- FilterSituation(data)
+
+
+  ## ######################
+  ## Tableau des domaines
+  output$domaineCodes <- renderTable({
+    x <- unique(data[, c("Domaine", "Code.du.domaine")])
+    colnames(x) <- c("Domaine", "Code")
+    x <- x[ order(x$Code), ]
+  }, rownames = FALSE, colnames = TRUE, striped = TRUE,  spacing = 'l')
   
   ## ######################
   ## Ensemble des diplômés
   output$diplomes <- renderPlot({
-    ggplot(fdata, aes(x = "", y = Nombre.de.diplômés, fill = Domaine)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol() +  theme_gdocs() + ggtitle("Nombre de diplômés") +
+    ggplot(fdata, aes(x = "", y = Nombre.de.diplômés, fill = Code.du.domaine)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol(name="Domaine") +  theme_gdocs() + ggtitle("Nombre de diplômés") + labs(x = "Domaine") + 
       theme(
         axis.line=element_blank(),
         axis.title.x=element_blank(),
-        axis.title.y=element_blank()
-      )
+        axis.title.y=element_blank(),
+        legend.position="bottom",
+        legend.direction="horizontal") 
+
   })
 
   output$tauxReponse <- renderPlot({
@@ -104,14 +123,19 @@ MinIndicators <- function(input, output, session, data) {
   })
   
   output$conditionEmploi <- renderPlot({
-    BarFacetPlotMin(data, "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi (en %)") 
+    BarFacetPlotMin(data, "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi") 
   })
   
-  output$salaireMedian <- renderPlot({
+  output$salaireNetMensuel <- renderPlot({
     BarDodgedPlotMin(data, aesX = "Code.du.domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
       ggtitle("Progression du salaire net mensuel médian à temps plein", subtitle = sprintf("Le salaire net mensuel médian régional est de %d euros.",data[1, "Salaire.net.mensuel.médian.régional"])) +labs(x = "Domaine", y = "euros") 
   })
-  
+
+    output$salaireBrutAnnuel <- renderPlot({
+    BarDodgedPlotMin(data, aesX = "Code.du.domaine", aesY = "Salaire.brut.annuel.estimé", labelYPercent = FALSE) +
+      ggtitle("Progression de l'estimation du salaire net brut annuel médian à temps plein") +labs(x = "Domaine", y = "euros") 
+  })
+
   output$tauxMobilite <- renderPlot({
     BarPlotMin(fdata, "Code.du.domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(x = "Domaine", y = "% emplois extérieurs à la région de l’université")
   }) 
