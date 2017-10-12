@@ -4,9 +4,12 @@ ReadIP <- function(file) {
   ## Visualization uses mostly columns created by this function.
   ## The survey model and charts model are separated.
   df <- read.csv(file = file, row.names = NULL, na.strings = c("NA", ""))
+
+  ## Remove VAEs
+  df <- subset(df, df$attribute_8_profil_étudiant_BO != "dem VAE")
+
   ##res <- data.frame(matrix(, nrow=nrow(df), ncol=0))
-  ## TODO Add attribute_27_dom_mention_SISE_BO instead attribute_6_diplôme_lib_BO
-  res <- df[,c("annee", "Diplôme", "code_dip")] ## "attribute_5_specialite_SISE_BO", "attribute_6_diplôme_lib_BO", "attribute_25_composante_lib_BO")]
+  res <- df[,c("annee", "Diplôme", "code_dip")] 
   
   colnames(res) <- c("annee", "libdip1", "code_diplome") ##, "libdip3", "libdip2", "composante_lib_BO")
 
