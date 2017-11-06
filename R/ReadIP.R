@@ -195,10 +195,20 @@ ReadIP <- function(file) {
   res$emploiSupIntN18 <- NA
   res$emploiSupIntN18[emploiN18] <- df$q8_2r[emploiN18] <= 4
 
-  ## Salaire de tous les emplois
-  res$salaireEmploiN30 <- as.numeric(df$q6_9)
-  res$salaireEmploiN18 <- as.numeric(df$q8_5)
-
+  ## Salaire mensuel net avec primes
+  ## res$salaireEmploiN18 <- as.numeric(df$q8_5) + as.numeric(df$q8_7)/12
+  ## res$salaireEmploiN30 <- as.numeric(df$q6_9) + as.numeric(df$q6_11)/12
+  GetSalaireEmploi <- function(salaires,primes) {
+    salaires <- as.numeric(salaires)
+    primes <- as.numeric(primes)
+    ## Si le montant des primes n'est pas précisée : on considère qu'il est nul.
+    primes[is.na(primes)] <- 0
+    return(salaires + primes/12)
+  }
+  
+  res$salaireEmploiN18 <- GetSalaireEmploi(df$q8_5, df$q8_7) 
+  res$salaireEmploiN30 <- GetSalaireEmploi(df$q6_9, df$q6_11)
+  
   ## typeEmployeur <- c(
   ##   "vous-même",
   ##   "la fonction publique\n (d'Etat, territoriale ou hospitalière)",

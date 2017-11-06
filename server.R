@@ -281,7 +281,7 @@ MakeSalaireOutput <- function(output, remployes) {
   output$salaire <- renderPlot( {
     salary <- remployesTP()$salaireEmploiN30
     salary <- subset(salary, salary < 10000) 
-    ggplot() + aes(salary) + geom_histogram(binwidth = 250,  fill = ptol_pal()(1)) + ggtitle("Niveau de rémunération (salaire mensuel net hors primes)") +  theme_gdocs() + labs(x="Salaire", y="Effectifs")
+    ggplot() + aes(salary) + geom_histogram(binwidth = 250,  fill = ptol_pal()(1)) + ggtitle("Niveau de rémunération (salaire mensuel net avec primes)") +  theme_gdocs() + labs(x="Salaire", y="Effectifs")
   })
 }
 
