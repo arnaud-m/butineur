@@ -137,7 +137,7 @@ MinIndicators <- function(input, output, session, data) {
   })
 
   output$tauxMobilite <- renderPlot({
-    BarPlotMin(fdata, "Code.du.domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(x = "Domaine", y = "% emplois extérieurs à la région de l’université")
+    BarPlotMin(fdata, "Code.du.domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(x = "Domaine", y = "% emplois extérieurs à la région de l'université")
   }) 
 }
 

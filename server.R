@@ -212,7 +212,7 @@ MakeInsertionOutput <- function(output, rpopulation) {
       geom_bar(position = "dodge", stat = "identity") +
       facet_wrap( ~ grade) + 
       theme_gdocs() + scale_fill_ptol() +
-      ggtitle("Progression des conditions d’emploi (en %)") +
+      ggtitle("Progression des conditions d'emploi (en %)") +
       labs(x="Situation à N+M mois", y="Taux (%)") +
       theme(legend.position="bottom", legend.direction="horizontal") 
       

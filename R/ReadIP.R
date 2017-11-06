@@ -53,7 +53,7 @@ ReadIP <- function(file) {
   ##   c(
   ##     "Deuxième diplôme dans le cas d'un double diplôme",
   ##     "Décédé",
-  ##     "Erreur sur le diplôme :\n diplômé n’ayant pas validé le diplôme",
+  ##     "Erreur sur le diplôme :\n diplômé n'ayant pas validé le diplôme",
   ##     "téléphone",
   ##     "internet",
   ##     "papier",
@@ -77,7 +77,7 @@ ReadIP <- function(file) {
 
   
   ## TODO add parameter
-  ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d’autres critères", "Non"))
+  ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d'autres critères", "Non"))
   res$boursier <- as.factor(df$q2_2)
   levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
   
@@ -95,8 +95,8 @@ ReadIP <- function(file) {
 
   ## situationPro <- c(
   ##   "Vous avez un emploi ",
-  ##   "Vous n’avez pas d’emploi et\n vous recherchez du travail ou\n vous êtes en attente d’un contrat",
-  ##   "Vous n’avez pas d’emploi et\n vous ne cherchez pas de travail"
+  ##   "Vous n'avez pas d'emploi et\n vous recherchez du travail ou\n vous êtes en attente d'un contrat",
+  ##   "Vous n'avez pas d'emploi et\n vous ne cherchez pas de travail"
   ## )
   situationPro <- c(
     "En emploi",
@@ -123,7 +123,7 @@ ReadIP <- function(file) {
   res$insertionN18[ res$situationProN18r %in% c("Ne recherche pas d'emploi","En études") ] <- NA
   
   ## statutEmploi <- c( 
-  ##   "Prof. libérale, indépendant,\n chef d’entreprise, auto-entrepreneur",
+  ##   "Prof. libérale, indépendant,\n chef d'entreprise, auto-entrepreneur",
   ##   "Fonctionnaire\n(y compris fonctionnaire stagiaire ou élève fonctionnaire)",
   ##   "CDI",
   ##   "Contrat spécifique au doctorat\n(contrat doctoral, allocation recherche, CIFRE….)",
@@ -131,14 +131,14 @@ ReadIP <- function(file) {
   ##   "Vacataire",
   ##   "Intérimaire",
   ##   "Intermittent du spectacle, pigiste",
-  ##   "Contrat d’apprentissage",
+  ##   "Contrat d'apprentissage",
   ##   "Contrat de professionnalisation",
   ##   "Emplois aidés (Contrat Initiative Emploi…)",
   ##   "Volontariat international",
   ##   "Service civique")
   
   statutEmploi <- c( 
-    "Prof. libérale, indépendant,\nchef d’entreprise, auto-entrepreneur",
+    "Prof. libérale, indépendant,\nchef d'entreprise, auto-entrepreneur",
     "Fonctionnaire",
     "CDI",
     "Contrat spécifique au doctorat",
@@ -146,7 +146,7 @@ ReadIP <- function(file) {
     "Vacataire",
     "Intérimaire",
     "Intermittent du spectacle, pigiste",
-    "Contrat d’apprentissage",
+    "Contrat d'apprentissage",
     "Contrat de professionnalisation",
     "Emplois aidés",
     "Volontariat international",
@@ -231,7 +231,7 @@ ReadIP <- function(file) {
     "Construction",
     "Commerce, transports, hébergement et restauration",
     "Information et communication",
-    "Activités financières et d’assurance",
+    "Activités financières et d'assurance",
     "Activités spécialisées, scientifiques et techniques",
     "Activités de services administratifs et de soutien",
     "Enseignement",
