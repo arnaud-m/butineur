@@ -69,17 +69,11 @@ function(input, output, session) {
   ## ######################
   ## Page: Brut 
 
-  coreChoices <- MakeCoreChoices(data)
-  MakeCoreSelectionOutput(output, coreChoices)
-
-  rcoreData <- MakeReactiveCoreData(input, data, coreChoices)
-
-  MakeReactiveSelectizeOutput(input, output, rcoreData)
-
+  rdiplomes <- MakeReactiveDiplomes(input, output, data)
+  
   ## #######################
   ## Ensemble des diplômés
-  rdiplomes <- MakeReactiveData(input, rcoreData)
-  
+
   MakeResultatsOutput(output, rdiplomes)
   
   rpopulation <- reactive({

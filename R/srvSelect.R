@@ -1,13 +1,6 @@
-MakeCoreChoices <- function(data) {
-  list(
-    annee=sort(unique(data$annee)),
-    grade=levels(data$libdip1)
-  )
-}
 
 
-
-MakeCoreSelectionOutput <- function(output, choices) {
+MakeCheckboxOutput <- function(output, choices) {
   output$checkboxAnnee <- renderUI( {
     checkboxGroupInput("annee", "Année(s)", choices$annee, choices$annee)
   })
@@ -20,31 +13,36 @@ MakeCoreSelectionOutput <- function(output, choices) {
 
 ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
 ## https://shiny.rstudio.com/articles/action-buttons.html
-MakeReactiveCoreData <- function(input, data, choices) {
+MakeCheckboxReactiveIndices <- function(input, data, choices) {
+  isSelected <- function(column) length(input[[column]]) < length(choices[[column]])
   reactive({
-    logInd <- rep(TRUE, nrow(data))
-    if( length(input$annee) < length(choices$annee) ) {
-      ## Sélection active : certains grades ne sont pas sélectionnés.
-      logInd <- logInd & (data$annee %in% input$annee)
-    } 
-    if( length(input$grade) < length(choices$grade) ) {
-      ## Sélection active : certains grades ne sont pas sélectionnés.
-      logInd <- logInd & (data$libdip1 %in% input$grade)
+    if( isSelected("annee")) {
+      if(isSelected("grade")) {
+        logInd <- (data$annee %in% input$annee) & (data$libdip1 %in% input$grade)
+      } else {
+        logInd <- (data$annee %in% input$annee)
       }
-    subset(data, logInd)
+    } else if(isSelected("grade")) {
+      logInd <- (data$libdip1 %in% input$grade)
+    } else {
+      logInd <- rep(TRUE, nrow(data))
+    }
+    logInd
   })
 }
 
 
-MakeReactiveSelectizeOutput <- function(input, output, coreData) {
+MakeReactiveSelectizeOutput <- function(input, output, data, rindices) {
   output$selectizeDiplome <- renderUI( {
-    data <- coreData()
+    df <- droplevels(data[ rindices(), c("libdom", "libdip2", "libdip3", "code_diplome")])
+    ##df <- data
     diplomes = list(
-      "Domaine"= levels(data$libdom[drop=TRUE]),
-      "Mention" = levels(data$libdip2[drop=TRUE]),
-      "Spécialité" = levels(data$libdip3[drop=TRUE]),
-      "Code SISE" = sort(unique(data$code_diplome))
+      "Domaine"= levels(df$libdom),
+      "Mention" = levels(df$libdip2),
+      "Spécialité" = levels(df$libdip3),
+      "Code SISE" = sort(unique(df$code_diplome))
     )
+    
     selectizeInput(
       'diplome', 'Sélectionner un ou plusieurs domaines, mentions, spécialités ou codes SISE : ',
       diplomes, selected = isolate(input$diplome), multiple = TRUE, 
@@ -58,19 +56,35 @@ MakeReactiveSelectizeOutput <- function(input, output, coreData) {
 
 ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
 ## https://shiny.rstudio.com/articles/action-buttons.html
-MakeReactiveData <- function(input, coreData) {
+MakeReactiveData <- function(input, data, rindices) {
   reactive({
-    data <- coreData()
-    logInd <- rep(TRUE, nrow(data))
+    data <- subset(data, rindices())
+    GetDiplomaIndices <- function() data$libdom %in% input$diplome | data$libdip2 %in% input$diplome | data$libdip3 %in% input$diplome | data$code_diplome %in% input$diplome
+    GetSexeIndices <- function() data$sexe %in% input$sexe
     if( length(input$sexe) < 2) {
-      ## Sélection active : un seul genre est sélectionné.
-      logInd <- logInd & (data$sexe %in% input$sexe)
+      ## Sélection d'un sous-ensemble de genres.
+      if(!is.null(input$diplome) ) {
+        ## Sélection d'un sous-ensemble de diplômes.
+        data <- subset(data, GetSexeIndices() & GetDiplomaIndices())
+      } else {
+        data <- subset(data, GetSexeIndices())
+      }
+    } else if(!is.null(input$diplome) ) {
+      ## Sélection d'un sous-ensemble de diplômes seulement.
+      data <- subset(data, GetDiplomaIndices())
     }
-    
-    if(! is.null(input$diplome) ) {
-      ## Sélection active : un sous-ensemble de diplômes est sélectionné.
-      logInd <- logInd & (data$libdom %in% input$diplome | data$libdip2 %in% input$diplome | data$libdip3 %in% input$diplome | data$code_diplome %in% input$diplome)
-    }
-    subset(data, logInd)
+    data
   })
+}
+
+
+MakeReactiveDiplomes <- function(input, output, data) {
+  choices <- list(
+    annee=sort(unique(data$annee)),
+    grade=levels(data$libdip1)
+  )
+  MakeCheckboxOutput(output, choices)
+  rindices <- MakeCheckboxReactiveIndices(input, data, choices)
+  MakeReactiveSelectizeOutput(input, output, data, rindices)
+  MakeReactiveData(input, data, rindices)
 }
