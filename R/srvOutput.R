@@ -195,11 +195,11 @@ MakeCloudOutput <- function(output, remployes) {
   wordcloud_rep <- repeatable(wordcloud)
   output$nuageEmploi <- renderPlot({
     v <- withProgress({
-        setProgress(message = "Processing corpus...")
-        getTermMatrix(as.character(remployes()$intituleEmploi))
+      setProgress(message = "Processing corpus...")
+      getTermMatrix(as.character(remployes()$intituleEmploi))
     })
-    wordcloud_rep(names(v), v, scale=c(3.5,0.5),
-                  min.freq = 3, max.words=100,
+    wordcloud_rep(names(v), v, scale=c(3.5,0.75), ##rot.per = 0.15,
+                  min.freq = 3, max.words=80,
                   colors=brewer.pal(8, "Dark2"))
   })  
 }
