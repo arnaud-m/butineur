@@ -52,9 +52,9 @@ BarPlotRaw <- function(x, threshold = 1, digits = 0) {
 ##' @references \url{http://stackoverflow.com/questions/21236229/stacked-bar-chart}
 ##' @author Arnaud Malapert
 BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE, labelF = TRUE) {
-  x <- as.data.frame(ftable(df[ , c(aesX, aesF), drop=TRUE], exclude= NaN))
+  x <- as.data.frame(ftable(droplevels(df[ , c(aesX, aesF)]), exclude= NaN))
   totFreq <- sum(x$Freq)
-  ## Percentage labels
+  ## Compute the percentage labels
   x$percentage <- 100 * x$Freq / totFreq
   x$percentage <-  GetPercentLabels(x$percentage, threshold = 3, digits = 0)
   x <- ddply(x, aesX, transform, pos = sum(Freq)-cumsum(Freq) + (0.5 * Freq), top = cumsum(Freq))
@@ -64,15 +64,16 @@ BarStackedPlotRaw <- function(df, aesX, aesF, legend.title = NULL, labelX = TRUE
   x$toplab[ append(rep(TRUE,m-1), FALSE) ] <- ""
   ## browser()
   p <- ggplot(x, aes_string(x = aesX, y = "Freq", fill = aesF)) + geom_bar(stat="identity") + coord_flip() + theme_gdocs()
-  
+  ## Labels in the bar cells
   if(labelF) {
     p <- p + geom_text(aes(y = x$pos, label = x$percentage), size = 5, show.legend = FALSE)
   }
-  
+  ## Labels of the bar
   if(labelX) {
-    p <- p + geom_text(aes(y = x$top, label = x$toplab), size = 7, hjust = -0.25, vjust = -0.5, fontface = 2, show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
+    vjust <- ifelse( length(levels(x[,aesX])) < 7, -0.5, 0.5)
+    p <- p + geom_text(aes(y = x$top, label = x$toplab), size = 7, hjust = -0.25, vjust = vjust, fontface = 2, show.legend = FALSE) + expand_limits( y = c(0,round(max(x$top)*1.1)))
   }
-  
+  ## Set title and legend
   if(is.null(legend.title)) {
     p <- p + scale_fill_ptol( na.value = "grey80") 
   } else {
