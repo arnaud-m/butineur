@@ -47,7 +47,7 @@ MakeReactiveSelectizeOutput <- function(input, output, coreData) {
     )
     selectizeInput(
       'diplome', 'Sélectionner un ou plusieurs domaines, mentions, spécialités ou codes SISE : ',
-      diplomes, selected = input$diplome, multiple = TRUE, 
+      diplomes, selected = isolate(input$diplome), multiple = TRUE, 
       options = list(
         placeholder = "Taper la sélection ici."
       ), width = "800px"
