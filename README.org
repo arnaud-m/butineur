@@ -55,5 +55,11 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
     - RColorBrewer 1.1+
     - tm 0.7+
 
+** Database
+   Preprocess and anonymize the database (For administrators only).
+#+BEGIN_SRC R :results output silent
+  source(file.path('R','ReadIP.R'))
+  GenerateShinyRawDb()
+#+END_SRC
 
 
