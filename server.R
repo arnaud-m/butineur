@@ -69,7 +69,7 @@ function(input, output, session) {
   ## ######################
   ## Page: Brut 
 
-  rdiplomes <- MakeReactiveDiplomes(input, output, data)
+  rdiplomes <- MakeReactiveDiplomes(session, input, output, data)
   
   ## #######################
   ## Ensemble des diplômés
@@ -113,7 +113,7 @@ function(input, output, session) {
   output$salaireHeader <- renderText(paste0("Distribution des salaires (", sum(remployes()$emploiPleinN30, na.rm=TRUE)," diplomés en emploi à temps plein)"))
   MakeSalaireOutput(output, remployes)
   
-
+  
   
   ## #####################
   ## DEBUG Set active panel

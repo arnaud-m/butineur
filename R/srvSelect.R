@@ -32,8 +32,8 @@ MakeCheckboxReactiveIndices <- function(input, data, choices) {
 }
 
 
-MakeReactiveSelectizeOutput <- function(input, output, data, rindices) {
-  output$selectizeDiplome <- renderUI( {
+MakeReactiveDiplomeChoices <- function(data, rindices) {
+  reactive({
     df <- droplevels(data[ rindices(), c("libdom", "libdip2", "libdip3", "code_diplome")])
     ##df <- data
     diplomes = list(
@@ -42,10 +42,14 @@ MakeReactiveSelectizeOutput <- function(input, output, data, rindices) {
       "Spécialité" = levels(df$libdip3),
       "Code SISE" = sort(unique(df$code_diplome))
     )
-    
+  })
+}
+
+MakeSelectizeOutput <- function(input, output) {
+  output$selectizeDiplome <- renderUI( {    
     selectizeInput(
       'diplome', 'Sélectionner un ou plusieurs domaines, mentions, spécialités ou codes SISE : ',
-      diplomes, selected = isolate(input$diplome), multiple = TRUE, 
+      NULL, multiple = TRUE, 
       options = list(
         placeholder = "Taper la sélection ici."
       ), width = "800px"
@@ -78,13 +82,37 @@ MakeReactiveData <- function(input, data, rindices) {
 }
 
 
-MakeReactiveDiplomes <- function(input, output, data) {
+MakeReactiveDiplomes <- function(session, input, output, data) {
+  ## Choose years and grades
   choices <- list(
     annee=sort(unique(data$annee)),
     grade=levels(data$libdip1)
   )
   MakeCheckboxOutput(output, choices)
   rindices <- MakeCheckboxReactiveIndices(input, data, choices)
-  MakeReactiveSelectizeOutput(input, output, data, rindices)
+
+  ## Selectize Diplomas
+  MakeSelectizeOutput(input, output)
+  ## Reactive diplomas List
+  diplomeChoices <- MakeReactiveDiplomeChoices(data, rindices)
+  ## Default selected diplomas
+  stateInputDiplome <- NULL
+
+  ## Update selectize when the diplomas list has changed
+  observe({
+    if(is.null(isolate(input$diplome))) {
+      updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = stateInputDiplome)
+    } else {
+      updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = isolate(input$diplome))
+    }
+  })
+
+  ## Update the default selected diplomas when restoring a bookmark 
+  onRestored(function(state) {
+    ## update default selected diplomes in the parent env for the observer
+    stateInputDiplome <<- state$input$diplome
+    updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = stateInputDiplome)
+  })
+  ## Make reactive graduates list
   MakeReactiveData(input, data, rindices)
 }
