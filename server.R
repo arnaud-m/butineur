@@ -16,7 +16,6 @@ source(file.path("R", "srvOutput.R"), local = TRUE)
 
 ##########################
 ## Load local data files
-
 ## Raw data
 data <- readRDS(file.path("data", "all-uns-insertion_professionnelle.rda"))
 data$mobiliteEmploi <- data$regionEmploi == "Étranger" | data$regionEmploi == "Hors PACA"
@@ -29,24 +28,10 @@ ReadMinIP <- function(file) {
   return(df)
 }
 
-FilterDomains <- function(dataMin) {
-  df <- aggregate(dataMin$Domaine, by = list(code = dataMin$Code.du.domaine), length)
-  domains <- subset(df$code, df$x == 2)
-  subset(dataMin, grepl("^Ensemble ", dataMin$Discipline) | dataMin$Code.du.domaine %in% domains)
-}
-
-FilterDisciplines <- function(dataMin) {
-  subset(dataMin, !grepl("^Ensemble ", dataMin$Discipline))
-}
-
 
 dataMinM <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-master.csv"))
-dataMinDomM <- FilterDomains(dataMinM)
-## TODO dataMinDiscM <- FilterDisciplines(dataMinM)
 
 dataMinLP <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-lp.csv"))
-dataMinDomLP <- FilterDomains(dataMinLP)
-## TODO dataMinDiscLP <- FilterDisciplines(dataMinLP)
 
 
 
@@ -57,13 +42,13 @@ function(input, output, session) {
 
   ## ######################
   ## Page: Ministere 
-  
+
   callModule(
-    MinIndicators, "licence", dataMinDomLP
+    MinIndicators, "licence", dataMinLP
   )
   
   callModule(
-    MinIndicators, "master", dataMinDomM
+    MinIndicators, "master", dataMinM
   )
 
   ## ######################
