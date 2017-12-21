@@ -6,11 +6,11 @@ FilterSituation <-function(dataMin, after=30) {
   )
 }
 
-MakeReactiveMinData <- function(input, data, rdomaine) {
+MakeReactiveMinData <- function(input, data) {
   reactive({
-    domaine <- rdomaine()
+    domaine <- input$domaine
     GetDomainIndices <- function() {
-      if(is.null(domaine) || nchar(domaine) == 0) {
+      if(is.null(domaine) || nchar(domaine) == 0 || domaine == "Regroupement par domaine") {
         ## All domains
         return(grepl("^Ensemble ", data$Discipline) | data[,"Diplôme"] == "MASTER ENS")
       } else {
@@ -80,7 +80,8 @@ MinIndicatorsUI <- function(id, title, value) {
     value = value,
     h3(textOutput(ns("minHeader"))),
     fluidRow(
-      radioButtons(ns("annee"), "Année : ", choices = c(""), inline=TRUE)
+      column(3, radioButtons(ns("annee"), "Année : ", choices = c(""), inline=TRUE)),
+      column(3, uiOutput(ns("selectizeDomaine")))
     ),
     fluidRow(
       column(3, tableOutput(ns("domaineCodes"))),
@@ -107,8 +108,7 @@ MinIndicatorsUI <- function(id, title, value) {
 
 MinIndicators <- function(input, output, session, data) {
 
-
-
+  ## Radio buttons
   choices <- sort(unique(data$Annee))
   updateRadioButtons(
     session, "annee",
@@ -117,15 +117,32 @@ MinIndicators <- function(input, output, session, data) {
     inline=TRUE
   )
 
-  rdomaine <- reactive({
-    ""
-  })
-  
-  rdata <- MakeReactiveMinData(input, data, rdomaine)
-  ## Keep only data at N+30 months
-  rdata30 <- reactive(FilterSituation(rdata()))
+  ## Selectize
+  domainChoices <- c(
+    "Regroupement par domaine",
+    levels(data$Domaine)[levels(data$Domaine) != "Masters enseignement"]
+  )
 
-  
+  output$selectizeDomaine <- renderUI( {
+    ## Using renderUI within modules
+    ns <- session$ns
+    selectizeInput(
+      ns("domaine"), "Choisir un domaine pour zoomer sur ses disciplines : ",
+      domainChoices, multiple = FALSE, 
+      options = list(
+        placeholder = "Taper la sélection ici."
+      ), width = "350px"
+    )
+  })
+
+  ## Reactive data
+  rdata <- MakeReactiveMinData(input, data)
+  ## Keep only data at N+30 months
+  rdata30 <- reactive({
+    FilterSituation(rdata())
+  })
+
+  ## Header
   output$minHeader <- renderText(paste0("Résultats et caractéristiques socio-démographiques (", sum(rdata30()$Nombre.de.diplômés)," diplômés)"))
   
   ## ######################

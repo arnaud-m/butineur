@@ -8,6 +8,9 @@ library(reshape)
 ## TODO Use interactive charts ?
 ## library(plotly)
 
+## print all inputs
+## print(str(reactiveValuesToList(input)))
+
 ##########################
 ## Source local R files
 source(file.path("R", "barPlotUtil.R"), local = TRUE)

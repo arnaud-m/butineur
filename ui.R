@@ -40,7 +40,7 @@ function(request) {
   theme = "butineur.css",
   MakeAccueilPanel(),
   tabPanel(
-    title = "Données Ministère 2013",
+    title = "Données Ministère",
     value = "minTabPanel",
     tabsetPanel(
       id = "minTabSetPanel",
