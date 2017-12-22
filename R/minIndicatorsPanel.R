@@ -13,14 +13,14 @@ MakeReactiveMinData <- function(input, data) {
       need(input$annee, 'Choisir une année.')
     )
     domaine <- input$domaine
-    domaines <- levels(data$Domaine)
+    domaines <- levels(data$Code.du.domaine)
     if(domaine %in% domaines) {
       ## All disciplines of the given domain
-      domInd <- data$Domaine == domaine
+      domInd <- data$Code.du.domaine == domaine
     } else {
       ## All domains
       ensInd <- grepl("^Ensemble ", data$Discipline)
-      missInd <- data$Domaine %in% setdiff(domaines, data$Domaine[ensInd])
+      missInd <- data$Code.du.domaine %in% setdiff(domaines, data$Code.du.domaine[ensInd])
       domInd <- ensInd | missInd
     }
     droplevels(
@@ -113,7 +113,6 @@ MinIndicatorsUI <- function(id, title, value) {
 
 MinIndicators <- function(input, output, session, data) {
 
-  ## FIXME https://shiny.rstudio.com/articles/bookmarking-modules.html
   ## Radio buttons
   choices <- sort(unique(data$Annee))
   updateRadioButtons(
@@ -122,11 +121,19 @@ MinIndicators <- function(input, output, session, data) {
     selected = max(choices),
     inline=TRUE
   )
-  
+
+
+  ensInd <- grepl("^Ensemble ", data$Discipline)
+  domainChoices <- levels(data$Code.du.domaine[ensInd, drop = TRUE])
+  names(domainChoices) <- levels(data$Domaine[ensInd, drop = TRUE])
   domainChoices <- c(
-    "Regroupement par domaine",
-    levels(data$Domaine[grepl("^Ensemble ", data$Discipline), drop = TRUE])
+    "Regroupement par domaine"="ALL.DOM",
+    domainChoices
   )
+
+  ## bookmarking currently does not seem to support accented characters 
+  ## https://stackoverflow.com/q/47743120
+  ## Workaround : use domain code instead of domain as value
   output$selectizeDomaine <- renderUI( {
     ## Using renderUI within modules
     ns <- session$ns
@@ -141,10 +148,8 @@ MinIndicators <- function(input, output, session, data) {
 
   onRestored(function(state) {
     ##FIXME Two calls ! can validate ?
-    ##FIXME accentuated charcaters not decoded
     print(state$input$domaine)
     print(state$input$annee)
-    browser()
     updateSelectizeInput(session, 'domaine', choices = domainChoices, selected = state$input$domaine)
     updateRadioButtons(
       session, "annee",
@@ -163,9 +168,9 @@ MinIndicators <- function(input, output, session, data) {
   })
 
   isByDomain <- reactive({
-    domaine <- input$domaine
-    is.null(domaine) || nchar(domaine) == 0 || domaine == "Regroupement par domaine"
+    input$domaine == "ALL.DOM"
   })
+  
   rcolBy <- reactive ({
     ifelse(isByDomain(), "Domaine", "Discipline")
   })
