@@ -1,3 +1,4 @@
+##  trace the execution of reactives at runtime
 ## options(shiny.reactlog=TRUE)
 ## Run once when the app is launched
 library(shiny)

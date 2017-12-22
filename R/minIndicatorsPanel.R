@@ -8,20 +8,25 @@ FilterSituation <-function(dataMin, after=30) {
 
 MakeReactiveMinData <- function(input, data) {
   reactive({
+    validate(
+      need(input$domaine, 'Choisir un domaine.'),
+      need(input$annee, 'Choisir une année.')
+    )
     domaine <- input$domaine
-    GetDomainIndices <- function() {
-      if(is.null(domaine) || nchar(domaine) == 0 || domaine == "Regroupement par domaine") {
-        ## All domains
-        return(grepl("^Ensemble ", data$Discipline) | data[,"Diplôme"] == "MASTER ENS")
-      } else {
-        ## All disciplines of the given domain
-        data$Domaine == domaine
-      }
+    domaines <- levels(data$Domaine)
+    if(domaine %in% domaines) {
+      ## All disciplines of the given domain
+      domInd <- data$Domaine == domaine
+    } else {
+      ## All domains
+      ensInd <- grepl("^Ensemble ", data$Discipline)
+      missInd <- data$Domaine %in% setdiff(domaines, data$Domaine[ensInd])
+      domInd <- ensInd | missInd
     }
     droplevels(
       subset(
         data,
-        data$Annee == input$annee & GetDomainIndices()
+        data$Annee == input$annee & domInd
       )
     )
   })
@@ -62,7 +67,7 @@ BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent =
 
 
 BarFacetPlotMin <- function(df, aesFacet) {
-  col.names <- c("Domaine", "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
+  col.names <- c(aesFacet, "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
   col.times <- tail(col.names, -2)
   x <- subset(df, apply(df[,col.times], 1, function(x) !all(is.na(x))))
   x <- reshape(x, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="valeur", timevar="indicateur", times=col.times)
@@ -108,6 +113,7 @@ MinIndicatorsUI <- function(id, title, value) {
 
 MinIndicators <- function(input, output, session, data) {
 
+  ## FIXME https://shiny.rstudio.com/articles/bookmarking-modules.html
   ## Radio buttons
   choices <- sort(unique(data$Annee))
   updateRadioButtons(
@@ -116,13 +122,11 @@ MinIndicators <- function(input, output, session, data) {
     selected = max(choices),
     inline=TRUE
   )
-
-  ## Selectize
+  
   domainChoices <- c(
     "Regroupement par domaine",
-    levels(data$Domaine)[levels(data$Domaine) != "Masters enseignement"]
+    levels(data$Domaine[grepl("^Ensemble ", data$Discipline), drop = TRUE])
   )
-
   output$selectizeDomaine <- renderUI( {
     ## Using renderUI within modules
     ns <- session$ns
@@ -135,30 +139,64 @@ MinIndicators <- function(input, output, session, data) {
     )
   })
 
+  onRestored(function(state) {
+    ##FIXME Two calls ! can validate ?
+    ##FIXME accentuated charcaters not decoded
+    print(state$input$domaine)
+    print(state$input$annee)
+    browser()
+    updateSelectizeInput(session, 'domaine', choices = domainChoices, selected = state$input$domaine)
+    updateRadioButtons(
+      session, "annee",
+      choices = choices,
+      selected = state$input$annee,
+      inline=TRUE
+  )
+  })
+  
   ## Reactive data
   rdata <- MakeReactiveMinData(input, data)
   ## Keep only data at N+30 months
   rdata30 <- reactive({
+    ## print(rdata())
     FilterSituation(rdata())
   })
 
+  isByDomain <- reactive({
+    domaine <- input$domaine
+    is.null(domaine) || nchar(domaine) == 0 || domaine == "Regroupement par domaine"
+  })
+  rcolBy <- reactive ({
+    ifelse(isByDomain(), "Domaine", "Discipline")
+  })
+
+  raesBy <- reactive ({
+    ifelse(isByDomain(), "Code.du.domaine", "Code.de.la.discipline")
+  })
+  
   ## Header
   output$minHeader <- renderText(paste0("Résultats et caractéristiques socio-démographiques (", sum(rdata30()$Nombre.de.diplômés)," diplômés)"))
   
   ## ######################
   ## Tableau des domaines
   output$domaineCodes <- renderTable({
-    x <- unique(rdata30()[, c("Domaine", "Code.du.domaine", "Nombre.de.diplômés")])
-    colnames(x) <- c("Domaine", "Code", "Diplômés")
+    x <- unique(rdata30()[, c(rcolBy(), raesBy(), "Nombre.de.diplômés")])
+    colnames(x) <- c(rcolBy(), "Code", "Diplômés")
     x[ order(x$Code), ]
   }, rownames = FALSE, colnames = TRUE, digits = 0, striped = TRUE,  spacing = 'l')
   
   ## ######################
   ## Ensemble des diplômés
   output$diplomes <- renderPlot({
-    ggplot(rdata30(), aes(x = "", y = Nombre.de.diplômés, fill = Code.du.domaine)) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol(name="Domaine") +  theme_gdocs() + ggtitle("Nombre de diplômés") + labs(x = "Domaine") + 
+    data <- rdata30()
+    if(!isByDomain()) {
+      data <- subset(data, !grepl("^Ensemble ", data$Discipline))
+    }
+    ## browser()
+    ggplot(data, aes_string(x= NA, y = "Nombre.de.diplômés", fill = raesBy())) + geom_bar(stat = "identity") +  coord_polar("y", start=0) + scale_fill_ptol(name=rcolBy()) +  theme_gdocs() + ggtitle("Nombre de diplômés") + labs(x = rcolBy()) + 
       theme(
         axis.line=element_blank(),
+        axis.text.y=element_blank(),
         axis.title.x=element_blank(),
         axis.title.y=element_blank(),
         legend.position="bottom",
@@ -166,36 +204,36 @@ MinIndicators <- function(input, output, session, data) {
   })
 
   output$tauxReponse <- renderPlot({
-    BarPlotMin(rdata30(), "Code.du.domaine", "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(x = "Domaine", y = "Taux de réponse (%)")
+    BarPlotMin(rdata30(), raesBy(), "Taux.de.réponse", labelYPercent = TRUE) + ggtitle("Taux de réponse") + labs(x = rcolBy(), y = "Taux de réponse (%)")
   })
   
   output$pourcentFemmes <- renderPlot({
-    BarPlotMin(rdata30(), "Code.du.domaine", "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(x = "Domaine", y = "Taux de femmes (%)")
+    BarPlotMin(rdata30(), raesBy(), "X..femmes", labelYPercent = TRUE) + ggtitle("Pourcentage de femmes") + labs(x = rcolBy(), y = "Taux de femmes (%)")
   })
 
   ## ######################
   ## Diplômés en emploi
   output$tauxInsertion <- renderPlot({
-    BarDodgedPlotMin(rdata(), aesX = "Code.du.domaine", aesY = "Taux.d.insertion", labelYPercent = TRUE) +
-      ggtitle("Évolution du taux d'insertion des diplômés", subtitle = sprintf("Le taux de chomage régional est de %.1f%%", rdata()[1, "Taux.de.chômage.régional"])) + labs(x = "Domaine", y = "Taux d'insertion (%)")
+    BarDodgedPlotMin(rdata(), aesX = raesBy(), aesY = "Taux.d.insertion", labelYPercent = TRUE) +
+      ggtitle("Évolution du taux d'insertion des diplômés", subtitle = sprintf("Le taux de chomage régional est de %.1f%%", rdata()[1, "Taux.de.chômage.régional"])) + labs(x = rcolBy(), y = "Taux d'insertion (%)")
   })
   
   output$conditionEmploi <- renderPlot({
-    BarFacetPlotMin(rdata(), "Domaine") + ggtitle("Progression des conditions d'emploi des diplômés en emploi") 
+    BarFacetPlotMin(rdata(), rcolBy()) + ggtitle("Progression des conditions d'emploi des diplômés en emploi") 
   })
   
   output$salaireNetMensuel <- renderPlot({
-    BarDodgedPlotMin(rdata(), aesX = "Code.du.domaine", aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
-      ggtitle("Progression du salaire net mensuel médian à temps plein", subtitle = sprintf("Le salaire net mensuel médian régional est de %d euros.",rdata()[1, "Salaire.net.mensuel.médian.régional"])) +labs(x = "Domaine", y = "euros") 
+    BarDodgedPlotMin(rdata(), aesX = raesBy(), aesY = "Salaire.net.médian.des.emplois.à.temps.plein", labelYPercent = FALSE) +
+      ggtitle("Progression du salaire net mensuel médian à temps plein", subtitle = sprintf("Le salaire net mensuel médian régional est de %d euros.",rdata()[1, "Salaire.net.mensuel.médian.régional"])) +labs(x = rcolBy(), y = "euros") 
   })
 
     output$salaireBrutAnnuel <- renderPlot({
-    BarDodgedPlotMin(rdata(), aesX = "Code.du.domaine", aesY = "Salaire.brut.annuel.estimé", labelYPercent = FALSE) +
-      ggtitle("Progression de l'estimation du salaire net brut annuel médian à temps plein") +labs(x = "Domaine", y = "euros") 
+    BarDodgedPlotMin(rdata(), aesX = raesBy(), aesY = "Salaire.brut.annuel.estimé", labelYPercent = FALSE) +
+      ggtitle("Progression de l'estimation du salaire net brut annuel médian à temps plein") +labs(x = rcolBy(), y = "euros") 
   })
 
   output$tauxMobilite <- renderPlot({
-    BarPlotMin(rdata30(), "Code.du.domaine", "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(x = "Domaine", y = "% emplois extérieurs à la région de l'université")
+    BarPlotMin(rdata30(), raesBy(), "X..emplois.extérieurs.à.la.région.de.l.université", labelYPercent = TRUE) + ggtitle("Taux de mobilité") + labs(x = rcolBy(), y = "% emplois extérieurs à la région de l'université")
   }) 
 }
 
