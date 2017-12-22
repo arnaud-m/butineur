@@ -180,7 +180,18 @@ MinIndicators <- function(input, output, session, data) {
   })
   
   ## Header
-  output$minHeader <- renderText(paste0("Résultats et caractéristiques socio-démographiques (", sum(rdata30()$Nombre.de.diplômés)," diplômés)"))
+  ## FIXME twice the good count
+  output$minHeader <- renderText({
+    data <- rdata30()
+    nbDiplomes <- ifelse(
+      isByDomain(),
+      sum(data$Nombre.de.diplômés),
+      ## The row "Ensemble" exists, otherwise the domain could not be selected 
+      data$Nombre.de.diplômés[grepl("^Ensemble ", data$Discipline)]
+    )
+
+    paste0("Résultats et caractéristiques socio-démographiques (", nbDiplomes," diplômés)")
+  })
   
   ## ######################
   ## Tableau des domaines
