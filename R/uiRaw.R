@@ -1,11 +1,19 @@
 require(shiny)
 
 MakeSelectionRow <- function() {
+  ## The creation of a checkbox avoids restoration issue when restoring a bookmark
+  ## Indeed, the call to renderUI is delayed until the UI get the focus. It can happen long after restoration.
   fluidRow(
-    column(1, uiOutput("checkboxAnnee")),
-    column(1, uiOutput("checkboxGrade")),
-    column(6, uiOutput("selectizeDiplome")),
-    column(1, checkboxGroupInput("sexe", "Sexe(s)", c("Femme", "Homme"), c("Femme", "Homme")))
+    column(1, checkboxGroupInput("annee", label = "Années(s)", choices = NULL, selected = NULL)),column(1, checkboxGroupInput("grade", label = "Grade(s)", choices = NULL, selected = NULL)),
+    column(6, selectizeInput(
+                'diplome',
+                label = 'Sélectionner un ou plusieurs domaines, mentions, spécialités ou codes SISE : ', 
+                choices = NULL, selected = NULL, multiple = TRUE, 
+                options = list(
+                  placeholder = "Taper la sélection ici."
+                ), width = "800px")
+           ),
+    column(1, checkboxGroupInput("sexe", label = "Sexe(s)", choices = c("Femme", "Homme"), selected = c("Femme", "Homme")))
   )
 }
 

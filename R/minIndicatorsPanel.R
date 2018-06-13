@@ -12,6 +12,9 @@ MakeReactiveMinData <- function(input, data) {
       need(input$domaine, 'Choisir un domaine.'),
       need(input$annee, 'Choisir une année.')
     )
+    ## print("react min data")
+    ## print(input$domaine)
+    ## print(input$annee)
     domaine <- input$domaine
     domaines <- levels(data$Code.du.domaine)
     if(domaine %in% domaines) {
@@ -86,7 +89,13 @@ MinIndicatorsUI <- function(id, title, value) {
     h3(textOutput(ns("minHeader"))),
     fluidRow(
       column(3, radioButtons(ns("annee"), "Année : ", choices = c(""), inline=TRUE)),
-      column(3, uiOutput(ns("selectizeDomaine")))
+      column(3,  selectizeInput(
+                   ns("domaine"), label = "Choisir un domaine pour zoomer sur ses disciplines : ",
+                   NULL, multiple = FALSE, 
+                   options = list(
+                     placeholder = "Taper la sélection ici."
+                   ), width = "350px")
+             )
     ),
     fluidRow(
       column(3, tableOutput(ns("domaineCodes"))),
@@ -115,15 +124,14 @@ MinIndicators <- function(input, output, session, data) {
 
   ## Radio buttons
   choices <- sort(unique(data$Annee))
-  updateRadioButtons(
-    session, "annee",
-    choices = choices,
-    selected = max(choices),
-    inline=TRUE
-  )
-
-
   ensInd <- grepl("^Ensemble ", data$Discipline)
+  
+  ## ######################
+  ## Bookmarking
+
+  ## bookmarking currently does not seem to support accented characters 
+  ## https://stackoverflow.com/q/47743120
+  ## Workaround : use domain code instead of domain as value
   domainChoices <- levels(data$Code.du.domaine[ensInd, drop = TRUE])
   names(domainChoices) <- levels(data$Domaine[ensInd, drop = TRUE])
   domainChoices <- c(
@@ -131,34 +139,28 @@ MinIndicators <- function(input, output, session, data) {
     domainChoices
   )
 
-  ## bookmarking currently does not seem to support accented characters 
-  ## https://stackoverflow.com/q/47743120
-  ## Workaround : use domain code instead of domain as value
-  output$selectizeDomaine <- renderUI( {
-    ## Using renderUI within modules
-    ns <- session$ns
-    selectizeInput(
-      ns("domaine"), "Choisir un domaine pour zoomer sur ses disciplines : ",
-      domainChoices, multiple = FALSE, 
-      options = list(
-        placeholder = "Taper la sélection ici."
-      ), width = "350px"
-    )
-  })
+  ## The selected choices are set after the session has been restored 
+  stateInputAnnee <- tail(choices, 1)
+  stateInputDomaine <- head(domainChoices, 1)
+  onFlushed(function(){
+    updateSelectizeInput(session, 'domaine',
+                         choices = domainChoices, selected = stateInputDomaine)
+    updateRadioButtons(session, "annee",
+                       choices = choices, selected = stateInputAnnee, inline=TRUE)
+  }, once = TRUE)
 
+  ## Session is restored
   onRestored(function(state) {
-    ##FIXME Two calls ! can validate ?
-    print(state$input$domaine)
-    print(state$input$annee)
-    updateSelectizeInput(session, 'domaine', choices = domainChoices, selected = state$input$domaine)
-    updateRadioButtons(
-      session, "annee",
-      choices = choices,
-      selected = state$input$annee,
-      inline=TRUE
-  )
+    ## Will update selectize
+    if(!is.null(state$input$domaine)) {
+      stateInputDomaine <<- state$input$domaine
+    }
+    ## Will update radio button
+    if(!is.null(state$input$annee)) {
+      stateInputAnnee <<- state$input$annee
+    }
   })
-  
+  ## ######################
   ## Reactive data
   rdata <- MakeReactiveMinData(input, data)
   ## Keep only data at N+30 months
@@ -180,7 +182,6 @@ MinIndicators <- function(input, output, session, data) {
   })
   
   ## Header
-  ## FIXME twice the good count
   output$minHeader <- renderText({
     data <- rdata30()
     nbDiplomes <- ifelse(

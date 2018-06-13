@@ -64,7 +64,7 @@ function(request) {
       MakeCloudPanel()
     )
   ),
-  footer = tags$footer(HTML("&copy; 2017 Université Nice Sophia Antipolis")),
+  footer = tags$footer(HTML("&copy; 2018 Université Nice Sophia Antipolis")),
   inputs = bookmarkButton(class = "btn-primary")
 )
 }

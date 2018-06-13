@@ -1,21 +1,18 @@
 
 
-MakeCheckboxOutput <- function(output, choices) {
-  output$checkboxAnnee <- renderUI( {
-    checkboxGroupInput("annee", "Année(s)", choices$annee, choices$annee)
-  })
-  
-  output$checkboxGrade <- renderUI( {
-    checkboxGroupInput("grade", "Grade(s)", choices$grade, choices$grade)
-  })
-}
-
 
 ## https://stackoverflow.com/questions/38653903/r-shiny-repetitive-evaluation-of-the-reactive-expression
 ## https://shiny.rstudio.com/articles/action-buttons.html
 MakeCheckboxReactiveIndices <- function(input, data, choices) {
   isSelected <- function(column) length(input[[column]]) < length(choices[[column]])
   reactive({
+    validate(
+      need(input$annee, 'Choisir une ou plusieurs années.'),
+      need(input$grade, 'Choisir un ou plusieurs grades.')
+    )
+    ## print("update indices")
+    ## print(input$grade)
+    ## print(input$annee)
     if( isSelected("annee")) {
       if(isSelected("grade")) {
         logInd <- (data$annee %in% input$annee) & (data$libdip1 %in% input$grade)
@@ -34,8 +31,9 @@ MakeCheckboxReactiveIndices <- function(input, data, choices) {
 
 MakeReactiveDiplomeChoices <- function(data, rindices) {
   reactive({
+    #print("update diplomas")
     df <- droplevels(data[ rindices(), c("libdom", "libdip2", "libdip3", "code_diplome")])
-    ##df <- data
+    ## df <- data
     diplomes = list(
       "Domaine"= levels(df$libdom),
       "Mention" = levels(df$libdip2),
@@ -88,30 +86,50 @@ MakeReactiveDiplomes <- function(session, input, output, data) {
     annee=sort(unique(data$annee)),
     grade=levels(data$libdip1)
   )
-  MakeCheckboxOutput(output, choices)
+
+  ## TODO Avoid loading default when restoring
+  updateCheckboxGroupInput(session, 'annee', choices = choices$annee, selected = choices$annee)
+  updateCheckboxGroupInput(session, 'grade', choices = choices$grade, selected = choices$grade)
+ 
+
   rindices <- MakeCheckboxReactiveIndices(input, data, choices)
 
   ## Selectize Diplomas
-  MakeSelectizeOutput(input, output)
+  ## MakeSelectizeOutput(input, output)
   ## Reactive diplomas List
   diplomeChoices <- MakeReactiveDiplomeChoices(data, rindices)
   ## Default selected diplomas
   stateInputDiplome <- NULL
-
+  ## stateInputGrade <- NULL
+  ## stateInputAnnee <- NULL
+  
   ## Update selectize when the diplomas list has changed
   observe({
+    #print("observer")
+    #print(input$diplome)
+    #print(stateInputDiplome)
+    #updateCheckboxGroupInput(session, 'grade', choices = choices$grade, selected = "Master")
+    #print(input$grade)
     if(is.null(isolate(input$diplome))) {
       updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = stateInputDiplome)
+      ## Restore the state only once
+      ## stateInputDiplome <<- NULL
     } else {
       updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = isolate(input$diplome))
     }
   })
-
+  
   ## Update the default selected diplomas when restoring a bookmark 
   onRestored(function(state) {
+    #print("onRestored")
     ## update default selected diplomes in the parent env for the observer
     stateInputDiplome <<- state$input$diplome
-    updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = stateInputDiplome)
+    ## These two checkboxes are not restored whereas the 'sexe' one is.
+    #print(input$grade)
+    updateCheckboxGroupInput(session, 'grade', choices = choices$grade, selected = state$input$grade)
+    updateCheckboxGroupInput(session, 'annee', choices = choices$annee, selected = state$input$annee)
+    ## Selectize will be updated by the observer
+    ## updateSelectizeInput(session, 'diplome', choices = diplomeChoices(), selected = stateInputDiplome)
   })
   ## Make reactive graduates list
   MakeReactiveData(input, data, rindices)
