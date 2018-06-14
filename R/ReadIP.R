@@ -23,8 +23,8 @@ ReadIP <- function(file) {
   }
 
   ColToFactor("attribute_10_sexe_BO", "sexe", c("Femme", "Homme"), c("F", "M"))
-  ## Detailed classification
 
+  ## Detailed classification
   bacs <- read.csv(file = file.path("data", "baccalaureats.csv"), na.strings = c("NA", "N/A", ""))
   bacs <- aggregate(bacs$bac, by = list(bacs$categorie), paste)
   x <- bacs[,2]
@@ -76,7 +76,7 @@ ReadIP <- function(file) {
    )
 
   
-  ## TODO add parameter
+ 
   ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d'autres critères", "Non"))
   res$boursier <- as.factor(df$q2_2)
   levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
@@ -247,8 +247,30 @@ ReadIP <- function(file) {
   return(res)
 }
 
-GenerateShinyRawDb <- function( file = file.path("data", "raw_data.csv")) {
-  data <- ReadIP(file.path("data", "raw_data.csv"))
-  ## write.csv(data, file.path("data", "all-uns-insertion_professionnelle.csv"), row.names=FALSE)
+GenerateShinyRawDb <- function( filename = file.path("data", "raw_data.csv")) {
+  data <- ReadIP(filename)
   saveRDS(data, file.path("data", "all-uns-insertion_professionnelle.rda"))
 }
+
+ReadMIN <- function(filename) {
+   df <-  df <- read.table(file = filename, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
+   df$Nombre.de.diplômés <- round(df$Nombre.de.réponses * 100 /  df$Taux.de.réponse)
+   df[,"Abbrev.de.la.discipline"] <- factor(
+     df[, "Code.de.la.discipline"],
+     levels =  c("disc01", "disc02", "disc03", "disc04", "disc05",
+                 "disc06", "disc07", "disc08", "disc09", "disc10",
+                 "disc11", "disc12", "disc13", "disc14", "disc15",
+                 "disc16", "disc17", "disc18", "disc19", "disc20"),
+     labels =   c("Ens. DEG", "Droit", "Éco", "Gestion", "Autres DEG",
+                  "LLA", "Ens. SHS", "Histoire Géo", "Psycho", "Info. Com.",
+                  "Autres SHS", "Ens. STS", "SVT", "Sc. Fonda", "Sc. Ing.",
+                  "Info", "Autres STS", "MENS", "MENS 1", "MENS 2")
+   )
+   return(df)
+}
+
+GenerateShinyMinDb <- function(filename) {
+  data <- ReadMIN(filename)
+  saveRDS(data, sub(".[^.]*$", ".rda", filename))
+}
+

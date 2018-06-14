@@ -178,7 +178,7 @@ MinIndicators <- function(input, output, session, data) {
   })
 
   raesBy <- reactive ({
-    ifelse(isByDomain(), "Code.du.domaine", "Code.de.la.discipline")
+    ifelse(isByDomain(), "Code.du.domaine", "Abbrev.de.la.discipline")
   })
   
   ## Header

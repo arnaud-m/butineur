@@ -24,19 +24,8 @@ source(file.path("R", "srvOutput.R"), local = TRUE)
 data <- readRDS(file.path("data", "all-uns-insertion_professionnelle.rda"))
 data$mobiliteEmploi <- data$regionEmploi == "Étranger" | data$regionEmploi == "Hors PACA"
 
-
-## Min. data
-ReadMinIP <- function(file) {
-  df <- read.table(file = file, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
-  df$Nombre.de.diplômés <- round(df$Nombre.de.réponses * 100 /  df$Taux.de.réponse)
-  return(df)
-}
-
-
-dataMinM <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-master.csv"))
-
-dataMinLP <- ReadMinIP(file = file.path("data", "fr-esr-insertion_professionnelle-lp.csv"))
-
+dataMinM <-  readRDS(file.path("data", "fr-esr-insertion_professionnelle-master.rda"))
+dataMinLP <- readRDS(file.path("data", "fr-esr-insertion_professionnelle-lp.rda"))
 
 
 ########################
