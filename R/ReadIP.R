@@ -40,7 +40,7 @@ ReadIP <- function(file) {
     z <- factor(y[x], levels = 1:4, labels = c("Alpes-Maritimes", "PACA hors\nAlpes-Maritimes", "Hors PACA", "Étranger"))
   }
   res$regionEmploi <- GetRegion(df$q6_14a)
-
+  res$mobiliteEmploi <- res$regionEmploi == "Étranger" | res$regionEmploi == "Hors PACA"
   ##res$regionBac <- GetRegion(df$region_bac)
   res$regionBac <- df$region_obtention_bac
   

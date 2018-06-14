@@ -19,14 +19,10 @@ source(file.path("R", "srvSelect.R"), local = TRUE)
 source(file.path("R", "srvOutput.R"), local = TRUE)
 
 ##########################
-## Load local data files
-## Raw data
+## Load local data files (rda)
 data <- readRDS(file.path("data", "all-uns-insertion_professionnelle.rda"))
-data$mobiliteEmploi <- data$regionEmploi == "Étranger" | data$regionEmploi == "Hors PACA"
-
 dataMinM <-  readRDS(file.path("data", "fr-esr-insertion_professionnelle-master.rda"))
 dataMinLP <- readRDS(file.path("data", "fr-esr-insertion_professionnelle-lp.rda"))
-
 
 ########################
 ## Define server logic 
