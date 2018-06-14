@@ -101,14 +101,12 @@ MakeInsertionOutput <- function(output, rpopulation) {
     indicateurs <- c("emploiStable", "emploiPlein", "emploiSupInt")
     labels <- c("emploi stable", "emploi à temps plein", "emploi cadre ou prof. interm.")
     y <- aggregate( 100*x[,c(paste0(indicateurs, "N18"), paste0(indicateurs, "N30"))], by = list(grade = x$libdip1), mean, na.rm=TRUE)
-    ## print(y)
     colnames(y) <- c("grade", labels, labels)
     
     z <- rbind(
       cbind(date = "N+18", melt(y[,1:4], "grade")),
       cbind(date = "N+30", melt(y[,c(1,5:7)], "grade"))
     )
-    ## print(z)
     ggplot(z, aes(x = date, y = value, fill = variable)) + 
       geom_bar(position = "dodge", stat = "identity") +
       facet_wrap( ~ grade) + 
