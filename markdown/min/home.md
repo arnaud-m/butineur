@@ -1,10 +1,10 @@
 
 
-## Insertion professionnelle des diplômés de l'UNS (2013) ##
+## Insertion professionnelle des diplômés de l'UNS (2010-2014) ##
 
 Les résultats présentés sont issus de la sixième enquête nationale sur l'insertion professionnelle des diplômés de l'université.
 Elle a pour objet d'évaluer la situation professionnelle, 18 mois puis 30 mois après l'obtention du diplôme, des diplômés français issus de la formation initiale, n'ayant pas poursuivi ou repris d'études dans les deux années suivant l'obtention de leur diplôme.
-Résultats de l'enquête sur les diplômé.e.s 2013 : enquête réalisée entre décembre 2015 et avril 2016
+Résultats de l'enquête sur les diplômé.e.s de 2010 à 2014 :
  * de licence professionnelle,
  * de master.
 
@@ -24,7 +24,7 @@ Deux indicateurs complémentaires sont proposés :
 * le taux de mobilité (pourcentage des emplois extérieurs à la région de l'université d'origine, y compris à l'étranger), la part des emplois de niveau cadre (seulement).
 
 Ils sont accompagnés de quatre éléments de contexte socio-économique :
-* le pourcentage de femmes (indicateur structurel), le pourcentage de diplômés boursiers de l'université (source : enquête insertion, diplômés de master), le taux de chômage régional (source : INSEE, 4ème trimestre 2015), le salaire net mensuel médian régional des jeunes âgés de 25 à 29 ans employés à temps plein dans les catégories cadres ou professions intermédiaires (source : INSEE DADS 2013).
+* le pourcentage de femmes (indicateur structurel), le pourcentage de diplômés boursiers de l'université (source : enquête insertion, diplômés de master), le taux de chômage régional (source : INSEE), le salaire net mensuel médian régional des jeunes âgés de 25 à 29 ans employés à temps plein dans les catégories cadres ou professions intermédiaires (source : INSEE).
 
 
 ### Ressources ###
