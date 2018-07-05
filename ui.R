@@ -50,7 +50,7 @@ function(request) {
     )
   ),
   tabPanel(
-    title = "Données UNS 2014",
+    title = "Données UNS",
     value = "rawTabPanel",
     MakeSelectionRow(),
     tabsetPanel(
