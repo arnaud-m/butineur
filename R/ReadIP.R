@@ -49,7 +49,7 @@ ReadIP <- function(file) {
   ## ##res$regionBac <- GetRegion(df$region_bac)
   ## FIXME bad format
   ## res$regionBac <- GetRegion(df[ ,"X.attribute_32..dpt.obtention.bac_code_BO."])
-  res$regionBac <- "FIXME"
+  res$regionBac <- GetRegion(df[ ,"DPTobtentionBAC"])
   res$repondant <- df$Eq.statut_reponse %in% 4:6
 
 

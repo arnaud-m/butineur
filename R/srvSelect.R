@@ -89,7 +89,7 @@ MakeReactiveDiplomes <- function(session, input, output, data) {
   })
 
   onFlushed(function() {
-    updateCheckboxGroupInput(session, 'annee', choices = choices$annee, selected = stateInputAnnee)
+    updateCheckboxGroupInput(session, 'annee', choices = choices$annee, selected = stateInputAnnee, inline = TRUE)
     updateCheckboxGroupInput(session, 'grade', choices = choices$grade, selected = stateInputGrade)
     updateSelectizeInput(session, 'diplome', choices = stateInputDiplome, selected = stateInputDiplome)
   }, once = TRUE)
