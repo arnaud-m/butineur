@@ -2,7 +2,7 @@
 FilterSituation <-function(dataMin, after=30) {
   subset(
     dataMin,
-    dataMin$situation == paste0(after, " mois après le diplôme")
+    dataMin$situation == paste("À", after, "mois")
   )
 }
 

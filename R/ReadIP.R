@@ -1,12 +1,10 @@
 ReadIP <- function(file) {
   ## Read the IP database and preprocess the data.
   ## Columns must be given as MNESR codes.
-  ## Visualization uses mostly columns created by this function.
-  ## The survey model and charts model are separated.
+  ## Visualization only uses columns created by this function.
   df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""))
 
-  ## FIXME Remove VAEs
-  df <- subset(df, df[,"attribute_8..profil.étudiant_BO."] != "dem VAE")
+  df <- subset(df, df[ ,"profil_etudiant_BO"] != "dem VAE")
 
   ##res <- data.frame(matrix(, nrow=nrow(df), ncol=0))
   res <- df[,c("Année", "Diplôme", "code_diplome")] 
@@ -26,16 +24,14 @@ ReadIP <- function(file) {
     res[,toCol] <<- factor(df[, fromCol], levels = levels, labels = labels)
   }
 
-  ## ColToFactor("attribute_10_sexe_BO", "sexe", c("Femme", "Homme"), c("F", "M"))
-  res$sexe <- df$Sexe.BO
+  res$sexe <- df$Sexe_BO
   ## Detailed classification
   bacs <- read.csv(file = file.path("data", "baccalaureats.csv"), na.strings = c("NA", "N/A", ""))
   bacs <- aggregate(bacs$bac, by = list(bacs$categorie), paste)
   x <- bacs[,2]
   names(x) <- bacs[,1]
   bacs <- x
-  ##FIXME bad format
-  res$serieBac <- df[, "X.attribute_34..code.bac_BO."]
+  res$serieBac <- df[, "code_bac_BO"]
   levels(res$serieBac) <- bacs
   
   GetRegion <- function(x) {
@@ -49,8 +45,8 @@ ReadIP <- function(file) {
   ## ##res$regionBac <- GetRegion(df$region_bac)
   ## FIXME bad format
   ## res$regionBac <- GetRegion(df[ ,"X.attribute_32..dpt.obtention.bac_code_BO."])
-  res$regionBac <- GetRegion(df[ ,"DPTobtentionBAC"])
-  res$repondant <- df$Eq.statut_reponse %in% 4:6
+  res$regionBac <- df$COD_region_obtention_bac ## GetRegion(df[ ,"DPTobtentionBAC"])
+  res$repondant <- df$Eq_statut_reponse %in% 4:6
 
 
   
@@ -68,7 +64,7 @@ ReadIP <- function(file) {
   ##   )
   ## )
    ColToFactor(
-    "Eq.statut_reponse", "statutReponse",
+    "Eq_statut_reponse", "statutReponse",
     c(
       "Deuxième diplôme\n(double diplôme)",
       "Décédé",
@@ -84,7 +80,7 @@ ReadIP <- function(file) {
   
  
   ## ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d'autres critères", "Non"))
-  res$boursier <- as.factor(df$Eq.q2_2)
+  res$boursier <- as.factor(df$Eq_q2_2)
   levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
   
   poursuiteEtude <- c(
@@ -93,11 +89,11 @@ ReadIP <- function(file) {
     "Non"
   )
   
-  ColToFactor("Eq.q3_1_1", "etudeN6", poursuiteEtude)
-  ColToFactor("Eq.q3_1_2", "etudeN18", poursuiteEtude)
-  ColToFactor("Eq.q4_1", "etudeN30", poursuiteEtude)
+  ColToFactor("Eq_q3_1_1", "etudeN6", poursuiteEtude)
+  ColToFactor("Eq_q3_1_2", "etudeN18", poursuiteEtude)
+  ColToFactor("Eq_q4_1", "etudeN30", poursuiteEtude)
   ## poursuivent des études dans les deux ans.
-  res$poursuiteEtude <- (df$Eq.q3_1_1 != 3) | (df$Eq.q3_1_2 != 3)
+  res$poursuiteEtude <- (df$Eq_q3_1_1 != 3) | (df$Eq_q3_1_2 != 3)
 
   ## ## situationPro <- c(
   ## ##   "Vous avez un emploi ",
@@ -109,18 +105,18 @@ ReadIP <- function(file) {
     "En recherche d'emploi",
     "Ne recherche pas d'emploi"
   )
-  ColToFactor("Eq.q4_3r", "situationProN30", situationPro)
-  ColToFactor("Eq.q7_1", "situationProN18", situationPro)
+  ColToFactor("Eq_q4_3r", "situationProN30", situationPro)
+  ColToFactor("Eq_q7_1", "situationProN18", situationPro)
 
-  ColToFactor("Eq.q4_3r", "situationProN30r", c(situationPro, "En études"))
-  res$situationProN30r[ df$Eq.q4_1 != 3 & df$eq.q4_2r == 1 & df$Eq.COD.q6_5 != 10 ] <- "En études"
-  res$situationProN30r[ df$Eq.q4_1 != 3 & df$Eq.q4_3 == 1 & df$Eq.COD.q6_5 == 9 ] <- "En études"
-  res$situationProN30r[ df$Eq.q4_1 != 3 & df$Eq.q4_3 == 1 & df$Eq.COD.q6_5 == 10 ] <- "En emploi"
+  ColToFactor("Eq_q4_3r", "situationProN30r", c(situationPro, "En études"))
+  res$situationProN30r[ df$Eq_q4_1 != 3 & df$q4_2r == 1 & df$Eq_COD_q6_5 != 10 ] <- "En études"
+  res$situationProN30r[ df$Eq_q4_1 != 3 & df$Eq_q4_3 == 1 & df$Eq_COD_q6_5 == 9 ] <- "En études"
+  res$situationProN30r[ df$Eq_q4_1 != 3 & df$Eq_q4_3 == 1 & df$Eq_COD_q6_5 == 10 ] <- "En emploi"
 
-  ColToFactor("Eq.q7_1", "situationProN18r", c(situationPro, "En études"))
+  ColToFactor("Eq_q7_1", "situationProN18r", c(situationPro, "En études"))
   ## ## Pas de question sur l'activite principale à N+18
-  res$situationProN18r[ df$Eq.q3_1_2 != 3 & df$Eq.q7_1 == 1 & df$Eq.q8_1 == 9 ] <- "En études"
-  res$situationProN18r[ df$Eq.q3_1_2 != 3 & df$Eq.q7_1 == 1 & df$Eq.q8_1 == 10 ] <- "En emploi"
+  res$situationProN18r[ df$Eq_q3_1_2 != 3 & df$Eq_q7_1 == 1 & df$Eq_q8_1 == 9 ] <- "En études"
+  res$situationProN18r[ df$Eq_q3_1_2 != 3 & df$Eq_q7_1 == 1 & df$Eq_q8_1 == 10 ] <- "En emploi"
 
   res$insertionN30 <- res$situationProN30r == "En emploi"
   res$insertionN30[ res$situationProN30r %in% c("Ne recherche pas d'emploi","En études") ] <- NA
@@ -158,8 +154,8 @@ ReadIP <- function(file) {
     "Volontariat international",
     "Service civique")
 
-  ColToFactor("Eq.COD.q6_5", "statutEmploiN30", statutEmploi)
-  ColToFactor("Eq.q8_1", "statutEmploiN18", statutEmploi)
+  ColToFactor("Eq_COD_q6_5", "statutEmploiN30", statutEmploi)
+  ColToFactor("Eq_q8_1", "statutEmploiN18", statutEmploi)
 
   ## ## Diplômés en emploi
   emploiN30 <- res$insertionN30 %in% TRUE
@@ -167,14 +163,14 @@ ReadIP <- function(file) {
   
   ## ## L'emploi stable correspond à la part des diplômés en emploi sous contrat de CDI, sous statut de la Fonction publique ou en qualité de travailleur indépendant.
   res$emploiStableN30 <- NA
-  res$emploiStableN30[emploiN30] <- df$Eq.COD.q6_5[emploiN30] <= 3
+  res$emploiStableN30[emploiN30] <- df$Eq_COD_q6_5[emploiN30] <= 3
   res$emploiStableN18 <- NA
-  res$emploiStableN18[emploiN18] <- df$Eq.q8_1[emploiN18] <= 3 
+  res$emploiStableN18[emploiN18] <- df$Eq_q8_1[emploiN18] <= 3 
 
   res$emploiPleinN30 <- NA
-  res$emploiPleinN30[emploiN30] <- df$Eq.q6_7[emploiN30] == 1
+  res$emploiPleinN30[emploiN30] <- df$Eq_q6_7[emploiN30] == 1
   res$emploiPleinN18 <- NA
-  res$emploiPleinN18[emploiN18] <- df$Eq.q8_3[emploiN18] == 1
+  res$emploiPleinN18[emploiN18] <- df$Eq_q8_3[emploiN18] == 1
 
 
   ## ## niveauEmploi <- c(
@@ -189,17 +185,17 @@ ReadIP <- function(file) {
   ## ## ColToFactor("q8_2r", "niveauEmploiN18", niveauEmploi)
   ## ## ColToFactor("q6_6r", "niveauEmploiN30", niveauEmploi)
 
-  res$niveauEmploiN18 <- factor(df$Eq.q8_2)
+  res$niveauEmploiN18 <- factor(df$Eq_q8_2)
   levels(res$niveauEmploiN18) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
 
-  res$niveauEmploiN30 <- factor(df$Eq.q6_6) 
+  res$niveauEmploiN30 <- factor(df$Eq_q6_6) 
   levels(res$niveauEmploiN30) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
   
   ## ## https://fr.wikipedia.org/wiki/Professions_et_cat%C3%A9gories_socioprofessionnelles_en_France
   res$emploiSupIntN30 <- NA
-  res$emploiSupIntN30[emploiN30] <- df$Eq.q6_6[emploiN30] <= 4
+  res$emploiSupIntN30[emploiN30] <- df$Eq_q6_6[emploiN30] <= 4
   res$emploiSupIntN18 <- NA
-  res$emploiSupIntN18[emploiN18] <- df$Eq.q8_2[emploiN18] <= 4
+  res$emploiSupIntN18[emploiN18] <- df$Eq_q8_2[emploiN18] <= 4
 
   ## ## Salaire mensuel net avec primes
   GetSalaireEmploi <- function(salaires,primes) {
@@ -211,7 +207,7 @@ ReadIP <- function(file) {
   }
   
   res$salaireEmploiN18 <- GetSalaireEmploi(df$q8_5, df$q8_7) 
-  res$salaireEmploiN30 <- GetSalaireEmploi(df$q6_9, df$q6_11)
+  res$salaireEmploiN30 <- GetSalaireEmploi(df$q6_9, df$q6_11r)
   
   ## ## typeEmployeur <- c(
   ## ##   "vous-même",
@@ -225,7 +221,7 @@ ReadIP <- function(file) {
   ## ## ColToFactor("q6_12", "typeEmployeur", typeEmployeur)
 
   ## ## Employeurs privés : cette catégorie regroupe les entreprises (privées et publiques), les indépendant.e.s et les professions libérales 
-  res$typeEmployeur <- factor(df$Eq.COD.q6_12)
+  res$typeEmployeur <- factor(df$Eq_COD_q6_12)
   levels(res$typeEmployeur) <- list('Employeurs privés'=c(1,3,4,6,7), 'Fonction Publique'=2, 'Associations'=5)
 
 
@@ -244,16 +240,16 @@ ReadIP <- function(file) {
     "Arts, spectacles et activités récréatives",
     "Autres activités de service"
   )
-  ColToFactor("Eq.q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
+  ColToFactor("Eq_q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
 
   res$intituleEmploi <- as.character(df$q6_4)
   
   return(res)
 }
 
-GenerateShinyRawDb <- function( filename = file.path("data", "raw_data.csv")) {
-  data <- ReadIP(filename)
-  saveRDS(data, file.path("data", "all-uns-insertion_professionnelle.rda"))
+GenerateShinyRawDb <- function( infile = file.path("data", "raw_data.csv"), outfile = file.path("data", "all-uns-insertion_professionnelle.rda")) {
+  data <- ReadIP(infile)
+  saveRDS(data, outfile)
 }
 
 ReadMIN <- function(filename) {
@@ -271,6 +267,7 @@ ReadMIN <- function(filename) {
                   "Autres SHS", "Ens. STS", "SVT", "Sc. Fonda", "Sc. Ing.",
                   "Info", "Autres STS", "MENS", "MENS 1", "MENS 2")
    )
+  df$situation <- factor(df$situation, levels = levels(df$situation), labels = c("À 18 mois", "À 30 mois"))
    return(df)
 }
 
