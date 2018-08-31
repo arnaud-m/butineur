@@ -43,8 +43,16 @@ GetPercentLabels <- function(x, threshold = 1, digits = 0) {
   return(r)
 }
 
-BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
+FilterNAs <- function(df, aesY) {
   df <- subset(df, !is.na( df[, aesY]))
+  validate(
+    need(nrow(df) > 0, 'Données manquantes.')
+  )
+  return(df)
+}
+
+BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
+  df <-FilterNAs(df, aesY)
   p <- ggplot(df, aes_string(x = aesX, y = aesY)) + geom_bar(stat="identity", position="dodge", fill = ptol_pal()(1)) + theme_gdocs() 
   if(labelYPercent) {
     labels <- GetPercentLabels(df[, aesY])
@@ -56,7 +64,8 @@ BarPlotMin <- function(df, aesX, aesY, labelYPercent = FALSE) {
 }
 
 BarDodgedPlotMin <- function(df, aesX, aesY, aesF = "situation", labelYPercent = FALSE) {
-  x <- subset(df, !is.na(df[, aesY]))
+  x <- FilterNAs(df, aesY)
+
   if(labelYPercent) {
     labels <- GetPercentLabels(x[, aesY])
   } else {
@@ -73,6 +82,10 @@ BarFacetPlotMin <- function(df, aesFacet) {
   col.names <- c(aesFacet, "situation", "X..emplois.cadre.ou.professions.intermédiaires", "X..emplois.à.temps.plein", "X..emplois.stables")
   col.times <- tail(col.names, -2)
   x <- subset(df, apply(df[,col.times], 1, function(x) !all(is.na(x))))
+  validate(
+    need(nrow(x) > 0, 'Données manquantes.')
+  )
+
   x <- reshape(x, idvar=head(col.names, 3), varying=list(col.times), direction="long", v.names="valeur", timevar="indicateur", times=col.times)
   x$indicateur <- factor(x$indicateur, levels = c("X..emplois.stables", "X..emplois.à.temps.plein", "X..emplois.cadre.ou.professions.intermédiaires"), labels =  c("% emplois stables", "% emplois à temps plein", "% emplois cadre ou professions intermédiaires"))
   
