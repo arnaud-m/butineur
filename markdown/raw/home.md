@@ -3,16 +3,15 @@
 
 Les enquêtes IP de l'OVE-IP sont réalisées auprès de tous les diplômés de licences professionnelles et de masters quels que soient l'âge, la nationalité et le statut d'inscription.
 Seuls les diplômés par Validation des Acquis de l'Expérience (VAE) sont écartés.
-Le fichier des diplômés avec le nom du ou des diplômes et avec les caractéristiques sociodémographiques est issu de la base Apogée de l'Université.
+Le fichier des diplômés avec le nom du ou des diplômes et avec les caractéristiques sociodémographiques est issu de la base Apogée de l'Université :
 
  * Genre
- * Baccalauréat
- * Lieu d'obtention du bac
+ * Baccalauréat ; Lieu d'obtention du bac
 
 La spécialité correspond à l'intitulé du diplôme. Les spécialités sont regroupées par mention, les mentions étant regroupées par domaine.
-Les données portent sur les étudiants en formation initiale (y compris en contrat d'apprentissage et de professionnalisation) et en formation continue.
+Les données portent sur les étudiants en formation initiale (y compris en contrat d'apprentissage) et en formation continue (y compris en contrat de professionnalisation).
 
-L'enquête est effectuée en ligne avec le logiciel Lime Survey. Afin d'obtenir des taux de réponse élevés, des relances sont faites par téléphone avec le logiciel TelSurvey. 
+L'enquête est effectuée en ligne avec le logiciel Lime Survey. Des relances sont faites par téléphone avec le logiciel TelSurvey sauf pour les diplômés délocalisés. 
 
 Les données de l'enquête sont en partie transmises  au Ministère de l'Enseignement Supérieur et de la Recherche. Celui-ci, en effet, cible la population à enquêter selon des critères restrictifs: il évalue la situation professionnelle des diplômés français  de moins de 30 ans issus de la formation initiale et n'ayant pas poursuivi ou repris d'études dans les 2 années suivant l'obtention de leur diplôme. 11 indicateurs sont déclinés par domaine (Droit-Economie-Gestion, Lettres-Langues-Arts, Sciences humaines et sociales, Sciences-Technologies-Santé) et par discipline de diplôme. Les résultats édités par le ministère sont consultables dans l'onglet "DONNÉES MINISTÈRE".
 

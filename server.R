@@ -76,15 +76,15 @@ function(input, output, session) {
     subset(x, x$insertionN30)
   })
 
-  output$emploiHeader <- renderText(paste0("Caractéristiques des emplois (", nrow(remployes())," diplomés en emploi)"))
+  output$emploiHeader <- renderText(paste0("Caractéristiques des emplois (", nrow(remployes())," diplômés en emploi)"))
   MakeEmploiOutput(output, remployes)
 
-  output$cloudHeader <- renderText(paste0("Nuage d'emplois (", nrow(remployes())," diplomés en emploi)"))
+  output$cloudHeader <- renderText(paste0("Nuage d'emplois (", nrow(remployes())," diplômés en emploi)"))
   MakeCloudOutput(output, remployes)
 
   ## ###############################
   ## Diplômés en emploi à temps plein
-  output$salaireHeader <- renderText(paste0("Distribution des salaires (", sum(remployes()$emploiPleinN30, na.rm=TRUE)," diplomés en emploi à temps plein)"))
+  output$salaireHeader <- renderText(paste0("Distribution des salaires (", sum(remployes()$emploiPleinN30, na.rm=TRUE)," diplômés en emploi à temps plein)"))
   MakeSalaireOutput(output, remployes)
   
   

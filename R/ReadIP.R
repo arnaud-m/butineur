@@ -27,6 +27,7 @@ ReadIP <- function(file) {
   res$sexe <- df$Sexe_BO
   ## Detailed classification
   bacs <- read.csv(file = file.path("data", "baccalaureats.csv"), na.strings = c("NA", "N/A", ""))
+  bacs$categorie <- factor(bacs$categorie, levels = c("Équivalent ou étranger", "Professionnel", "Technique ou technologique", "Scientifique", "Littéraire", "Économique et social"))
   bacs <- aggregate(bacs$bac, by = list(bacs$categorie), paste)
   x <- bacs[,2]
   names(x) <- bacs[,1]
@@ -43,9 +44,10 @@ ReadIP <- function(file) {
   res$regionEmploi <- GetRegion(df$q6_14a)
   res$mobiliteEmploi <- res$regionEmploi == "Étranger" | res$regionEmploi == "Hors PACA"
   ## ##res$regionBac <- GetRegion(df$region_bac)
-  ## FIXME bad format
   ## res$regionBac <- GetRegion(df[ ,"X.attribute_32..dpt.obtention.bac_code_BO."])
-  res$regionBac <- df$COD_region_obtention_bac ## GetRegion(df[ ,"DPTobtentionBAC"])
+  ##res$regionBac <- df$COD_region_obtention_bac ## GetRegion(df[ ,"DPTobtentionBAC"])
+  res$regionBac <- factor(df$COD_region_obtention_bac, levels = c("Etranger", "Hors PACA", "PACA hors Alpes-Maritimes", "Alpes-Maritimes"))
+  levels(res$regionBac) <- c("Étranger", "Hors PACA", "PACA hors\nAlpes-Maritimes", "Alpes-Maritimes")
   res$repondant <- df$Eq_statut_reponse %in% 4:6
 
 

@@ -1,10 +1,9 @@
-## Présentation de l'Observatoire de la Vie Étudiante et de l'Insertion Professionnelle de l'Université Nice Sophia Antipolis ##
+## Observatoire de la Vie Étudiante et de l'Insertion Professionnelle de l'Université Nice Sophia Antipolis ##
 
 Créé en 1993, l'Observatoire de la vie étudiante et de l'insertion professionnelle (OVE-IP) de l'Université Nice Sophia Antipolis (UNS) réalise des enquêtes sur les conditions de vie des étudiants et sur leur devenir.
 L'équipe, constituée d'une directrice, d'une chargée d'enquêtes et d'un référent informatique, emploie chaque année entre 8 et 10 enquêteurs téléphoniques ainsi que des stagiaires en statistique.
 
 [Observatoire de la vie étudiante et de l'insertion professionnelle](http://unice.fr/ove)  
-UnicePro  
 Campus Saint Jean d'Angély  
 24, avenue des diables bleus - Nice  
 04 89 15 21 82 / 04 89 15 21 83   
@@ -18,7 +17,7 @@ L'OVE-IP mène deux enquêtes annuelles visant à étudier l'insertion professio
 
 ### Le butineur de l'OVE-IP ###
 
-Le butineur est une application web d'analyse des données obtenues pendant les enquêtes d'insertion professionnelle des diplômés de l'Université Nice Sophia Antipolis.
+Le butineur est une application web d'analyse des données obtenues pendant les enquêtes d'insertion professionnelle à 30 mois des diplômés de l'Université Nice Sophia Antipolis.
 Elle analyse les données officielles du ministère, mais aussi les données brutes au champ plus étendu de l'OVE-IP.  
 Le butineur est un logiciel libre sous licence [MIT](https://opensource.org/licenses/MIT) disponible sur [github](https://github.com/arnaud-m/butineur).
 
@@ -28,7 +27,7 @@ Directrice : Catherine LLATY
 Tél. : 04 89 15 21 82  
 Courriel : catherine.llaty@unice.fr
 
-Chargée Développement Enquêtes : Marie-Annick DENCHE  
+Chargée de projets d'enquêtes : Marie-Annick DENCHE  
 Tél. : 04 89 15 21 83  
 Courriel : Marie-Annick.DENCHE@unice.fr
 

@@ -2,9 +2,9 @@
 
 ## Insertion professionnelle des diplômés de l'UNS (2010-2014) ##
 
-Les résultats présentés sont issus de la sixième enquête nationale sur l'insertion professionnelle des diplômés de l'université.
+Les résultats présentés sont issus des enquêtes nationales sur l'insertion professionnelle des diplômés de l'université.
 Elle a pour objet d'évaluer la situation professionnelle, 18 mois puis 30 mois après l'obtention du diplôme, des diplômés français issus de la formation initiale, n'ayant pas poursuivi ou repris d'études dans les deux années suivant l'obtention de leur diplôme.
-Résultats de l'enquête sur les diplômé.e.s de 2010 à 2014 :
+Résultats de l'enquête sur les diplômés de 2010 à 2014 :
  * de licence professionnelle,
  * de master.
 
@@ -14,6 +14,8 @@ Cette insertion se poursuit pendant la deuxième année avec l'amélioration des
 
 Le dispositif d'enquête annuelle est coordonné par le ministère de l‘Education nationale, de l'Enseignement supérieur et de la Recherche et administré par les universités.
 
+Les résultats sont présentés par domaine ou par discipline.
+Les domaines sont subdivisés en disciplines à l'exception des Lettres, langues, arts (LLA) et des masters enseignement (MEEF).
 
 ### Principaux indicateurs ###
 
@@ -26,10 +28,11 @@ Deux indicateurs complémentaires sont proposés :
 Ils sont accompagnés de quatre éléments de contexte socio-économique :
 * le pourcentage de femmes (indicateur structurel), le pourcentage de diplômés boursiers de l'université (source : enquête insertion, diplômés de master), le taux de chômage régional (source : INSEE), le salaire net mensuel médian régional des jeunes âgés de 25 à 29 ans employés à temps plein dans les catégories cadres ou professions intermédiaires (source : INSEE).
 
+Un indicateur est absent si le nombre de répondants est inférieur à 30.
 
 ### Ressources ###
 
 * [Enquête relative à l'insertion professionnelle des diplômé.e.s de l'université](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle/)
-* [Enquête relative à l'insertion professionnelle des diplômé.e.s de l'Université Nice Sophia Antipolis](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle_etablissements/?disjunctive.discipline2&refine.diplome=MASTER_LMD&refine.annee=2013&refine.numero_de_l_etablissement=0060931E&sort=code_de_la_discipline) :  Exportation des principaux indicateurs (csv ou xls) par discipline sous forme de tableaux.
+* [Enquête relative à l'insertion professionnelle des diplômé.e.s de l'Université Nice Sophia Antipolis](https://data.enseignementsup-recherche.gouv.fr/pages/insertion_professionnelle_etablissements/?disjunctive.discipline2&refine.diplome=MASTER_LMD&refine.annee=2014&refine.numero_de_l_etablissement=0060931E&sort=code_de_la_discipline) :  Exportation des principaux indicateurs (csv ou xls) par discipline sous forme de tableaux.
 * [Jeux de données Insertion professionnelle sur la plateforme open data du ministère](https://data.enseignementsup-recherche.gouv.fr/explore/?sort=modified&q=insertion)
-* [Notice méthodologique](http://c.par-la.fr/insertion/Notice%20de%20m%c3%a9thodologie_2016.pdf)
+* [Notice méthodologique](https://dataesr.fr/fichiers/methodologie_2017.pdf)

@@ -13,7 +13,7 @@ MakeResultatsOutput <- function(output, rdiplomes) {
   )
   
   output$statutReponse <- renderTable({
-    table(rdiplomes()[,"statutReponse"][drop=TRUE], useNA = "ifany")
+    table(rdiplomes()[,"statutReponse"][drop=TRUE], useNA = "no")
   }, colnames = FALSE, striped = TRUE,  spacing = 'l')
 
   output$statutReponsePlot <- renderPlot({
@@ -135,7 +135,7 @@ MakeEmploiOutput <- function(output, remployes) {
       tauxMobilite <- 100*mean(remployes()$mobiliteEmploi, na.rm = TRUE)
       BarStackedPlotRaw(remployes(), "regionEmploi", "regionBac", "Région d'obtention du bac") +
         labs(x="Région d'emploi", y="Effectifs") +
-        ggtitle("Localisation de l'emploi et mobilité des diplomés", subtitle = sprintf("Le taux de mobilité des diplomés est de %.1f%%", tauxMobilite))
+        ggtitle("Localisation de l'emploi et mobilité des diplômés", subtitle = sprintf("Le taux de mobilité des diplômés est de %.1f%%", tauxMobilite))
     })
 
     output$niveauEmploi <- renderPlot({

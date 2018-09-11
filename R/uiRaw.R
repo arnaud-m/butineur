@@ -67,7 +67,7 @@ MakeInsertionPanel<- function() {
     title = "Insertion",
     value = "rawInsPanel",
     h2(textOutput("insertionHeader")),
-    h3("Évolution de l'insertion des diplomé.e.s à 18 et 30 mois"),
+    h3("Évolution de l'insertion des diplômé.e.s à 18 et 30 mois"),
     fluidRow(
       column(
         6,
@@ -80,7 +80,7 @@ MakeInsertionPanel<- function() {
         plotOutput("insertionTaux")
       )
     ),
-    h3("Évolution de la situation des diplomé.e.s à 18 et 30 mois (en %)"),
+    h3("Évolution de la situation des diplômé.e.s à 18 et 30 mois (en %)"),
     fluidRow(
       column(6, plotOutput("situationDiplomeN18")),
       column(6, plotOutput("situationDiplomeN30"))

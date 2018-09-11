@@ -3,7 +3,7 @@ Le taux de réponse est calculé avec la formule suivante:
 Taux de réponse = (Nombre de questionnaires exploités/Nombre de diplômés) * 100
 ```
 
-Le nombre de diplôme comptabilise les double diplômes.
+Le nombre de diplômes comptabilise les double diplômes.
 Les double diplômés sont enquêtés une seule fois, car les réponses aux questions sont valables pour chacun des deux diplômes obtenus.  
 *Seul le premier diplôme est pris en compte dans les statistiques du butineur.*
 
