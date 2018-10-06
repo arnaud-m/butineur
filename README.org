@@ -21,9 +21,10 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
 
 * Download and Installation
 
-  In the following, we distinguish two usages of the butineur:
+  In the following, we distinguish three usages of the butineur:
     - as a local application: launch the application on your computer,
     - as a web application: deploy the application on [[http://www.shinyapps.io/][shinyapps.io]].
+    - as a web application: deploy the application on a [[https://www.rstudio.com/products/shiny/shiny-server/][shiny server]].
 
 ** Prerequisites 
    This project works on 32 bits and 64 bits environment. 
@@ -41,6 +42,13 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
 ** Deploy the application on shinyapps.io
    Administrators must follow the instructions given [[http://docs.rstudio.com/shinyapps.io/getting-started.html#using-your-r-packages-in-the-cloud][here]].
 
+** Deploy the application on a shiny server
+   Execute the following commands on the shiny server: 
+   #+BEGIN_SRC bash
+     cd shiny-server/butineur
+     git pull origin master
+      sudo systemctl status shiny-server
+   #+END_SRC
 ** Dependencies
    
   - This project requires additional R packages:
@@ -59,7 +67,7 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
    Preprocess and anonymize the database (For administrators only).
 #+BEGIN_SRC R :results output silent
   source(file.path('R','ReadIP.R'))
-  GenerateShinyRawDb()
+  GenerateShinyRawDb("~/ove/db/IP2012-13-14_15M+LP_Cathy-27-08-18.csv")
 #+END_SRC
 
 
