@@ -26,12 +26,22 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
     - as a web application: deploy the application on [[http://www.shinyapps.io/][shinyapps.io]].
     - as a web application: deploy the application on a [[https://www.rstudio.com/products/shiny/shiny-server/][shiny server]].
 
-** Prerequisites 
+** Prerequisites and Dependencies 
    This project works on 32 bits and 64 bits environment. 
-   This project requires:
+   This project requires [[https://www.r-project.org/][Gnu R]] 3.4+.
 
-   - Gnu R 3.4+ 
- 
+   - This project requires additional R packages:
+    - Shiny 1.0+
+    - ggplot2 2.2+
+    - ggthemes 3.4+
+    - plyr 1.8+
+  - This project requires other additionnal R packages for the word cloud.
+    - SnowballC 0.5+
+    - memoise 1.1+
+    - wordcloud 2.5+
+    - RColorBrewer 1.1+
+    - tm 0.7+
+
 ** Launch the application 
    Start a R session in the project root directory and type:
    #+BEGIN_SRC R
@@ -40,34 +50,23 @@ Copyright (c) 2017, Arnaud Malapert, Université Nice Sophia Antipolis.
    #+END_SRC
 
 ** Deploy the application on shinyapps.io
-   Administrators must follow the instructions given [[http://docs.rstudio.com/shinyapps.io/getting-started.html#using-your-r-packages-in-the-cloud][here]].
+   Follow the instructions given [[http://docs.rstudio.com/shinyapps.io/getting-started.html#using-your-r-packages-in-the-cloud][here]].
 
 ** Deploy the application on a shiny server
    Execute the following commands on the shiny server: 
    #+BEGIN_SRC bash
      cd shiny-server/butineur
      git pull origin master
-      sudo systemctl status shiny-server
+     sudo systemctl restart shiny-server
    #+END_SRC
-** Dependencies
-   
-  - This project requires additional R packages:
-    - Shiny 1.0+
-    - ggplot2 2.2+
-    - ggthemes 3.4+
-    - plyr 1.8+
-  - The project requires other additionnal R packages for the word cloud.
-    - SnowballC 0.5+
-    - memoise 1.1+
-    - wordcloud 2.5+
-    - RColorBrewer 1.1+
-    - tm 0.7+
 
-** Database
-   Preprocess and anonymize the database (For administrators only).
+* Database Generation
+   Preprocess and anonymize the raw database.
 #+BEGIN_SRC R :results output silent
   source(file.path('R','ReadIP.R'))
   GenerateShinyRawDb("~/ove/db/IP2012-13-14_15M+LP_Cathy-27-08-18.csv")
 #+END_SRC
+
+   
 
 
