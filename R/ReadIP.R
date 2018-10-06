@@ -71,9 +71,9 @@ ReadIP <- function(file) {
       "Deuxième diplôme\n(double diplôme)",
       "Décédé",
       "Erreur : non validé",
-      "téléphone",
-      "internet",
-      "papier",
+      "Téléphone",
+      "Internet",
+      "Papier",
       "Formation délocalisée",
       "Autre"
     )

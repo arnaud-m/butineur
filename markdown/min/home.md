@@ -1,5 +1,3 @@
-
-
 ## Insertion professionnelle des diplômés de l'UNS (2010-2014) ##
 
 Les résultats présentés sont issus des enquêtes nationales sur l'insertion professionnelle des diplômés de l'université.
