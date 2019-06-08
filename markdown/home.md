@@ -1,12 +1,14 @@
 ## Observatoire de la Vie Étudiante et de l'Insertion Professionnelle de l'Université Nice Sophia Antipolis ##
 
 Créé en 1993, l'Observatoire de la vie étudiante et de l'insertion professionnelle (OVE-IP) de l'Université Nice Sophia Antipolis (UNS) réalise des enquêtes sur les conditions de vie des étudiants et sur leur devenir.
-L'équipe, constituée d'une directrice, d'une chargée d'enquêtes et d'un référent informatique, emploie chaque année entre 8 et 10 enquêteurs téléphoniques ainsi que des stagiaires en statistique.
+L'équipe, constituée d'une directrice, d'une chargée d'enquêtes et d'un référent informatique, emploie chaque année entre 8 et 10 enquêteurs téléphoniques ainsi que des stagiaires en statistique.  
+L'OVE-IP est membre du [RESeau des Observatoires de l’enseignement SUPérieur](http://www.resosup.fr/). 
 
 [Observatoire de la vie étudiante et de l'insertion professionnelle](http://unice.fr/ove)  
-Campus Saint Jean d'Angély  
-24, avenue des diables bleus - Nice  
-04 89 15 21 82 / 04 89 15 21 83   
+Faculté de Droit, des Sciences Politiques, Economiques et de Gestion  
+UFR de droit, Bureau 313  
+1, avenue du Doyen Louis Trotabas  
+06050 Nice Cedex 1  
 ove@unice.fr  
 
 ### Les enquêtes d'insertion professionnelle des diplômés ###
