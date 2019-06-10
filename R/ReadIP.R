@@ -6,23 +6,22 @@ ReadIP <- function(file) {
 
   df <- subset(df, df[ ,"profil_etudiant_BO"] != "dem VAE")
 
-  ##res <- data.frame(matrix(, nrow=nrow(df), ncol=0))
-  res <- df[,c("Année", "Diplôme", "code_diplome")] 
-  
-  colnames(res) <- c("annee", "libdip1", "code_diplome") ##, "libdip3", "libdip2", "composante_lib_BO")
+  res <- df[,c("Année", "code_diplome")]
+  colnames(res) <- c("annee", "code_diplome") 
 
   ## res$libdom  <- factor(gsub('[[:blank:]]*-.*$','', df$attribute_27_dom_mention_SISE_BO)) ## domaine
   res$libdom  <- df$DOMAINE ## domaine
-  ## LP has only a 'mention' 
-  ## res$libdom[res$libdip1=="LP"] <- NA
 
-  ## res$libdip2 <- factor(gsub('^[^-]*-[[:blank:]]','', df$attribute_27_dom_mention_SISE_BO)) ## mention
-  res$libdip2 <- df$Mention ## Mention
-  res$libdip3 <- df$Spécialité ## spécialité
-  
   ColToFactor <- function(fromCol, toCol, labels, levels = seq_along(labels)) {
     res[,toCol] <<- factor(df[, fromCol], levels = levels, labels = labels)
   }
+  
+  ## res$libdip2 <- factor(gsub('^[^-]*-[[:blank:]]','', df$attribute_27_dom_mention_SISE_BO)) ## mention
+  ColToFactor("Diplôme", "libdip1", c("Licence Pro", "Master"), c("LP", "Master"))
+  res$libdip2 <- df$Mention ## Mention
+  res$libdip3 <- df$Spécialité ## spécialité
+  
+  
 
   res$sexe <- df$Sexe_BO
   ## Detailed classification
