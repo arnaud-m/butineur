@@ -15,7 +15,7 @@ ove@unice.fr
 
 L'OVE-IP mène deux enquêtes annuelles visant à étudier l'insertion professionnelle des diplômés de l'Université Nice Sophia Antipolis (Master et Licence Professionnelle - les DUT sont enquêtés directement par l'IUT).
 * Enquête à 30 mois : cette enquête est conduite dans un cadre national (toutes les universités réalisent l'enquête au même moment) et interroge les diplômés sur leur situation professionnelle au 1er décembre de l'année en cours, soit 30 mois après l'obtention de leur Master ou de leur Licence Professionnelle.
-* Enquête à 6 mois : lancée pour la première fois en avril 2011, cette enquête locale est envoyée aux diplômés ayant validé leur Master ou leur Licence Professionnelle l'année précédente. Le questionnaire porte sur leur situation professionnelle au 1er avril de l'année en cours, soit environ 6 mois après l'obtention du diplôme.
+* Enquête à 6 mois : lancée pour la première fois en avril 2011, cette enquête locale est envoyée aux diplômés ayant validé leur Master ou leur Licence Professionnelle l'année précédente. Le questionnaire porte sur leur situation professionnelle au 1er mars de l'année en cours, soit environ 6 mois après l'obtention du diplôme.
 
 ### Le butineur de l'OVE-IP ###
 
@@ -33,7 +33,7 @@ Directrice : Catherine LLATY
 Tél. : 04 89 15 21 82  
 Courriel : catherine.llaty@univ-cotedazur.fr
 
-Chargée de projets d'enquêtes : Marie-Annick DENCHE  
+Responsable de projets d'enquêtes : Marie-Annick DENCHE  
 Tél. : 04 89 15 21 83  
 Courriel : Marie-Annick.DENCHE@univ-cotedazur.fr
 
