@@ -255,7 +255,7 @@ GenerateShinyRawDb <- function( infile = file.path("data", "raw_data.csv"), outf
 
 ReadMIN <- function(filename) {
   ## Read a min database and preprocess the data.
-   df <-  df <- read.table(file = filename, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
+   df <- read.table(file = filename, header=TRUE, row.names=NULL, sep=';', quote="", na.strings=c("", NA, "ns", "nd"))
    df$Nombre.de.diplômés <- round(df$Nombre.de.réponses * 100 /  df$Taux.de.réponse)
    df[,"Abbrev.de.la.discipline"] <- factor(
      df[, "Code.de.la.discipline"],
