@@ -15,12 +15,16 @@ ReadIP <- function(file) {
   ColToFactor <- function(fromCol, toCol, labels, levels = seq_along(labels)) {
     res[,toCol] <<- factor(df[, fromCol], levels = levels, labels = labels)
   }
+
+  ForceNumeric <- function(x) {
+    if(is.factor(x)) x <- levels(x)[x]
+    return(as.numeric(x))
+  }
   
   ## res$libdip2 <- factor(gsub('^[^-]*-[[:blank:]]','', df$attribute_27_dom_mention_SISE_BO)) ## mention
   ColToFactor("Diplôme", "libdip1", c("Licence Pro", "Master"), c("LP", "Master"))
   res$libdip2 <- df$Mention ## Mention
   res$libdip3 <- df$Spécialité ## spécialité
-  
   
 
   res$sexe <- df$Sexe_BO
@@ -35,11 +39,16 @@ ReadIP <- function(file) {
   levels(res$serieBac) <- bacs
   
   GetRegion <- function(x) {
+    ## departments in q6_14a has various cell formats : 6 or 06 !
+    x <- ForceNumeric(x)
+    ## Create mapping from dpt to region
     y <- c(rep(3, 98), 4)
     y[6] <- 1
     y[c(4,5,13,83,84)] <- 2
+    ## Map dpt to region
     z <- factor(y[x], levels = 1:4, labels = c("Alpes-Maritimes", "PACA hors\nAlpes-Maritimes", "Hors PACA", "Étranger"))
   }
+
   res$regionEmploi <- GetRegion(df$q6_14a)
   res$mobiliteEmploi <- res$regionEmploi == "Étranger" | res$regionEmploi == "Hors PACA"
   ## ##res$regionBac <- GetRegion(df$region_bac)
@@ -198,17 +207,17 @@ ReadIP <- function(file) {
   res$emploiSupIntN18 <- NA
   res$emploiSupIntN18[emploiN18] <- df$Eq_q8_2[emploiN18] <= 4
 
-  ## ## Salaire mensuel net avec primes
-  GetSalaireEmploi <- function(salaires,primes) {
-    salaires <- as.numeric(salaires)
-    primes <- as.numeric(primes)
+  ## Salaire mensuel net avec primes
+  GetSalaireEmploi <- function(salaires, primes) {
+    salaires <- ForceNumeric(salaires)
+    primes <- ForceNumeric(primes)
     ## Si le montant des primes n'est pas précisée : on considère qu'il est nul.
     primes[is.na(primes)] <- 0
     return(salaires + primes/12)
   }
   
   res$salaireEmploiN18 <- GetSalaireEmploi(df$q8_5, df$q8_7) 
-  res$salaireEmploiN30 <- GetSalaireEmploi(df$q6_9, df$q6_11r)
+  res$salaireEmploiN30 <- GetSalaireEmploi(df$q6_9r, df$q6_11r)
   
   ## ## typeEmployeur <- c(
   ## ##   "vous-même",
@@ -243,12 +252,13 @@ ReadIP <- function(file) {
   )
   ColToFactor("Eq_q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
 
+
   res$intituleEmploi <- as.character(df$q6_4)
   
   return(res)
 }
 
-GenerateShinyRawDb <- function( infile = file.path("data", "raw_data.csv"), outfile = file.path("data", "all-uns-insertion_professionnelle.rda")) {
+GenerateShinyRawDb <- function(infile, outfile = file.path("data", "all-uns-insertion_professionnelle.rda")) {
   data <- ReadIP(infile)
   saveRDS(data, outfile)
 }
