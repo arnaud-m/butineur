@@ -120,8 +120,8 @@ ReadIP <- function(file) {
 
   ColToFactor("Eq_q4_3r", "situationProN30r", c(situationPro, "En études"))
   res$situationProN30r[ df$Eq_q4_1 != 3 & df$q4_2r == 1 & df$Eq_COD_q6_5 != 10 ] <- "En études"
-  res$situationProN30r[ df$Eq_q4_1 != 3 & df$Eq_q4_3 == 1 & df$Eq_COD_q6_5 == 9 ] <- "En études"
-  res$situationProN30r[ df$Eq_q4_1 != 3 & df$Eq_q4_3 == 1 & df$Eq_COD_q6_5 == 10 ] <- "En emploi"
+  res$situationProN30r[ df$Eq_q4_1 != 3 & df$Eq_q4_3r == 1 & df$Eq_COD_q6_5 == 9 ] <- "En études"
+  res$situationProN30r[ df$Eq_q4_1 != 3 & df$Eq_q4_3r == 1 & df$Eq_COD_q6_5 == 10 ] <- "En emploi"
 
   ColToFactor("Eq_q7_1", "situationProN18r", c(situationPro, "En études"))
   ## ## Pas de question sur l'activite principale à N+18
@@ -258,6 +258,11 @@ ReadIP <- function(file) {
   return(res)
 }
 
+## normalize the database with simple sed commands
+## Remove heading and trailing whitespaces in the CSV file
+## sed 's/[[:blank:]]*"[[:blank:]]*/"/g'
+## Find annoying newlines in the job description
+## grep  -n "[^,\"]$"
 GenerateShinyRawDb <- function(infile, outfile = file.path("data", "all-uns-insertion_professionnelle.rda")) {
   data <- ReadIP(infile)
   saveRDS(data, outfile)
@@ -286,4 +291,5 @@ GenerateShinyMinDb <- function(filename) {
   data <- ReadMIN(filename)
   saveRDS(data, sub(".[^.]*$", ".rda", filename))
 }
+
 
