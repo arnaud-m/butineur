@@ -121,11 +121,11 @@ MakeInsertionOutput <- function(output, rpopulation) {
   
 MakeSituationOutput <- function(output, rpopulation) {
   output$situationDiplomeN30 <- renderPlot({
-    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "En études") + ggtitle("Situation des diplômés à N + 30 mois") + labs(x="Situation professionnelle", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "En études") + ggtitle("Situation des diplômés à N + 30 mois", subtitle="Analyse croisée des cas mixtes, emploi ou recherche d’emploi et études.") + labs(x="Situation professionnelle", y="Effectifs")
   })
   
   output$situationDiplomeN18 <- renderPlot({
-    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "En études") + ggtitle("Situation des diplômés à N + 18 mois") + labs(x="Situation professionnelle", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "En études") + ggtitle("Situation des diplômés à N + 18 mois", subtitle="Analyse croisée des cas mixtes, emploi ou recherche d’emploi et études.") + labs(x="Situation professionnelle", y="Effectifs")
   }
   )
 }
