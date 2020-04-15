@@ -52,17 +52,17 @@ MakeBaccalaureatOutput <- function(output, rpopulation) {
 }
 
 MakeInsertionOutput <- function(output, rpopulation) {
-  output$etudeInsertionTaux <- renderTable({
+  output$etudesInsertionTaux <- renderTable({
     x <- rpopulation()
-    x <- aggregate( 100*x[,c("poursuiteEtude", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
-    colnames(x) <- c("Grade", "Poursuite d'étude", "Insertion à 18 mois", "Insertion à 30 mois")
+    x <- aggregate( 100*x[,c("poursuiteEtudes", "insertionN18","insertionN30")], by = list(x$libdip1), mean, na.rm=TRUE)
+    colnames(x) <- c("Grade", "Poursuite d'études", "Insertion à 18 mois", "Insertion à 30 mois")
     x
   }, digits = 1, spacing = 'l')
 
   output$insertionMNESR <- renderTable({
     x <- rpopulation()
    ## browser()
-    y <- x[,c("poursuiteEtude", "mobiliteEmploi", 
+    y <- x[,c("poursuiteEtudes", "mobiliteEmploi", 
               "insertionN18","insertionN30",
               "emploiStableN18", "emploiStableN30",
               "emploiPleinN18", "emploiPleinN30",
@@ -77,12 +77,12 @@ MakeInsertionOutput <- function(output, rpopulation) {
         mean(x$salaireEmploiN18[x$emploiPleinN18], na.rm=TRUE)
       ),
       c(
-        y[c("insertionN30", "poursuiteEtude",
+        y[c("insertionN30", "poursuiteEtudes",
             "emploiStableN30", "emploiPleinN30", "emploiSupIntN30",
             "mobiliteEmploi")],
         mean(x$salaireEmploiN30[x$emploiPleinN30], na.rm=TRUE)
       ),
-      row.names = c("Taux d'insertion", "Poursuite d'étude", 
+      row.names = c("Taux d'insertion", "Poursuite d'études", 
                     "Part des emplois stables",
                     "Part des emplois à temps plein",
                     "Part des emplois de niveau cadre ou profession intermédiaire",
@@ -121,11 +121,11 @@ MakeInsertionOutput <- function(output, rpopulation) {
   
 MakeSituationOutput <- function(output, rpopulation) {
   output$situationDiplomeN30 <- renderPlot({
-    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudeN30", "En études") + ggtitle("Situation des diplômés à N + 30 mois", subtitle="Analyse croisée des cas mixtes, emploi ou recherche d’emploi et études.") + labs(x="Situation professionnelle", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "situationProN30", "etudesN30", "En études") + ggtitle("Situation des diplômés à N + 30 mois", subtitle="Analyse croisée des cas mixtes, emploi ou recherche d’emploi et études.") + labs(x="Situation professionnelle", y="Effectifs")
   })
   
   output$situationDiplomeN18 <- renderPlot({
-    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudeN18", "En études") + ggtitle("Situation des diplômés à N + 18 mois", subtitle="Analyse croisée des cas mixtes, emploi ou recherche d’emploi et études.") + labs(x="Situation professionnelle", y="Effectifs")
+    BarStackedPlotRaw(rpopulation(), "situationProN18", "etudesN18", "En études") + ggtitle("Situation des diplômés à N + 18 mois", subtitle="Analyse croisée des cas mixtes, emploi ou recherche d’emploi et études.") + labs(x="Situation professionnelle", y="Effectifs")
   }
   )
 }

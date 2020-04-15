@@ -21,7 +21,7 @@ Une dizaine d'indicateurs sont disponibles au regard des diplômés ayant répon
 
 
  * Le taux d'emploi correspond au nombre de diplômés en emploi au regard du nombre total de diplômés ayant répondu à l'enquête.
- * Le taux de poursuite d'étude correspond à la part des diplômés ayant poursuivi leurs études dans les deux ans suivant leur diplôme.
+ * Le taux de poursuite d'études correspond à la part des diplômés ayant poursuivi leurs études dans les deux ans suivant leur diplôme.
  * Le taux d'insertion correspond au nombre de diplômés en emploi au regard du nombre total d'actifs (qui sont en emploi ou en recherche d'emploi).
  * L'emploi stable correspond à la part des diplômés en emploi sous contrat de CDI, sous statut de la Fonction publique ou en qualité de travailleur indépendant.
  * Le taux d'emploi à temps plein correspond au nombre de diplômés en emploi à temps plein au regard du nombre total de diplômés en emploi.

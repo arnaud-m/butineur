@@ -93,17 +93,17 @@ ReadIP <- function(file) {
   res$boursier <- as.factor(df$Eq_q2_2)
   levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
   
-  poursuiteEtude <- c(
+  poursuiteEtudes <- c(
     "En doctorat (Master) / en Master (LP)",
     "Dans une autre formation",
     "Non"
   )
   
-  ColToFactor("Eq_q3_1_1", "etudeN6", poursuiteEtude)
-  ColToFactor("Eq_q3_1_2", "etudeN18", poursuiteEtude)
-  ColToFactor("Eq_q4_1", "etudeN30", poursuiteEtude)
+  ColToFactor("Eq_q3_1_1", "etudesN6", poursuiteEtudes)
+  ColToFactor("Eq_q3_1_2", "etudesN18", poursuiteEtudes)
+  ColToFactor("Eq_q4_1", "etudesN30", poursuiteEtudes)
   ## poursuivent des études dans les deux ans.
-  res$poursuiteEtude <- (df$Eq_q3_1_1 != 3) | (df$Eq_q3_1_2 != 3)
+  res$poursuiteEtudes <- (df$Eq_q3_1_1 != 3) | (df$Eq_q3_1_2 != 3)
 
   ## ## situationPro <- c(
   ## ##   "Vous avez un emploi ",

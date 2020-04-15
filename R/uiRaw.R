@@ -76,7 +76,7 @@ MakeInsertionPanel<- function() {
       ),
       column(
         6,
-        tableOutput("etudeInsertionTaux"),
+        tableOutput("etudesInsertionTaux"),
         plotOutput("insertionTaux")
       )
     ),
