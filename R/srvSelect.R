@@ -46,6 +46,7 @@ MakeReactiveDiplomeChoices <- function(data, rindices) {
 ## https://shiny.rstudio.com/articles/action-buttons.html
 MakeReactiveData <- function(input, data, rindices) {
   reactive({
+    validate(need(input$sexe, 'Choisir au moins un genre.'))
     data <- subset(data, rindices())
     GetDiplomaIndices <- function() data$libdom %in% input$diplome | data$libdip2 %in% input$diplome | data$libdip3 %in% input$diplome | data$code_diplome %in% input$diplome
     GetSexeIndices <- function() data$sexe %in% input$sexe

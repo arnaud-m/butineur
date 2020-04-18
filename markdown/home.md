@@ -35,7 +35,7 @@ Courriel : catherine.llaty@univ-cotedazur.fr
 
 Responsable de projets d'enquêtes : Marie-Annick DENCHE  
 Tél. : 04 89 15 21 83  
-Courriel : Marie-Annick.DENCHE@univ-cotedazur.fr
+Courriel : marie-annick.denche@univ-cotedazur.fr
 
 Référent informatique : Arnaud MALAPERT  
 Courriel : arnaud.malapert@univ-cotedazur.fr

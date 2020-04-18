@@ -14,7 +14,7 @@ MakeSelectionRow <- function() {
                   placeholder = "Taper la sélection ici."
                 ), width = "800px")
            ),
-    column(1, checkboxGroupInput("sexe", label = "Sexe(s)", choices = c("Femme", "Homme"), selected = c("Femme", "Homme")))
+    column(1, checkboxGroupInput("sexe", label = "Genre(s)", choices = c("Femme", "Homme"), selected = c("Femme", "Homme")))
   )
 }
 
