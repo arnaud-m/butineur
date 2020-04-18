@@ -43,7 +43,7 @@ function(input, output, session) {
   ## ######################
   ## Page: Brut 
 
-  rdiplomes <- MakeReactiveDiplomes(session, input, output, data)
+  rdiplomes <- MakeReactiveDiplomes(session, input, data)
   
   ## #######################
   ## Ensemble des diplômés

@@ -67,7 +67,7 @@ MakeReactiveData <- function(input, data, rindices) {
 }
 
 
-MakeReactiveDiplomes <- function(session, input, output, data) {
+MakeReactiveDiplomes <- function(session, input, data) {
   ## Choose years and grades
   choices <- list(
     annee=sort(unique(data$annee)),
