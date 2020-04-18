@@ -74,12 +74,14 @@ MakeInsertionOutput <- function(output, rpopulation) {
         NA,
         y[c("emploiStableN18", "emploiPleinN18", "emploiSupIntN18")],
         NA,
+        median(x$salaireEmploiN18[x$emploiPleinN18], na.rm=TRUE),
         mean(x$salaireEmploiN18[x$emploiPleinN18], na.rm=TRUE)
       ),
       c(
         y[c("insertionN30", "poursuiteEtudes",
             "emploiStableN30", "emploiPleinN30", "emploiSupIntN30",
             "mobiliteEmploi")],
+        median(x$salaireEmploiN30[x$emploiPleinN30], na.rm=TRUE),
         mean(x$salaireEmploiN30[x$emploiPleinN30], na.rm=TRUE)
       ),
       row.names = c("Taux d'insertion", "Poursuite d'études", 
@@ -87,7 +89,8 @@ MakeInsertionOutput <- function(output, rpopulation) {
                     "Part des emplois à temps plein",
                     "Part des emplois de niveau cadre ou profession intermédiaire",
                     "Part des emplois situés en dehors de la région de l'établissement (y compris à l'étranger)",
-                    "Salaire net mensuel médian des emplois à temps plein (en euros)"
+                    "Salaire net mensuel médian des emplois à temps plein (en euros)",
+                    "Salaire net mensuel moyen des emplois à temps plein (en euros)"
                     )
     )
     colnames(df) <- c("N+18", "N+30")
