@@ -7,4 +7,17 @@
     p {
         max-width: 1100px;
     }
+
+    body {
+	font-size: 16px;
+    }
+
+    .navbar .nav > li > a {
+	font-size: 13px;
+    }
+
+    .navbar-brand {
+	font-size: 20px;
+    }
 }
+

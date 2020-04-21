@@ -101,13 +101,13 @@ MinIndicatorsUI <- function(id, title, value) {
     value = value,
     h3(textOutput(ns("minHeader"))),
     fluidRow(
-      column(3, radioButtons(ns("annee"), "Année : ", choices = c(""), inline=TRUE)),
+      column(4, radioButtons(ns("annee"), "Année : ", choices = c(""), inline=TRUE)),
       column(6,  selectizeInput(
                    ns("domaine"), label = "Choisir un domaine pour zoomer sur ses disciplines : ",
                    NULL, multiple = FALSE, 
                    options = list(
                      placeholder = "Taper la sélection ici."
-                   ), width = "350px")
+                   ), width = "400px")
              )
     ),
     fluidRow(
