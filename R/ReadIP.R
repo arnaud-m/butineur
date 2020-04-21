@@ -289,6 +289,13 @@ ReadMIN <- function(filename) {
 
 GenerateShinyMinDb <- function(filename) {
   data <- ReadMIN(filename)
+  ## Remove two disciplines :
+  ## disc20 Masters enseignement : second degré, CPE...
+  ## disc19 Masters enseignement : premier degré
+  ## They appear to be deprecated subdisciplines of
+  ## disc18 Masters enseignement
+  data <- subset(data, ! data$Code.de.la.discipline %in% c("disc19", "disc20"))
+  data$Code.de.la.discipline <-droplevels(data$Code.de.la.discipline) 
   saveRDS(data, sub(".[^.]*$", ".rda", filename))
 }
 
