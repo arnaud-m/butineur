@@ -2,10 +2,13 @@ ReadIP <- function(file) {
   ## Read the IP database and preprocess the data.
   ## Columns must be given as MNESR codes.
   ## Visualization only uses columns created by this function.
-  df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""))
+  df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"" )
+  ## df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"", sep = ";" )
 
+  ## Remove VAE students
   df <- subset(df, df[ ,"profil_etudiant_BO"] != "dem VAE")
 
+  ## Initialize the results data frame
   res <- df[,c("Année", "code_diplome")]
   colnames(res) <- c("annee", "code_diplome") 
 
@@ -87,11 +90,11 @@ ReadIP <- function(file) {
     )
    )
 
-  
- 
-  ## ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d'autres critères", "Non"))
-  res$boursier <- as.factor(df$Eq_q2_2)
-  levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
+  ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d'autres critères", "Non"))
+  ## res$boursier <- as.factor(df$Eq_q2_2)
+  ## levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
+  res$boursier <- df$Boursier_BO
+  levels(res$boursier) <- list("Boursier"="Oui", "Non boursier"="Non")
   
   poursuiteEtudes <- c(
     "En doctorat (Master) / en Master (LP)",
