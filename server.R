@@ -24,6 +24,14 @@ data <- readRDS(file.path("data", "all-uns-insertion_professionnelle.rda"))
 dataMinM <-  readRDS(file.path("data", "fr-esr-insertion_professionnelle-master.rda"))
 dataMinLP <- readRDS(file.path("data", "fr-esr-insertion_professionnelle-lp.rda"))
 
+
+##########################
+## Define local filtering functions
+
+FilterPopulation <- function(x) subset(x, ! x$doubleDiplome)
+FilterRepondants <- function(x) subset(x, x$repondant)
+FilterEmployes <- function(x) subset(x, x$insertionN30)
+
 ########################
 ## Define server logic 
 function(input, output, session) {
@@ -51,8 +59,7 @@ function(input, output, session) {
   MakeResultatsOutput(output, rdiplomes)
   
   rpopulation <- reactive({
-    x <- rdiplomes()
-    subset(x, is.na(x$statutReponse) | x$statutReponse!= "Deuxième diplôme\n(double diplôme)")
+    FilterPopulation(rdiplomes())
   })
   
   MakePopulationOutput(output, rpopulation)
@@ -61,8 +68,7 @@ function(input, output, session) {
   ## #######################
   ## Ensemble des répondants
   rrepondants <- reactive({
-    x <- rpopulation()
-    subset(x, x$repondant)
+    FilterRepondants(rpopulation())
   })
 
   output$insertionHeader <- renderText(paste0("Insertion professionnelle des diplômés (", nrow(rrepondants())," répondants)"))
@@ -72,8 +78,7 @@ function(input, output, session) {
   ## #####################
   ## Diplômés en emploi
   remployes <- reactive({
-    x <- rrepondants()
-    subset(x, x$insertionN30)
+    FilterEmployes(rrepondants())
   })
 
   output$emploiHeader <- renderText(paste0("Caractéristiques des emplois (", nrow(remployes())," diplômés en emploi)"))
@@ -86,9 +91,7 @@ function(input, output, session) {
   ## Diplômés en emploi à temps plein
   output$salaireHeader <- renderText(paste0("Distribution des salaires (", sum(remployes()$emploiPleinN30, na.rm=TRUE)," diplômés en emploi à temps plein)"))
   MakeSalaireOutput(output, remployes)
-  
-  
-  
+    
   ## #####################
   ## DEBUG Set active panel
   ## updateNavbarPage(session, "navPage", selected = "minTabPanel")

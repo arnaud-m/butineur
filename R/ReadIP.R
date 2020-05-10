@@ -2,8 +2,8 @@ ReadIP <- function(file) {
   ## Read the IP database and preprocess the data.
   ## Columns must be given as MNESR codes.
   ## Visualization only uses columns created by this function.
-  df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"" )
-  ## df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"", sep = ";" )
+  ## df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"" )
+  df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"", sep = ";" )
 
   ## Remove VAE students
   df <- subset(df, df[ ,"profil_etudiant_BO"] != "dem VAE")
@@ -18,7 +18,7 @@ ReadIP <- function(file) {
   ColToFactor <- function(fromCol, toCol, labels, levels = seq_along(labels)) {
     res[,toCol] <<- factor(df[, fromCol], levels = levels, labels = labels)
   }
-
+  
   ForceNumeric <- function(x) {
     if(is.factor(x)) x <- levels(x)[x]
     return(as.numeric(x))
@@ -52,17 +52,15 @@ ReadIP <- function(file) {
     z <- factor(y[x], levels = 1:4, labels = c("Alpes-Maritimes", "PACA hors\nAlpes-Maritimes", "Hors PACA", "Étranger"))
   }
 
-  res$regionEmploi <- GetRegion(df$q6_14a)
-  res$mobiliteEmploi <- res$regionEmploi == "Étranger" | res$regionEmploi == "Hors PACA"
-  ## ##res$regionBac <- GetRegion(df$region_bac)
+  ##res$regionBac <- GetRegion(df$region_bac)
   ## res$regionBac <- GetRegion(df[ ,"X.attribute_32..dpt.obtention.bac_code_BO."])
   ##res$regionBac <- df$COD_region_obtention_bac ## GetRegion(df[ ,"DPTobtentionBAC"])
   res$regionBac <- factor(df$COD_region_obtention_bac, levels = c("Etranger", "Hors PACA", "PACA hors Alpes-Maritimes", "Alpes-Maritimes"))
   levels(res$regionBac) <- c("Étranger", "Hors PACA", "PACA hors\nAlpes-Maritimes", "Alpes-Maritimes")
-  res$repondant <- df$Eq_statut_reponse %in% 4:6
-
-
   
+  res$regionEmploi <- GetRegion(df$q6_14a)
+  res$mobiliteEmploi <- res$regionEmploi == "Étranger" | res$regionEmploi == "Hors PACA"
+    
   ##   ColToFactor(
   ##   "statut_reponse", "statutReponse",
   ##   c(
@@ -90,11 +88,30 @@ ReadIP <- function(file) {
     )
    )
 
+  ## Respondant variable
   ## ColToFactor("q2_2", "boursier", c("Oui sur critères sociaux", "Oui sur d'autres critères", "Non"))
   ## res$boursier <- as.factor(df$Eq_q2_2)
   ## levels(res$boursier) <- list(Boursier=1:2, "Non boursier"=3)
-  res$boursier <- df$Boursier_BO
-  levels(res$boursier) <- list("Boursier"="Oui", "Non boursier"="Non")
+
+  ## BO variable
+  ## res$boursier <- df$Boursier_BO
+  ## levels(res$boursier) <- list("Boursier"="Oui", "Non boursier"="Non")
+
+  ## Regroup respondant and BO variables
+  res$boursier <- as.factor((df$Boursier_BO == "Oui") | (df$Eq_q2_2 %in% 1:2))
+  levels(res$boursier) <- list("Boursier"="TRUE", "Non boursier"="FALSE")
+
+  ## Trying to identify the second diploma for double graduates
+  res$doubleDiplome <- FALSE
+  indDD <- df$DD > 1 ## double diploma
+  indSR <- df$Eq_statut_reponse == 1 ## respondants
+  res$doubleDiplome[indSR] <- TRUE
+  ineDD <- ! df$INE %in% subset(df$INE, indSR)
+  indDD <- ineDD & indDD 
+  res$doubleDiplome[indDD] <- duplicated(subset(df$INE, indDD))
+
+  ## Double graduates are counted only once.
+  res$repondant <- (df$Eq_statut_reponse %in% 4:6) & (!res$doubleDiplome)
   
   poursuiteEtudes <- c(
     "En doctorat (Master) / en Master (LP)",
@@ -185,7 +202,6 @@ ReadIP <- function(file) {
   res$emploiPleinN18 <- NA
   res$emploiPleinN18[emploiN18] <- df$Eq_q8_3[emploiN18] == 1
 
-
   ## ## niveauEmploi <- c(
   ## ##   "personnel de catégorie A de la fonction publique",
   ## ##   "ingénieur, cadre, professions libérales, professions intellectuelles supérieures",
@@ -237,7 +253,6 @@ ReadIP <- function(file) {
   res$typeEmployeur <- factor(df$Eq_COD_q6_12)
   levels(res$typeEmployeur) <- list('Employeurs privés'=c(1,3,4,6,7), 'Fonction Publique'=2, 'Associations'=5)
 
-
   activiteEcoEmployeur <- c( 
     "Agriculture, sylviculture et pêche",
     "Industries (manufacturières, extractives et autres)",
@@ -254,7 +269,6 @@ ReadIP <- function(file) {
     "Autres activités de service"
   )
   ColToFactor("Eq_q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
-
 
   res$intituleEmploi <- as.character(df$q6_4)
   

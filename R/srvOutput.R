@@ -3,7 +3,7 @@ MakeResultatsOutput <- function(output, rdiplomes) {
   output$recapReponse <- renderTable( {
     df <- rdiplomes()
     n <- nrow(df)
-    m <- n - sum(df$statutReponse == "Deuxième diplôme\n(double diplôme)", na.rm = TRUE)
+    m <- n - sum(df$doubleDiplome)
     p <- sum(df$repondant)
     data.frame(
       c("Nombre de diplômes", "Nombre de diplômés", "Questionnaires exploités", "Taux de réponse"),
