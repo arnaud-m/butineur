@@ -1,16 +1,16 @@
-ReadIP <- function(file) {
+ReadIP <- function(file, ...) {
   ## Read the IP database and preprocess the data.
   ## Columns must be given as MNESR codes.
   ## Visualization only uses columns created by this function.
   ## df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"" )
-  df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"", sep = ";" )
+  df <- read.csv(file = file, row.names = NULL, strip.white = TRUE, na.strings = c("NA", "#N/A", ""), quote = "\"", sep = ";", ...)
 
   ## Remove VAE students
   df <- subset(df, df[ ,"profil_etudiant_BO"] != "dem VAE")
 
   ## Initialize the results data frame
   res <- df[,c("Année", "code_diplome")]
-  colnames(res) <- c("annee", "code_diplome") 
+  colnames(res) <- c("annee", "code_diplome")
 
   ## res$libdom  <- factor(gsub('[[:blank:]]*-.*$','', df$attribute_27_dom_mention_SISE_BO)) ## domaine
   res$libdom  <- df$DOMAINE ## domaine
@@ -18,17 +18,17 @@ ReadIP <- function(file) {
   ColToFactor <- function(fromCol, toCol, labels, levels = seq_along(labels)) {
     res[,toCol] <<- factor(df[, fromCol], levels = levels, labels = labels)
   }
-  
+
   ForceNumeric <- function(x) {
     if(is.factor(x)) x <- levels(x)[x]
     return(as.numeric(x))
   }
-  
+
   ## res$libdip2 <- factor(gsub('^[^-]*-[[:blank:]]','', df$attribute_27_dom_mention_SISE_BO)) ## mention
   ColToFactor("Diplôme", "libdip1", c("Licence Pro", "Master"), c("LP", "Master"))
   res$libdip2 <- df$Mention ## Mention
   res$libdip3 <- df$Spécialité ## spécialité
-  
+
 
   res$sexe <- df$Sexe_BO
   ## Detailed classification
@@ -40,7 +40,7 @@ ReadIP <- function(file) {
   bacs <- x
   res$serieBac <- df[, "code_bac_BO"]
   levels(res$serieBac) <- bacs
-  
+
   GetRegion <- function(x) {
     ## departments in q6_14a has various cell formats : 6 or 06 !
     x <- ForceNumeric(x)
@@ -57,10 +57,10 @@ ReadIP <- function(file) {
   ##res$regionBac <- df$COD_region_obtention_bac ## GetRegion(df[ ,"DPTobtentionBAC"])
   res$regionBac <- factor(df$COD_region_obtention_bac, levels = c("Etranger", "Hors PACA", "PACA hors Alpes-Maritimes", "Alpes-Maritimes"))
   levels(res$regionBac) <- c("Étranger", "Hors PACA", "PACA hors\nAlpes-Maritimes", "Alpes-Maritimes")
-  
+
   res$regionEmploi <- GetRegion(df$q6_14a)
   res$mobiliteEmploi <- res$regionEmploi == "Étranger" | res$regionEmploi == "Hors PACA"
-    
+
   ##   ColToFactor(
   ##   "statut_reponse", "statutReponse",
   ##   c(
@@ -107,18 +107,18 @@ ReadIP <- function(file) {
   indSR <- df$Eq_statut_reponse == 1 ## respondants
   res$doubleDiplome[indSR] <- TRUE
   ineDD <- ! df$INE %in% subset(df$INE, indSR)
-  indDD <- ineDD & indDD 
+  indDD <- ineDD & indDD
   res$doubleDiplome[indDD] <- duplicated(subset(df$INE, indDD))
 
   ## Double graduates are counted only once.
   res$repondant <- (df$Eq_statut_reponse %in% 4:6) & (!res$doubleDiplome)
-  
+
   poursuiteEtudes <- c(
     "En doctorat (Master) / en Master (LP)",
     "Dans une autre formation",
     "Non"
   )
-  
+
   ColToFactor("Eq_q3_1_1", "etudesN6", poursuiteEtudes)
   ColToFactor("Eq_q3_1_2", "etudesN18", poursuiteEtudes)
   ColToFactor("Eq_q4_1", "etudesN30", poursuiteEtudes)
@@ -153,8 +153,8 @@ ReadIP <- function(file) {
 
   res$insertionN18 <- res$situationProN18r == "En emploi"
   res$insertionN18[ res$situationProN18r %in% c("Ne recherche pas d'emploi","En études") ] <- NA
-  
-  ## ## statutEmploi <- c( 
+
+  ## ## statutEmploi <- c(
   ## ##   "Prof. libérale, indépendant,\n chef d'entreprise, auto-entrepreneur",
   ## ##   "Fonctionnaire\n(y compris fonctionnaire stagiaire ou élève fonctionnaire)",
   ## ##   "CDI",
@@ -168,8 +168,8 @@ ReadIP <- function(file) {
   ## ##   "Emplois aidés (Contrat Initiative Emploi…)",
   ## ##   "Volontariat international",
   ## ##   "Service civique")
-  
-  statutEmploi <- c( 
+
+  statutEmploi <- c(
     "Prof. libérale, indépendant,\nchef d'entreprise, auto-entrepreneur",
     "Fonctionnaire",
     "CDI",
@@ -190,12 +190,12 @@ ReadIP <- function(file) {
   ## ## Diplômés en emploi
   emploiN30 <- res$insertionN30 %in% TRUE
   emploiN18 <- res$insertionN18 %in% TRUE
-  
+
   ## ## L'emploi stable correspond à la part des diplômés en emploi sous contrat de CDI, sous statut de la Fonction publique ou en qualité de travailleur indépendant.
   res$emploiStableN30 <- NA
   res$emploiStableN30[emploiN30] <- df$Eq_COD_q6_5[emploiN30] <= 3
   res$emploiStableN18 <- NA
-  res$emploiStableN18[emploiN18] <- df$Eq_q8_1[emploiN18] <= 3 
+  res$emploiStableN18[emploiN18] <- df$Eq_q8_1[emploiN18] <= 3
 
   res$emploiPleinN30 <- NA
   res$emploiPleinN30[emploiN30] <- df$Eq_q6_7[emploiN30] == 1
@@ -217,9 +217,9 @@ ReadIP <- function(file) {
   res$niveauEmploiN18 <- factor(df$Eq_q8_2)
   levels(res$niveauEmploiN18) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
 
-  res$niveauEmploiN30 <- factor(df$Eq_q6_6) 
+  res$niveauEmploiN30 <- factor(df$Eq_q6_6)
   levels(res$niveauEmploiN30) <- list('ingénieur ou cadre /cat. A'=1:2, 'technicien ou agent de maîtrise / cat. B'=3:4, 'ouvrier ou employé / cat. C'=5:7)
-  
+
   ## ## https://fr.wikipedia.org/wiki/Professions_et_cat%C3%A9gories_socioprofessionnelles_en_France
   res$emploiSupIntN30 <- NA
   res$emploiSupIntN30[emploiN30] <- df$Eq_q6_6[emploiN30] <= 4
@@ -234,10 +234,10 @@ ReadIP <- function(file) {
     primes[is.na(primes)] <- 0
     return(salaires + primes/12)
   }
-  
-  res$salaireEmploiN18 <- GetSalaireEmploi(df$q8_5, df$q8_7) 
+
+  res$salaireEmploiN18 <- GetSalaireEmploi(df$q8_5, df$q8_7)
   res$salaireEmploiN30 <- GetSalaireEmploi(df$q6_9r, df$q6_11r)
-  
+
   ## ## typeEmployeur <- c(
   ## ##   "vous-même",
   ## ##   "la fonction publique\n (d'Etat, territoriale ou hospitalière)",
@@ -249,11 +249,11 @@ ReadIP <- function(file) {
   ## ## )
   ## ## ColToFactor("q6_12", "typeEmployeur", typeEmployeur)
 
-  ## ## Employeurs privés : cette catégorie regroupe les entreprises (privées et publiques), les indépendant.e.s et les professions libérales 
+  ## ## Employeurs privés : cette catégorie regroupe les entreprises (privées et publiques), les indépendant.e.s et les professions libérales
   res$typeEmployeur <- factor(df$Eq_COD_q6_12)
   levels(res$typeEmployeur) <- list('Employeurs privés'=c(1,3,4,6,7), 'Fonction Publique'=2, 'Associations'=5)
 
-  activiteEcoEmployeur <- c( 
+  activiteEcoEmployeur <- c(
     "Agriculture, sylviculture et pêche",
     "Industries (manufacturières, extractives et autres)",
     "Construction",
@@ -271,7 +271,7 @@ ReadIP <- function(file) {
   ColToFactor("Eq_q6_13", "activiteEcoEmployeur", activiteEcoEmployeur)
 
   res$intituleEmploi <- as.character(df$q6_4)
-  
+
   return(res)
 }
 
@@ -280,9 +280,9 @@ ReadIP <- function(file) {
 ## sed 's/[[:blank:]]*"[[:blank:]]*/"/g'
 ## Find annoying newlines in the job description
 ## grep  -n "[^,\"]$"
-GenerateShinyRawDb <- function(infile, outfile = file.path("data", "all-uns-insertion_professionnelle.rda")) {
-  data <- ReadIP(infile)
-  saveRDS(data, outfile)
+GenerateShinyRawDb <- function(infile, outfile = file.path("data", "all-uns-insertion_professionnelle.rda"), ...) {
+    data <- ReadIP(infile, ...)
+    saveRDS(data, outfile)
 }
 
 ReadMIN <- function(filename) {
@@ -312,8 +312,6 @@ GenerateShinyMinDb <- function(filename) {
   ## They appear to be deprecated subdisciplines of
   ## disc18 Masters enseignement
   data <- subset(data, ! data$Code.de.la.discipline %in% c("disc19", "disc20"))
-  data$Code.de.la.discipline <-droplevels(data$Code.de.la.discipline) 
+  data$Code.de.la.discipline <-droplevels(data$Code.de.la.discipline)
   saveRDS(data, sub(".[^.]*$", ".rda", filename))
 }
-
-

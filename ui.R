@@ -1,5 +1,3 @@
-
-
 library(shiny)
 ## library(plotly)
 
@@ -50,7 +48,7 @@ function(request) {
     )
   ),
   tabPanel(
-    title = "Données UNS",
+    title = "Données UCA",
     value = "rawTabPanel",
     MakeSelectionRow(),
     tabsetPanel(
@@ -64,7 +62,7 @@ function(request) {
       MakeCloudPanel()
     )
   ),
-  footer = tags$footer(HTML("&copy; 2017-2020 Université Nice Sophia Antipolis")),
+  footer = tags$footer(HTML("&copy; 2017-2020 Université Côte d'Azur")),
   inputs = bookmarkButton(class = "btn-primary")
 )
 }
