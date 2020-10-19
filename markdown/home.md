@@ -9,7 +9,7 @@ L'OVE-IP mène plusieurs enquêtes annuelles visant à étudier l'insertion prof
  - L’enquête à 30 mois des LP et des Master : cette enquête est conduite dans un cadre national et interroge les diplômés sur leur situation professionnelle au 1er décembre de l'année en cours, 30 mois après l'obtention de leur Master ou de leur Licence Professionnelle.
  - L’enquête à 6 mois des LP et des Master : lancée pour la première fois en avril 2011, cette enquête locale est envoyée aux diplômés ayant validé leur Master ou leur Licence Professionnelle l'année précédente. Le questionnaire porte sur la situation professionnelle au 1er mars de l'année en cours, soit environ 6 mois après l'obtention du diplôme.
  - L’enquête Licence Générale à 1 an : depuis 2018, une enquête est réalisée au mois de juin auprès des diplômés de licence générale qui ont quitté l’université suite à l’obtention de leur diplôme.
- - L’enquête à 3 ans des docteurs : cette enquête nationale a été mise en place en 2017 et doit être réalisée tous les deux ans.L'OVE-IP mène plusieurs enquêtes annuelles visant à étudier l'insertion professionnelle des diplômés : cette enquête nationale a été mise en place en 2017 et doit être réalisée tous les deux ans.
+ - L’enquête à 3 ans des docteurs : cette enquête nationale a été mise en place en 2017 et doit être réalisée tous les deux ans.
 
 ### Le butineur de l'OVE-IP ###
 
